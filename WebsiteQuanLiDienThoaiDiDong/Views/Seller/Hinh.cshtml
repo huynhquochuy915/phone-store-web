@@ -1,0 +1,53 @@
+﻿@model WebsiteQuanLiDienThoaiDiDong.Models.SanPham
+
+@{
+    ViewBag.Title = "Hinh";
+}
+
+<h2>Hình ảnh: @Model.TenSanPham</h2>
+
+@if (TempData["Msg"] != null)
+{
+    <div class="alert alert-success">@TempData["Msg"]</div>
+}
+@if (TempData["Loi"] != null)
+{
+    <div class="alert alert-danger">@TempData["Loi"]</div>
+}
+
+@using (Html.BeginForm("UploadHinh", "Seller", FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" value="@Model.Id" />
+    <div class="mb-3">
+        <input type="file" name="files" class="form-control" accept=".jpg,.jpeg,.png,.webp" multiple />
+    </div>
+    <button type="submit" class="btn btn-primary">Tải lên</button>
+    <a href="@Url.Action("Index")" class="btn btn-light">Quay lại</a>
+}
+
+<div class="row mt-4">
+    @foreach (var hinh in Model.HinhAnhSanPhams.OrderByDescending(h => h.LaAnhChinh).ThenBy(h => h.ThuTu))
+    {
+        <div class="col-md-3 mb-3">
+            <div class="card">
+                <img src="@hinh.DuongDan" class="card-img-top" style="height:200px;object-fit:contain" />
+                <div class="card-body">
+                    @if (hinh.LaAnhChinh)
+                    {
+                        <span class="badge bg-success">Ảnh chính</span>
+                    }
+                    else
+                    {
+                        using (Html.BeginForm("XoaHinh", "Seller", FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@hinh.Id" />
+                            <button type="submit" class="btn btn-sm btn-danger">Xóa</button>
+                        }
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>

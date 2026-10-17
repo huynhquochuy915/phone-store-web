@@ -1,0 +1,57 @@
+﻿@model IEnumerable<WebsiteQuanLiDienThoaiDiDong.Models.BienTheSanPham>
+
+@{
+    ViewBag.Title = "Quản lý sản phẩm";
+    int soLuongSapHet = Model.Count(b => b.SoLuongTon <= b.NguongCanhBao);
+}
+
+<h2>Quản lý sản phẩm</h2>
+
+@if (TempData["Msg"] != null)
+{
+    <div class="alert alert-success">@TempData["Msg"]</div>
+}
+
+@if (soLuongSapHet > 0)
+{
+    <div class="alert alert-danger">
+        Có <strong>@soLuongSapHet</strong> sản phẩm sắp hết hàng, cần nhập thêm!
+    </div>
+}
+
+<table class="table table-bordered">
+    <thead>
+        <tr>
+            <th>Tên sản phẩm</th>
+            <th>Màu sắc</th>
+            <th>Dung lượng</th>
+            <th>Giá bán</th>
+            <th>Tồn kho</th>
+            <th>Thao tác</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var bienThe in Model)
+        {
+            bool sapHetHang = bienThe.SoLuongTon <= bienThe.NguongCanhBao;
+
+            <tr class="@(sapHetHang ? "table-danger" : "")">
+                <td>@bienThe.SanPham.TenSanPham</td>
+                <td>@bienThe.MauSac</td>
+                <td>@bienThe.DungLuong</td>
+                <td>@bienThe.GiaBan.ToString("N0") đ</td>
+                <td>
+                    @bienThe.SoLuongTon
+                    @if (sapHetHang)
+                    {
+                        <span class="badge bg-danger">Sắp hết hàng</span>
+                    }
+                </td>
+                <td>
+                    <a href="@Url.Action("Sua", new { id = bienThe.Id })" class="btn btn-sm btn-primary">Sửa</a>
+                    <a href="@Url.Action("Hinh", new { id = bienThe.SanPhamId })" class="btn btn-sm btn-secondary">Hình ảnh</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
