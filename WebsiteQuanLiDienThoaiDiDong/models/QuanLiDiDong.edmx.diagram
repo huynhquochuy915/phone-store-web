@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="9be32ad07a5249bdaacfd0299d281836" Name="Diagram1">
+        <EntityTypeShape EntityType="QL_DienThoaiModel.BienTheSanPham" Width="1.5" PointX="8.25" PointY="12.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienThoaiModel.CauHinhHeThong" Width="1.5" PointX="0.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienThoaiModel.ChiTietDonHang" Width="1.5" PointX="10.5" PointY="19" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienThoaiModel.DanhGia" Width="1.5" PointX="5.25" PointY="16" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienThoaiModel.DiaChiGiaoHang" Width="1.5" PointX="5.25" PointY="19.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienThoaiModel.DonHang" Width="1.5" PointX="8.25" PointY="17.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienThoaiModel.DonHangLichSu" Width="1.5" PointX="13.5" PointY="19.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienThoaiModel.GioHang" Width="1.5" PointX="5.25" PointY="30.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienThoaiModel.GioHangChiTiet" Width="1.5" PointX="7.5" PointY="30.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienThoaiModel.GoiTraGop" Width="1.5" PointX="2.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienThoaiModel.HinhAnhSanPham" Width="1.5" PointX="10.5" PointY="11.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienThoaiModel.ImeiSanPham" Width="1.5" PointX="12.75" PointY="23.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienThoaiModel.KhuyenMai" Width="1.5" PointX="6" PointY="10.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienThoaiModel.KhuyenMaiSuDung" Width="1.5" PointX="10.5" PointY="15.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienThoaiModel.LichSuTonKho" Width="1.5" PointX="10.5" PointY="23.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienThoaiModel.LoaiSanPham" Width="1.5" PointX="0.75" PointY="11.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienThoaiModel.NguoiDung" Width="1.5" PointX="3" PointY="18.125" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienThoaiModel.NhatKyEmail" Width="1.5" PointX="10.5" PointY="32.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienThoaiModel.PhiVanChuyen" Width="1.5" PointX="0.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienThoaiModel.SanPham" Width="1.5" PointX="3" PointY="10.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienThoaiModel.SanPhamLienQuan" Width="1.5" PointX="5.25" PointY="7.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienThoaiModel.ThanhToanGiaoDich" Width="1.5" PointX="13.5" PointY="15" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienThoaiModel.ThuongHieu" Width="1.5" PointX="0.75" PointY="14" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienThoaiModel.TokenDatLaiMatKhau" Width="1.5" PointX="5.25" PointY="33.25" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienThoaiModel.VaiTro" Width="1.5" PointX="0.75" PointY="19.625" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienThoaiModel.YeuThich" Width="1.5" PointX="5.25" PointY="23.375" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienThoaiModel.vw_CanhBaoTonKho" Width="1.5" PointX="2.75" PointY="3.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienThoaiModel.vw_NguoiDaMuaSanPham" Width="1.5" PointX="4.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienThoaiModel.vw_SanPhamHienThi" Width="1.5" PointX="6.75" PointY="0.75" IsExpanded="true" />
+        <EntityTypeShape EntityType="QL_DienThoaiModel.vw_TopBanChay" Width="1.5" PointX="7.75" PointY="6.75" IsExpanded="true" />
+        <AssociationConnector Association="QL_DienThoaiModel.FK__BienTheSa__SanPh__5EBF139D" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienThoaiModel.FK__ChiTietDo__BienT__2EDAF651" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienThoaiModel.FK__GioHangCh__BienT__04E4BC85" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienThoaiModel.FK__HinhAnhSa__BienT__6754599E" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienThoaiModel.FK__LichSuTon__BienT__41EDCAC5" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienThoaiModel.FK__ChiTietDo__DonHa__2DE6D218" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienThoaiModel.FK__ImeiSanPh__ChiTi__3493CFA7" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienThoaiModel.FK__DanhGia__NguoiDu__787EE5A0" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienThoaiModel.FK__DanhGia__SanPham__778AC167" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienThoaiModel.FK__DiaChiGia__Nguoi__44FF419A" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienThoaiModel.FK__DonHang__KhuyenM__1AD3FDA4" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienThoaiModel.FK__DonHang__NguoiDu__19DFD96B" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienThoaiModel.FK__DonHangLi__DonHa__3D2915A8" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienThoaiModel.FK__KhuyenMai__DonHa__29221CFB" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienThoaiModel.FK__LichSuTon__DonHa__42E1EEFE" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienThoaiModel.FK__NhatKyEma__DonHa__489AC854" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienThoaiModel.FK__ThanhToan__DonHa__37703C52" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienThoaiModel.FK__DonHangLi__Nguoi__3E1D39E1" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienThoaiModel.FK__GioHang__NguoiDu__7E37BEF6" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienThoaiModel.FK__GioHangCh__GioHa__03F0984C" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienThoaiModel.FK__HinhAnhSa__SanPh__66603565" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienThoaiModel.FK__KhuyenMai__Khuye__2739D489" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienThoaiModel.FK__KhuyenMai__Nguoi__282DF8C2" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienThoaiModel.FK__SanPham__LoaiId__534D60F1" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienThoaiModel.FK__NguoiDung__VaiTr__3B75D760" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienThoaiModel.FK__ThanhToan__Nguoi__3A4CA8FD" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienThoaiModel.FK__TokenDatL__Nguoi__412EB0B6" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienThoaiModel.FK__YeuThich__NguoiD__71D1E811" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienThoaiModel.FK__SanPham__ThuongH__5441852A" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienThoaiModel.FK__SanPhamLi__SanPh__6C190EBB" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienThoaiModel.FK__SanPhamLi__SanPh__6D0D32F4" ManuallyRouted="false" />
+        <AssociationConnector Association="QL_DienThoaiModel.FK__YeuThich__SanPha__72C60C4A" ManuallyRouted="false" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>

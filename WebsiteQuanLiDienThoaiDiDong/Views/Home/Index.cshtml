@@ -1,33 +1,82 @@
-﻿@{
-    ViewBag.Title = "Home Page";
+﻿@model WebsiteQuanLiDienThoaiDiDong.Models.ViewModels.TrangChuVM
+@{ ViewBag.Title = "Trang chủ"; }
+
+<section class="hero">
+    <aside class="cat-side">@Html.Action("Menu", "Home", new { area = "" })</aside>
+
+    <div id="heroCar" class="carousel slide hero-main" data-bs-ride="carousel" data-bs-interval="5000">
+        <div class="carousel-indicators">
+            <button type="button" data-bs-target="#heroCar" data-bs-slide-to="0" class="active" aria-label="Banner 1"></button>
+            <button type="button" data-bs-target="#heroCar" data-bs-slide-to="1" aria-label="Banner 2"></button>
+            <button type="button" data-bs-target="#heroCar" data-bs-slide-to="2" aria-label="Banner 3"></button>
+        </div>
+        <div class="carousel-inner">
+            <div class="carousel-item active">
+                <div class="slide slide-1">
+                    <h2>Điện thoại chính hãng, trả góp 0%</h2>
+                    <p>Chọn máy, chọn màu, nhận hàng nhanh. Thanh toán khi nhận hoặc quét mã QR.</p>
+                    <a class="btn btn-light" href="@Url.Action("Index", "SanPham", new { area = "", loaiId = 1 })">Xem điện thoại</a>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="slide slide-2">
+                    <h2>Phụ kiện mua kèm cho máy mới</h2>
+                    <p>Sạc nhanh, cáp, pin dự phòng, ốp lưng và kính cường lực.</p>
+                    <a class="btn btn-light" href="@Url.Action("Index", "SanPham", new { area = "", loaiId = 3 })">Chọn phụ kiện</a>
+                </div>
+            </div>
+            <div class="carousel-item">
+                <div class="slide slide-3">
+                    <h2>Nhập CHAOBAN10 để giảm 10% đơn đầu tiên</h2>
+                    <p>Giảm tối đa 500.000₫, áp dụng cho đơn từ 1.000.000₫.</p>
+                    <a class="btn btn-dark" href="@Url.Action("Index", "SanPham", new { area = "" })">Mua sắm ngay</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <aside class="hero-side">
+        <a class="tile" href="@Url.Action("TraCuu", "BaoHanh", new { area = "" })">
+            <i class="bi bi-upc-scan"></i>
+            <strong>Tra cứu bảo hành</strong>
+            <span>Nhập số IMEI để xem hạn bảo hành</span>
+        </a>
+        <a class="tile" href="@Url.Action("Index", "SanPham", new { area = "" })">
+            <i class="bi bi-ticket-perforated"></i>
+            <strong>Giảm 500.000₫</strong>
+            <span>Đơn từ 15 triệu, nhập mã GIAM500K</span>
+        </a>
+    </aside>
+</section>
+
+<section class="policy">
+    <div><i class="bi bi-patch-check"></i><span><b>Hàng chính hãng</b>Có bảo hành theo hãng</span></div>
+    <div><i class="bi bi-truck"></i><span><b>Giao nhanh</b>Phí ship theo tỉnh thành</span></div>
+    <div><i class="bi bi-credit-card-2-front"></i><span><b>Trả góp 0%</b>Kỳ hạn 3 đến 12 tháng</span></div>
+    <div><i class="bi bi-qr-code-scan"></i><span><b>Thanh toán QR</b>Chuyển khoản VietQR</span></div>
+</section>
+
+@if (Model.NoiBat.Any())
+{
+    <section class="sec deal">
+        <div class="sec-head">
+            <h2><i class="bi bi-lightning-charge-fill"></i> Nổi bật hôm nay</h2>
+            <a href="@Url.Action("Index", "SanPham", new { area = "" })">Xem tất cả</a>
+        </div>
+        <div class="hrow">
+            @foreach (var sp in Model.NoiBat)
+            {@Html.Partial("_SanPhamCard", sp)}
+        </div>
+    </section>
 }
 
-<main>
-    <section class="row" aria-labelledby="aspnetTitle">
-        <h1 id="title">ASP.NET</h1>
-        <p class="lead">ASP.NET is a free web framework for building great Web sites and Web applications using HTML, CSS and JavaScript.</p>
-        <p><a href="https://asp.net" class="btn btn-primary btn-md">Learn more &raquo;</a></p>
-    </section>
-
-    <div class="row">
-        <section class="col-md-4" aria-labelledby="gettingStartedTitle">
-            <h2 id="gettingStartedTitle">Getting started</h2>
-            <p>
-                ASP.NET MVC gives you a powerful, patterns-based way to build dynamic websites that
-                enables a clean separation of concerns and gives you full control over markup
-                for enjoyable, agile development.
-            </p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301865">Learn more &raquo;</a></p>
-        </section>
-        <section class="col-md-4" aria-labelledby="librariesTitle">
-            <h2 id="librariesTitle">Get more libraries</h2>
-            <p>NuGet is a free Visual Studio extension that makes it easy to add, remove, and update libraries and tools in Visual Studio projects.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301866">Learn more &raquo;</a></p>
-        </section>
-        <section class="col-md-4" aria-labelledby="hostingTitle">
-            <h2 id="hostingTitle">Web Hosting</h2>
-            <p>You can easily find a web hosting company that offers the right mix of features and price for your applications.</p>
-            <p><a class="btn btn-outline-dark" href="https://go.microsoft.com/fwlink/?LinkId=301867">Learn more &raquo;</a></p>
-        </section>
+<section class="sec">
+    <div class="sec-head">
+        <h2>Bán chạy nhất</h2>
+        <a href="@Url.Action("Index", "SanPham", new { area = "" })">Xem tất cả</a>
     </div>
-</main>
+    <div class="pgrid">
+        @foreach (var sp in Model.BanChay)
+        {@Html.Partial("_SanPhamCard", sp)}
+    </div>
+</section>
