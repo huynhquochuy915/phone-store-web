@@ -1,0 +1,35 @@
+﻿@model WebsiteQuanLiDienThoaiDiDong.Models.ViewModels.SanPhamCardVM
+@{
+    var noImg = Url.Content("~/Content/images/no-image.png");
+    int giam = 0;
+    if (Model.GiaGoc.HasValue && Model.GiaThapNhat.HasValue && Model.GiaGoc.Value > Model.GiaThapNhat.Value)
+    {
+        giam = (int)Math.Round((Model.GiaGoc.Value - Model.GiaThapNhat.Value) * 100 / Model.GiaGoc.Value);
+    }
+}
+<a class="pcard" href="@Url.Action("ChiTiet", "SanPham", new { area = "", id = Model.Id })">
+    @if (giam > 0)
+    {<span class="pcard-off">Giảm @giam%</span>}
+    <div class="pcard-img">
+        <img src="@(Model.AnhDaiDien != null ? Url.Content("~" + Model.AnhDaiDien) : noImg)" alt="@Model.TenSanPham"
+             loading="lazy" onerror="this.onerror=null;this.src='@noImg'" />
+    </div>
+    @if (Model.LoaiId == 1)
+    {<span class="pcard-tag">Trả góp 0%</span>}
+    else
+    {<span class="pcard-tag" style="visibility:hidden">&nbsp;</span>}
+    <h3 class="pcard-name">@Model.TenSanPham</h3>
+    <div class="pcard-price">
+        <strong>@Model.GiaThapNhat.VND()</strong>
+        @if (giam > 0)
+        {<del>@Model.GiaGoc.VND()</del>}
+    </div>
+    <div class="pcard-meta">
+        @if (Model.SoDanhGia > 0)
+        {<span class="star">★ @Model.SaoTrungBinh</span>}
+        @if (Model.DaBan > 0)
+        {<span>Đã bán @Model.DaBan</span>}
+    </div>
+    @if ((Model.TongTon ?? 0) <= 0)
+    {<div class="pcard-out">Tạm hết hàng</div>}
+</a>
