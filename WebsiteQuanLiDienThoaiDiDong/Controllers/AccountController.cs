@@ -31,47 +31,63 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
         }
         // Phần ĐĂNG KÝ
         [HttpGet]
-        public ActionResult Register()
+        public ActionResult Register(string returnUrl = null)
         {
+            ViewBag.ReturnUrl = returnUrl;
             return View();
         }
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Register(NguoiDung model, string confirmPassword)
+        public ActionResult Register(NguoiDung model, string confirmPassword, string returnUrl = null)
         {
+            ViewBag.ReturnUrl = returnUrl;
             if (ModelState.IsValid)
             {
-                var checkEmail = db.NguoiDungs.FirstOrDefault(x => x.Email == model.Email);
-                if (checkEmail == null)
+                model.HoTen = (model.HoTen ?? "").Trim();
+                model.Email = (model.Email ?? "").Trim();
+                model.SoDienThoai = String.IsNullOrWhiteSpace(model.SoDienThoai) ? null : model.SoDienThoai.Trim();
+
+                if (String.IsNullOrWhiteSpace(model.HoTen) || String.IsNullOrWhiteSpace(model.Email) || String.IsNullOrEmpty(model.MatKhauHash))
                 {
-                    ModelState.AddModelError(" Email", "Email đã tồn tại");
+                    ModelState.AddModelError("", "Vui lòng nhập họ tên, email và mật khẩu.");
                     return View(model);
                 }
-                if (!string.IsNullOrEmpty(model.MatKhauHash))
+                if (!String.Equals(model.MatKhauHash, confirmPassword, StringComparison.Ordinal))
                 {
-                    model.MatKhauHash = ComputeSha256Hash(model.MatKhauHash);
+                    ModelState.AddModelError("confirmPassword", "Mật khẩu xác nhận không khớp.");
+                    return View(model);
                 }
+
+                if (db.NguoiDungs.Any(x => x.Email == model.Email))
+                {
+                    ModelState.AddModelError("Email", "Email này đã được sử dụng.");
+                    return View(model);
+                }
+
+                model.MatKhauHash = ComputeSha256Hash(model.MatKhauHash);
                 model.VaiTroId = 3;
                 model.TrangThai = true;
                 model.NgayTao = DateTime.Now;
                 db.NguoiDungs.Add(model);
                 db.SaveChanges();
-                TempData["Success Message"] = "Đăng ký thành công! Vui lòng đăng nhập.";
-                return RedirectToAction("Login");
+                TempData["SuccessMessage"] = "Đăng ký thành công! Vui lòng đăng nhập.";
+                return RedirectToAction("Login", new { returnUrl = returnUrl });
             }
             return View(model);
         }
         // Phần ĐĂNG NHẬP
         [HttpGet]
-        public ActionResult Login()
+        public ActionResult Login(string returnUrl = null)
         {
+            ViewBag.ReturnUrl = returnUrl;
             return View();
         }
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult Login(string email, string matKhau) 
+        public ActionResult Login(string email, string matKhau, string returnUrl = null)
         {
+            ViewBag.ReturnUrl = returnUrl;
             if (string.IsNullOrEmpty(email) || string.IsNullOrEmpty(matKhau))
             {
                 ModelState.AddModelError("", "Vui lòng nhập đầy đủ email và mật khẩu.");
@@ -82,7 +98,10 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
             string hashedPassword = ComputeSha256Hash(matKhau);
 
          
-            var user = db.NguoiDungs.FirstOrDefault(u => u.Email == email && u.MatKhauHash == hashedPassword && u.TrangThai == true);
+            var taiKhoan = email.Trim();
+            var user = db.NguoiDungs.FirstOrDefault(u =>
+                (u.Email == taiKhoan || u.SoDienThoai == taiKhoan) &&
+                u.MatKhauHash == hashedPassword && u.TrangThai);
 
             if (user != null)
             {
@@ -101,6 +120,8 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
                 }
                 else
                 {
+                    if (!String.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                        return Redirect(returnUrl);
                     return RedirectToAction("Index", "Home");
                 }
             }

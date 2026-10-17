@@ -11,8 +11,10 @@
             @using (Html.BeginForm("Register", "Account", FormMethod.Post))
             {
                 @Html.AntiForgeryToken()
+                <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
 
                 @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3" })
+                @Html.ValidationMessage("confirmPassword", "", new { @class = "text-danger d-block mb-2" })
 
                 <div class="form-group mb-3">
                     <label for="HoTen" class="form-label">Họ và tên</label>
@@ -22,6 +24,7 @@
                 <div class="form-group mb-3">
                     <label for="Email" class="form-label">Email</label>
                     <input type="email" id="Email" name="Email" class="form-control" placeholder="Nhập email..." required />
+                    @Html.ValidationMessage("Email", "", new { @class = "text-danger" })
                 </div>
 
                 <div class="form-group mb-3">

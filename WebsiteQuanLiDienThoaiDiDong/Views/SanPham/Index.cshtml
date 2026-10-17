@@ -1,0 +1,90 @@
+﻿@model WebsiteQuanLiDienThoaiDiDong.Models.ViewModels.DanhSachSanPhamVM
+@{ ViewBag.Title = "Sản phẩm"; }
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1 class="h3 mb-0">Danh sách sản phẩm</h1>
+    <div class="d-flex gap-2">
+        <a class="btn btn-outline-secondary btn-sm" href="@Url.Action("SoSanh")">So sánh sản phẩm</a>
+    </div>
+</div>
+
+<form method="get" action="@Url.Action("Index")" class="card card-body mb-4">
+    <div class="row g-2 align-items-end">
+        <div class="col-md-4 position-relative">
+            <label class="form-label" for="tuKhoa">Tìm kiếm</label>
+            <input class="form-control" id="tuKhoa" name="tuKhoa" value="@Model.TuKhoa" autocomplete="off" placeholder="Tên điện thoại, thương hiệu..." />
+            <div id="goiYBox" class="list-group position-absolute w-100 shadow" style="z-index:5;display:none"></div>
+        </div>
+        <div class="col-md-2"><label class="form-label">Danh mục</label>
+            <select class="form-select" name="loaiId"><option value="">Tất cả</option>@foreach (var x in Model.Loais) { <option value="@x.Id" @(Model.LoaiId == x.Id ? "selected" : "")>@x.TenLoai</option> }</select>
+        </div>
+        <div class="col-md-2"><label class="form-label">Thương hiệu</label>
+            <select class="form-select" name="thuongHieuId"><option value="">Tất cả</option>@foreach (var x in Model.ThuongHieus) { <option value="@x.Id" @(Model.ThuongHieuId == x.Id ? "selected" : "")>@x.TenThuongHieu</option> }</select>
+        </div>
+        <div class="col-md-2"><label class="form-label">Giá từ</label><input class="form-control" type="number" min="0" name="giaTu" value="@Model.GiaTu" /></div>
+        <div class="col-md-2"><label class="form-label">Giá đến</label><input class="form-control" type="number" min="0" name="giaDen" value="@Model.GiaDen" /></div>
+        <div class="col-md-2"><label class="form-label">RAM</label><select class="form-select" name="ramGB"><option value="">Tất cả</option>@foreach (var x in new byte[] { 4, 6, 8, 12, 16 }) { <option value="@x" @(Model.RamGB == x ? "selected" : "")>@x GB</option> }</select></div>
+        <div class="col-md-2"><label class="form-label">Dung lượng</label><select class="form-select" name="dungLuongGB"><option value="">Tất cả</option>@foreach (var x in new[] { 64, 128, 256, 512, 1024 }) { <option value="@x" @(Model.DungLuongGB == x ? "selected" : "")>@(x == 1024 ? "1 TB" : x + " GB")</option> }</select></div>
+        <div class="col-md-3"><label class="form-label">Sắp xếp</label><select class="form-select" name="sapXep">
+            <option value="" @(Model.SapXep == null ? "selected" : "")>Mới nhất</option>
+            <option value="gia_tang" @(Model.SapXep == "gia_tang" ? "selected" : "")>Giá tăng dần</option>
+            <option value="gia_giam" @(Model.SapXep == "gia_giam" ? "selected" : "")>Giá giảm dần</option>
+            <option value="banchay" @(Model.SapXep == "banchay" ? "selected" : "")>Bán chạy</option>
+            <option value="danhgia" @(Model.SapXep == "danhgia" ? "selected" : "")>Đánh giá cao</option>
+            <option value="xemnhieu" @(Model.SapXep == "xemnhieu" ? "selected" : "")>Xem nhiều</option>
+        </select></div>
+        <div class="col-md-2 form-check ms-2"><input class="form-check-input" type="checkbox" name="conHang" value="true" id="conHang" @(Model.ConHang ? "checked" : "") /><label class="form-check-label" for="conHang">Còn hàng</label></div>
+        <div class="col-md-2"><button class="btn btn-danger w-100" type="submit">Lọc sản phẩm</button></div>
+    </div>
+</form>
+
+@if (!Model.SanPhams.Any())
+{
+    <div class="alert alert-light border">Không tìm thấy sản phẩm phù hợp. Thử bỏ bớt điều kiện lọc nhé.</div>
+}
+else
+{
+    <div class="d-flex justify-content-between align-items-center mb-2"><span>Tìm thấy sản phẩm (trang @Model.Trang/@Model.SoTrang)</span></div>
+    <div class="pgrid">
+        @foreach (var sp in Model.SanPhams)
+        {
+            @Html.Partial("_SanPhamCard", sp)
+        }
+    </div>
+}
+@if (Model.SoTrang > 1)
+{
+    <nav class="mt-4" aria-label="Phân trang"><ul class="pagination justify-content-center">
+        @for (var p = 1; p <= Model.SoTrang; p++)
+        {
+            <li class="page-item @(p == Model.Trang ? "active" : "")"><a class="page-link" href="@Url.Action("Index", new { tuKhoa = Model.TuKhoa, loaiId = Model.LoaiId, thuongHieuId = Model.ThuongHieuId, giaTu = Model.GiaTu, giaDen = Model.GiaDen, ramGB = Model.RamGB, dungLuongGB = Model.DungLuongGB, conHang = Model.ConHang, sapXep = Model.SapXep, trang = p })">@p</a></li>
+        }
+    </ul></nav>
+}
+
+@section scripts {
+<script>
+(function () {
+    var input = document.getElementById('tuKhoa'), box = document.getElementById('goiYBox'), timer;
+    if (!input || !box) return;
+    input.addEventListener('input', function () {
+        clearTimeout(timer);
+        var q = input.value.trim();
+        if (q.length < 2) { box.style.display = 'none'; return; }
+        timer = setTimeout(function () {
+            $.getJSON('@Url.Action("GoiY")', { tuKhoa: q }, function (items) {
+                box.innerHTML = '';
+                items.forEach(function (x) {
+                    var a = document.createElement('a'); a.className = 'list-group-item list-group-item-action';
+                    a.href = '@Url.Action("ChiTiet")/' + x.id;
+                    a.textContent = x.ten + ' · ' + (x.thuongHieu || '') + (x.gia ? ' · ' + Number(x.gia).toLocaleString('vi-VN') + '₫' : '');
+                    box.appendChild(a);
+                });
+                box.style.display = items.length ? 'block' : 'none';
+            });
+        }, 250);
+    });
+    document.addEventListener('click', function (e) { if (!box.contains(e.target) && e.target !== input) box.style.display = 'none'; });
+})();
+</script>
+}

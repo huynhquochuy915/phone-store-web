@@ -210,6 +210,28 @@ body {
     position: relative
 }
 
+.account-favorite-link {
+    display: flex;
+    align-items: center;
+    gap: .55rem;
+    margin: 3px 8px;
+    width: calc(100% - 16px);
+    padding: .55rem .75rem;
+    border-radius: 8px;
+    background: #fff1f2;
+    color: var(--red);
+    font-weight: 600;
+    transition: background-color .15s ease, color .15s ease;
+}
+
+.account-favorite-link:hover,
+.account-favorite-link:focus {
+    background: var(--red);
+    color: #fff;
+}
+
+.account-favorite-link i { font-size: .95rem; }
+
     .hd-link:hover, .hd-link:focus {
         color: #fff;
         opacity: .9
@@ -590,6 +612,20 @@ body {
     color: var(--ink)
 }
 
+.pcard-wrap { min-width: 0; height: 100%; }
+.pcard-link { position: relative; display: flex; flex: 1 1 auto; flex-direction: column; min-width: 0; color: var(--ink); text-decoration: none; }
+.pcard-link:hover { color: var(--ink); }
+.favorite-form { margin: 0; }
+.pcard > .favorite-form { position: absolute; z-index: 2; top: 8px; right: 8px; }
+.favorite-toggle { display: inline-flex; align-items: center; justify-content: center; width: 38px; height: 38px; border: 1px solid var(--line); border-radius: 50%; background: #fff; color: var(--red); box-shadow: 0 2px 8px rgba(0,0,0,.12); cursor: pointer; }
+.favorite-toggle:hover, .favorite-toggle.is-favorite { color: var(--red); border-color: var(--red); background: #fff5f5; }
+.favorite-toggle:disabled { opacity: .65; cursor: wait; }
+.pcard > .favorite-form .favorite-toggle { font-size: 1.05rem; }
+.detail-favorite-toggle { width: auto; height: auto; padding: .5rem .9rem; border-radius: .5rem; box-shadow: none; gap: .45rem; white-space: nowrap; }
+.pcard-actions { margin-top: 10px; }
+.pcard-actions .compare-form { flex: 1; min-width: 0; }
+.pcard-actions .compare-form .btn { white-space: nowrap; }
+
     .pcard:hover {
         border-color: var(--red);
         color: var(--ink)
@@ -739,6 +775,7 @@ body {
 /* 1. Các thẻ trong cùng hàng cao bằng nhau */
 .hrow { display: flex; gap: 12px; align-items: stretch; overflow-x: auto; }
 .hrow .pcard { flex: 0 0 190px; }
+.hrow > .pcard-wrap { flex: 0 0 190px; }
 .pgrid { align-items: stretch; }
 
 /* 2. Thẻ xếp dọc, giá đẩy xuống đáy */

@@ -135,6 +135,7 @@
     <Compile Include="Controllers\DatHangController.cs" />
     <Compile Include="Controllers\GioHangController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\SanPhamController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
@@ -344,6 +345,8 @@
     </Content>
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
+    <Content Include="Scripts\search-suggest.js" />
+    <Content Include="Scripts\favorite.js" />
     <Content Include="Scripts\jquery-3.7.0.min.js" />
     <Content Include="Scripts\jquery-3.7.0.slim.js" />
     <Content Include="Scripts\jquery-3.7.0.slim.min.js" />
@@ -374,6 +377,10 @@
     <Content Include="Views\GioHang\Badge.cshtml" />
     <Content Include="Views\GioHang\Index.cshtml" />
     <Content Include="Views\Home\Menu.cshtml" />
+    <Content Include="Views\SanPham\Index.cshtml" />
+    <Content Include="Views\SanPham\ChiTiet.cshtml" />
+    <Content Include="Views\SanPham\SoSanh.cshtml" />
+    <Content Include="Views\SanPham\YeuThich.cshtml" />
     <Content Include="Views\Shared\_AdminLayout.cshtml" />
     <Content Include="Views\Shared\_ChonBienThe.cshtml" />
     <Content Include="Views\Shared\_SanPhamCard.cshtml" />
