@@ -1,0 +1,63 @@
+﻿@model WebsiteQuanLiDienThoaiDiDong.Models.DonHang
+@{
+    ViewBag.Title = "Đặt hàng thành công";
+    var qr = ViewBag.QrUrl as string;
+}
+
+<div class="box text-center mb-3">
+    <i class="bi bi-check-circle-fill text-success" style="font-size:3rem"></i>
+    <h3 class="mt-2">Đặt hàng thành công!</h3>
+    <p class="mb-0">Mã đơn hàng: <strong>@Model.MaDonHang</strong></p>
+    <p class="text-muted">Chúng tôi đã ghi nhận đơn và sẽ liên hệ xác nhận sớm nhất.</p>
+</div>
+
+@if (qr != null)
+{
+    <div class="box text-center mb-3">
+        <h5>Quét mã QR để thanh toán</h5>
+        <img src="@qr" alt="VietQR" style="max-width:320px;width:100%" />
+        <div class="mt-2">
+            Ngân hàng: <strong>@CauHinh.Get("NganHang_Ma")</strong> &middot;
+            STK: <strong>@CauHinh.Get("NganHang_SoTaiKhoan")</strong> &middot;
+            Chủ TK: <strong>@CauHinh.Get("NganHang_TenChuTK")</strong>
+        </div>
+        <div>Số tiền: <strong class="text-danger">@(((decimal)ViewBag.Tong).VND())</strong> &middot; Nội dung CK: <strong>@Model.MaDonHang</strong></div>
+        <div class="alert alert-warning d-inline-block mt-3 mb-0">
+            Vui lòng thanh toán trong <strong id="cd" data-sec="@ViewBag.ConLaiGiay"></strong>, quá hạn đơn sẽ tự động hủy.
+        </div>
+    </div>
+}
+
+<div class="box">
+    <h5>Chi tiết đơn hàng</h5>
+    <table class="table">
+        <thead><tr><th>Sản phẩm</th><th>SL</th><th class="text-end">Đơn giá</th><th class="text-end">Thành tiền</th></tr></thead>
+        <tbody>
+            @foreach (var ct in Model.ChiTietDonHangs)
+            {
+                <tr><td>@ct.TenSanPham</td><td>@ct.SoLuong</td><td class="text-end">@ct.DonGia.VND()</td><td class="text-end">@((ct.SoLuong * ct.DonGia).VND())</td></tr>
+            }
+        </tbody>
+        <tfoot>
+            <tr><td colspan="3" class="text-end">Tiền hàng</td><td class="text-end">@Model.TongTienHang.VND()</td></tr>
+            <tr><td colspan="3" class="text-end">Phí vận chuyển</td><td class="text-end">@Model.PhiShip.VND()</td></tr>
+            <tr><td colspan="3" class="text-end">Giảm giá</td><td class="text-end">-@Model.TienGiam.VND()</td></tr>
+            <tr><td colspan="3" class="text-end fw-bold">Tổng thanh toán</td><td class="text-end price">@(((decimal)ViewBag.Tong).VND())</td></tr>
+        </tfoot>
+    </table>
+    <a class="btn btn-brand" href="@Url.Action("Index", "Home")">Tiếp tục mua sắm</a>
+</div>
+
+@section scripts {
+    <script>
+        var el = document.getElementById('cd');
+        if (el) {
+            var s = parseInt(el.dataset.sec, 10);
+            (function tick() {
+                if (s <= 0) { el.textContent = '0 phút (đã quá hạn)'; return; }
+                el.textContent = Math.floor(s / 60) + ' phút ' + (s % 60) + ' giây';
+                s--; setTimeout(tick, 1000);
+            })();
+        }
+    </script>
+}

@@ -1,0 +1,56 @@
+﻿@{
+    ViewBag.Title = "Đăng nhập";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<div class="container mt-5" style="max-width: 450px;">
+    <div class="card shadow-sm border-0">
+        <div class="card-body p-4">
+            <h3 class="card-title text-center mb-4 font-weight-bold">ĐĂNG NHẬP</h3>
+
+            @* Hiển thị thông báo đăng ký thành công nếu có *@
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show" role="alert">
+                    @TempData["SuccessMessage"]
+                </div>
+            }
+
+            @* Form đăng nhập *@
+            @using (Html.BeginForm("Login", "Account", FormMethod.Post))
+            {
+                @* Tạo token chống giả mạo CSRF (Khớp với [ValidateAntiForgeryToken] trong Controller) *@
+                @Html.AntiForgeryToken()
+
+                @* Hiển thị tổng hợp lỗi từ Controller *@
+                @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3" })
+
+                <div class="form-group mb-3">
+                    <label for="email" class="form-label">Email</label>
+                    <input type="email" id="email" name="email" class="form-control" placeholder="Nhập email..." required />
+                </div>
+
+                <div class="form-group mb-3">
+                    <label for="matKhau" class="form-label">Mật khẩu</label>
+                    <input type="password" id="matKhau" name="matKhau" class="form-control" placeholder="Nhập mật khẩu..." required />
+                </div>
+
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <div class="form-check">
+                        <input type="checkbox" class="form-check-input" id="rememberMe">
+                        <label class="form-check-label" for="rememberMe">Ghi nhớ đăng nhập</label>
+                    </div>
+                    <a href="@Url.Action("ForgotPassword", "Account")" class="text-decoration-none small">Quên mật khẩu?</a>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 py-2 font-weight-bold">ĐĂNG NHẬP</button>
+            }
+
+            <hr class="my-4">
+
+            <div class="text-center">
+                <p class="mb-0">Chưa có tài khoản? <a href="@Url.Action("Register", "Account")" class="text-primary font-weight-bold text-decoration-none">Đăng ký ngay</a></p>
+            </div>
+        </div>
+    </div>
+</div>

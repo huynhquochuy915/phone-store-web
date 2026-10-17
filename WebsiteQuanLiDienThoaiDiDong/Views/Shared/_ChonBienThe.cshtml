@@ -1,0 +1,90 @@
+﻿@model WebsiteQuanLiDienThoaiDiDong.Models.SanPham
+@{
+    var bienThes = Model.BienTheSanPhams.Where(b => b.HienThi)
+        .Select(b => new { id = b.Id, mau = b.MauSac, dl = b.DungLuong, gia = b.GiaBan, goc = b.GiaGoc, ton = b.SoLuongTon })
+        .ToList();
+}
+
+@if (!bienThes.Any())
+{
+    <div class="alert alert-warning">Sản phẩm tạm ngừng bán.</div>
+}
+else
+{
+    <div id="variantBox" data-variants="@Json.Encode(bienThes)">
+        <div id="vbDl" class="mb-3"><div class="fw-semibold mb-2">Dung lượng</div><div class="d-flex flex-wrap gap-2" data-role="dl"></div></div>
+        <div class="mb-3"><div class="fw-semibold mb-2">Màu sắc</div><div class="d-flex flex-wrap gap-2" data-role="mau"></div></div>
+        <div class="mb-1"><span id="vbGia" class="price"></span> <del id="vbGoc" class="text-muted ms-2"></del></div>
+        <div id="vbTon" class="small mb-3"></div>
+
+        @using (Html.BeginForm("Them", "GioHang", new { area = "" }, FormMethod.Post, new { id = "frmThemGio" }))
+        {
+            @Html.AntiForgeryToken()
+            <input type="hidden" name="bienTheId" id="vbId" />
+            <div class="d-flex gap-2 align-items-center">
+                <input type="number" name="soLuong" id="vbSl" value="1" min="1" class="form-control" style="width:90px" />
+                <button type="submit" class="btn btn-outline-brand" id="btnThem"><i class="bi bi-cart-plus"></i> Thêm vào giỏ</button>
+                <button type="submit" name="muaNgay" value="true" class="btn btn-accent" id="btnMua">Mua ngay</button>
+            </div>
+        }
+    </div>
+
+    <script>
+    (function () {
+        var box = document.getElementById('variantBox');
+        var vs = JSON.parse(box.dataset.variants);
+        var fmt = function (n) { return Number(n).toLocaleString('vi-VN') + '₫'; };
+        var dls = Array.from(new Set(vs.map(function (v) { return v.dl || ''; })));
+        var maus = Array.from(new Set(vs.map(function (v) { return v.mau; })));
+        if (dls.length === 1 && dls[0] === '') document.getElementById('vbDl').style.display = 'none';
+
+        var first = vs.find(function (v) { return v.ton > 0; }) || vs[0];
+        var selDl = first.dl || '', selMau = first.mau;
+
+        function has(dl, mau) { return vs.some(function (v) { return (v.dl || '') === dl && v.mau === mau; }); }
+        function btn(text, active, disabled, onclick) {
+            var b = document.createElement('button');
+            b.type = 'button'; b.textContent = text; b.disabled = disabled; b.onclick = onclick;
+            b.className = 'btn btn-sm ' + (active ? 'btn-brand' : 'btn-outline-secondary');
+            return b;
+        }
+        function render() {
+            var gDl = box.querySelector('[data-role=dl]'), gMau = box.querySelector('[data-role=mau]');
+            gDl.innerHTML = ''; gMau.innerHTML = '';
+            dls.forEach(function (d) {
+                if (d === '') return;
+                gDl.appendChild(btn(d, d === selDl, false, function () {
+                    selDl = d;
+                    if (!has(selDl, selMau)) selMau = vs.find(function (v) { return (v.dl || '') === selDl; }).mau;
+                    render();
+                }));
+            });
+            maus.forEach(function (m) {
+                gMau.appendChild(btn(m, m === selMau, !has(selDl, m), function () { selMau = m; render(); }));
+            });
+
+            var v = vs.find(function (x) { return (x.dl || '') === selDl && x.mau === selMau; });
+            document.getElementById('vbGia').textContent = fmt(v.gia);
+            document.getElementById('vbGoc').textContent = v.goc > v.gia ? fmt(v.goc) : '';
+            var t = document.getElementById('vbTon');
+            t.textContent = v.ton <= 0 ? 'Hết hàng' : (v.ton <= 5 ? 'Chỉ còn ' + v.ton + ' sản phẩm' : 'Còn hàng');
+            t.className = 'small mb-3 ' + (v.ton <= 0 ? 'text-danger' : (v.ton <= 5 ? 'text-warning' : 'text-success'));
+            document.getElementById('vbId').value = v.id;
+            document.getElementById('vbSl').max = Math.max(v.ton, 1);
+            document.getElementById('btnThem').disabled = document.getElementById('btnMua').disabled = v.ton <= 0;
+        }
+        render();
+
+        // "Thêm vào giỏ" gửi AJAX, "Mua ngay" submit thường để chuyển trang
+        $('#frmThemGio').on('submit', function (e) {
+            var sub = e.originalEvent && e.originalEvent.submitter;
+            if (sub && sub.name === 'muaNgay') return;
+            e.preventDefault();
+            $.post(this.action, $(this).serialize(), function (r) {
+                showToast(r.message, r.ok);
+                if (r.ok) { var b = $('.cart-badge'); if (b.length) b.text(r.count); else $('.bi-cart3').after('<span class="cart-badge">' + r.count + '</span>'); }
+            }, 'json');
+        });
+    })();
+    </script>
+}

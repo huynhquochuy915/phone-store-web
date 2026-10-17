@@ -1,0 +1,34 @@
+﻿@model List<WebsiteQuanLiDienThoaiDiDong.Models.ViewModels.MenuLoaiVM>
+@functions {
+    string Icon(string ten)
+    {
+        ten = (ten ?? "").ToLower();
+        if (ten.Contains("điện thoại")) return "bi-phone";
+        if (ten.Contains("tai nghe")) return "bi-headphones";
+        if (ten.Contains("sạc")) return "bi-lightning-charge";
+        if (ten.Contains("ốp")) return "bi-shield";
+        return "bi-box";
+    }
+}
+<ul class="cat-list">
+    @foreach (var loai in Model)
+    {
+        <li>
+            <a href="@Url.Action("Index", "SanPham", new { area = "", loaiId = loai.Id })">
+                <i class="bi @Icon(loai.Ten)"></i> @loai.Ten <i class="bi bi-chevron-right chev"></i>
+            </a>
+            @if (loai.ThuongHieus.Any())
+            {
+                <div class="cat-fly">
+                    <h6>Chọn theo thương hiệu</h6>
+                    <ul>
+                        @foreach (var th in loai.ThuongHieus)
+                        {
+                            <li><a href="@Url.Action("Index", "SanPham", new { area = "", loaiId = loai.Id, thuongHieuId = th.Id })">@th.Ten</a></li>
+                        }
+                    </ul>
+                </div>
+            }
+        </li>
+    }
+</ul>
