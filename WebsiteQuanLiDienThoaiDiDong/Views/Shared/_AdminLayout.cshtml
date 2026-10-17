@@ -1,0 +1,40 @@
+﻿<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewBag.Title - Quản trị</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
+    <link href="~/Content/site.css" rel="stylesheet" />
+</head>
+<body>
+    <div class="d-flex">
+        <aside class="admin-side">
+            <div class="p-3 text-white fw-bold fs-5"><i class="bi bi-shop"></i> @CauHinh.Get("TenCuaHang", "PhoneStore")</div>
+            <a href="@Url.Action("Index", "ThongKe", new { area = "Admin" })"><i class="bi bi-bar-chart"></i> Thống kê</a>
+            <a href="@Url.Action("Index", "DonHang", new { area = "Admin" })"><i class="bi bi-receipt"></i> Đơn hàng</a>
+            <a href="@Url.Action("Index", "SanPham", new { area = "Admin" })"><i class="bi bi-phone"></i> Sản phẩm</a>
+            <a href="@Url.Action("Index", "LoaiSanPham", new { area = "Admin" })"><i class="bi bi-tags"></i> Loại sản phẩm</a>
+            <a href="@Url.Action("Index", "KhuyenMai", new { area = "Admin" })"><i class="bi bi-percent"></i> Khuyến mãi</a>
+            <hr class="border-secondary mx-3" />
+            <a href="@Url.Action("Index", "Home", new { area = "" })"><i class="bi bi-arrow-left"></i> Về trang web</a>
+            <a href="@Url.Action("DangXuat", "TaiKhoan", new { area = "" })"><i class="bi bi-box-arrow-right"></i> Đăng xuất</a>
+        </aside>
+        <main class="flex-grow-1 p-4">
+            <div class="d-flex justify-content-between mb-3">
+                <h4>@ViewBag.Title</h4>
+                <span class="text-muted"><i class="bi bi-person-circle"></i> @AuthHelper.HoTen (@AuthHelper.VaiTro)</span>
+            </div>
+            @if (TempData["Msg"] != null)
+            {<div class="alert alert-success">@TempData["Msg"]</div>}
+            @if (TempData["Err"] != null)
+            {<div class="alert alert-danger">@TempData["Err"]</div>}
+            @RenderBody()
+        </main>
+    </div>
+    @Scripts.Render("~/bundles/jquery")
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    @RenderSection("scripts", required: false)
+</body>
+</html>
