@@ -21,13 +21,14 @@
             {
                 @* Tạo token chống giả mạo CSRF (Khớp với [ValidateAntiForgeryToken] trong Controller) *@
                 @Html.AntiForgeryToken()
+                <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
 
                 @* Hiển thị tổng hợp lỗi từ Controller *@
                 @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3" })
 
                 <div class="form-group mb-3">
-                    <label for="email" class="form-label">Email</label>
-                    <input type="email" id="email" name="email" class="form-control" placeholder="Nhập email..." required />
+                    <label for="email" class="form-label">Email hoặc số điện thoại</label>
+                    <input type="text" id="email" name="email" class="form-control" placeholder="Nhập email hoặc số điện thoại..." value="@(Request["email"])" required />
                 </div>
 
                 <div class="form-group mb-3">
@@ -49,7 +50,7 @@
             <hr class="my-4">
 
             <div class="text-center">
-                <p class="mb-0">Chưa có tài khoản? <a href="@Url.Action("Register", "Account")" class="text-primary font-weight-bold text-decoration-none">Đăng ký ngay</a></p>
+                <p class="mb-0">Chưa có tài khoản? <a href="@Url.Action("Register", "Account", new { returnUrl = ViewBag.ReturnUrl })" class="text-primary font-weight-bold text-decoration-none">Đăng ký ngay</a></p>
             </div>
         </div>
     </div>

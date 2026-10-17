@@ -30,11 +30,56 @@ namespace WebsiteQuanLiDienThoaiDiDong.Models.ViewModels
         public decimal SaoTrungBinh { get; set; }
         public int SoDanhGia { get; set; }
         public int DaBan { get; set; }
+        public bool DaYeuThich { get; set; }
     }
     public class TrangChuVM
     {
         public List<SanPhamCardVM> NoiBat { get; set; }
         public List<SanPhamCardVM> BanChay { get; set; }
+    }
+
+    public class DanhSachSanPhamVM
+    {
+        public List<SanPhamCardVM> SanPhams { get; set; } = new List<SanPhamCardVM>();
+        public List<LoaiSanPham> Loais { get; set; } = new List<LoaiSanPham>();
+        public List<ThuongHieu> ThuongHieus { get; set; } = new List<ThuongHieu>();
+        public string TuKhoa { get; set; }
+        public int? LoaiId { get; set; }
+        public int? ThuongHieuId { get; set; }
+        public decimal? GiaTu { get; set; }
+        public decimal? GiaDen { get; set; }
+        public byte? RamGB { get; set; }
+        public int? DungLuongGB { get; set; }
+        public bool ConHang { get; set; }
+        public string SapXep { get; set; }
+        public int Trang { get; set; }
+        public int SoTrang { get; set; }
+    }
+
+    public class SanPhamChiTietVM
+    {
+        public SanPham SanPham { get; set; }
+        public List<HinhAnhSanPham> HinhAnhs { get; set; } = new List<HinhAnhSanPham>();
+        public List<DanhGia> DanhGias { get; set; } = new List<DanhGia>();
+        public bool CoTheDanhGia { get; set; }
+        public bool DaDanhGia { get; set; }
+        public List<byte> KyHanTraGop { get; set; } = new List<byte>();
+        public List<SanPhamCardVM> SanPhamLienQuan { get; set; } = new List<SanPhamCardVM>();
+    }
+
+    public class DanhGiaVM
+    {
+        public int SanPhamId { get; set; }
+        [Required(ErrorMessage = "Vui lòng chọn số sao")]
+        [Range(1, 5, ErrorMessage = "Số sao từ 1 đến 5")]
+        public byte SoSao { get; set; }
+        [StringLength(1000, ErrorMessage = "Nội dung tối đa 1000 ký tự")]
+        public string NoiDung { get; set; }
+    }
+
+    public class SoSanhVM
+    {
+        public List<SanPham> SanPhams { get; set; } = new List<SanPham>();
     }
 
     public class CartItemVM

@@ -1,0 +1,29 @@
+﻿@model WebsiteQuanLiDienThoaiDiDong.Models.ViewModels.SoSanhVM
+@{ ViewBag.Title = "So sánh sản phẩm"; }
+
+<div class="d-flex justify-content-between align-items-center mb-3"><h1 class="h3">So sánh sản phẩm</h1><a class="btn btn-outline-secondary" href="@Url.Action("Index")">Tiếp tục chọn sản phẩm</a></div>
+@if (!Model.SanPhams.Any())
+{
+    <div class="alert alert-light border">Chưa có sản phẩm để so sánh. Mở danh sách sản phẩm rồi chọn “Thêm so sánh”.</div>
+}
+else
+{
+    <div class="table-responsive"><table class="table table-bordered align-middle bg-white">
+        <thead><tr><th style="min-width:150px">Thông tin</th>@foreach (var sp in Model.SanPhams) { <th style="min-width:220px"><a href="@Url.Action("ChiTiet", new { id = sp.Id })">@sp.TenSanPham</a><form method="post" action="@Url.Action("XoaSoSanh")" class="mt-2">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@sp.Id" /><button class="btn btn-sm btn-outline-danger" type="submit">Bỏ khỏi bảng</button></form></th> }</tr></thead>
+        <tbody>
+            <tr><th>Ảnh</th>@foreach (var sp in Model.SanPhams) { var anh = sp.HinhAnhSanPhams.OrderByDescending(x => x.LaAnhChinh).ThenBy(x => x.ThuTu).FirstOrDefault(); <td><img src="@(anh == null ? Url.Content("~/Content/images/no-image.png") : Url.Content("~" + anh.DuongDan))" alt="@sp.TenSanPham" style="width:150px;height:150px;object-fit:contain" /></td> }</tr>
+            <tr><th>Thương hiệu</th>@foreach (var sp in Model.SanPhams) { <td>@sp.ThuongHieu.TenThuongHieu</td> }</tr>
+            <tr><th>Danh mục</th>@foreach (var sp in Model.SanPhams) { <td>@sp.LoaiSanPham.TenLoai</td> }</tr>
+            <tr><th>Giá</th>@foreach (var sp in Model.SanPhams) { var v = sp.BienTheSanPhams.Where(x => x.HienThi).OrderBy(x => x.GiaBan).FirstOrDefault(); <td class="text-danger fw-bold">@(v == null ? "Tạm ngừng bán" : v.GiaBan.VND())</td> }</tr>
+            <tr><th>Tồn kho</th>@foreach (var sp in Model.SanPhams) { <td>@sp.BienTheSanPhams.Where(x => x.HienThi).Sum(x => x.SoLuongTon)</td> }</tr>
+            <tr><th>Màn hình</th>@foreach (var sp in Model.SanPhams) { <td>@sp.ManHinh</td> }</tr>
+            <tr><th>Chip xử lý</th>@foreach (var sp in Model.SanPhams) { <td>@sp.ChipXuLy</td> }</tr>
+            <tr><th>RAM</th>@foreach (var sp in Model.SanPhams) { <td>@sp.RAM</td> }</tr>
+            <tr><th>Camera sau</th>@foreach (var sp in Model.SanPhams) { <td>@sp.CameraSau</td> }</tr>
+            <tr><th>Camera trước</th>@foreach (var sp in Model.SanPhams) { <td>@sp.CameraTruoc</td> }</tr>
+            <tr><th>Pin</th>@foreach (var sp in Model.SanPhams) { <td>@sp.Pin</td> }</tr>
+            <tr><th>Hệ điều hành</th>@foreach (var sp in Model.SanPhams) { <td>@sp.HeDieuHanh</td> }</tr>
+            <tr><th>Bảo hành</th>@foreach (var sp in Model.SanPhams) { <td>@sp.BaoHanhThang tháng</td> }</tr>
+        </tbody>
+    </table></div>
+}

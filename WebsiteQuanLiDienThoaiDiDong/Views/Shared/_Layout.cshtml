@@ -47,6 +47,7 @@
                             <i class="bi bi-person-circle"></i><span>@AuthHelper.HoTen</span>
                         </a>
                         <ul class="dropdown-menu dropdown-menu-end">
+                            <li><a class="dropdown-item account-favorite-link" href="@Url.Action("YeuThich", "SanPham", new { area = "" })"><i class="bi bi-heart-fill"></i><span>Yêu thích</span></a></li>
                             @if (AuthHelper.IsStaff)
                             {
                                 <li><a class="dropdown-item" href="@Url.Action("Index", "ThongKe", new { area = "Admin" })">Trang quản trị</a></li>
