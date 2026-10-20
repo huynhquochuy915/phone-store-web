@@ -199,7 +199,11 @@
     <Compile Include="Models\PhiVanChuyen.cs">
       <DependentUpon>QuanLiDiDong.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\QuanLiDiDong.Context.cs" />
+    <Compile Include="Models\QuanLiDiDong.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>QuanLiDiDong.Context.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\QuanLiDiDong.cs" />
     <Compile Include="Models\QuanLiDiDong.Designer.cs">
       <DependentUpon>QuanLiDiDong.cs</DependentUpon>
@@ -246,7 +250,7 @@
     <Compile Include="Models\sql.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>sql.tt</DependentUpon>
+      <DependentUpon>QuanLiDiDong.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\sql.Designer.cs">
       <AutoGen>True</AutoGen>
