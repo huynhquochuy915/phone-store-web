@@ -13,7 +13,7 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
     public class AccountController : Controller
     {
         // GET: Account
-        private QL_DienThoaiEntities1 db = new QL_DienThoaiEntities1();
+        private QL_DienThoaiEntities db = new QL_DienThoaiEntities();
 
         //hàm hỗ trợ mã hóa mật khẩu
         private string ComputeSha256Hash(string input)
@@ -171,3 +171,4 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
         }
     }
 }
+
