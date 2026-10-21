@@ -1,0 +1,76 @@
+﻿@model WebsiteQuanLiDienThoaiDiDong.Models.ViewModels.CartVM
+@{ ViewBag.Title = "Giỏ hàng"; var noImg = Url.Content("~/Content/images/no-image.png"); }
+
+<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
+    <h3 class="mb-0"><i class="bi bi-cart3"></i> Giỏ hàng của bạn</h3>
+    <a class="btn btn-outline-danger" href="@Url.Action("YeuThich", "SanPham")">
+        <i class="bi bi-heart me-1"></i> Danh sách yêu thích
+    </a>
+</div>
+
+@if (!Model.Items.Any())
+{
+    <div class="box text-center py-5">
+        <p class="fs-5 mb-3">Giỏ hàng đang trống</p>
+        <a class="btn btn-brand" href="@Url.Action("Index", "SanPham")">Mua sắm ngay</a>
+    </div>
+}
+else
+{
+    <div class="row g-4">
+        <div class="col-lg-8">
+            <div class="box table-responsive">
+                <table class="table align-middle mb-0">
+                    <thead><tr><th>Sản phẩm</th><th>Đơn giá</th><th style="width:110px">Số lượng</th><th class="text-end">Thành tiền</th><th></th></tr></thead>
+                    <tbody>
+                        @foreach (var it in Model.Items)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="d-flex gap-3 align-items-center">
+                                        <img src="@(it.Anh != null ? Url.Content("~" + it.Anh) : noImg)" width="70" height="70" style="object-fit:contain"
+                                             onerror="this.onerror=null;this.src='@noImg'" />
+                                        <div>
+                                            <a class="fw-semibold text-decoration-none" href="@Url.Action("ChiTiet", "SanPham", new { id = it.SanPhamId })">@it.Ten</a>
+                                            <div class="small text-muted">@it.DungLuong @(it.DungLuong != null ? "·" : "") @it.MauSac</div>
+                                            @if (it.SoLuong > it.Ton)
+                                            {<div class="small text-danger">Kho chỉ còn @it.Ton sản phẩm</div>}
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>@it.DonGia.VND()</td>
+                                <td>
+                                    @using (Html.BeginForm("CapNhat", "GioHang", FormMethod.Post))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="lineId" value="@it.LineId" />
+                                        <input type="number" name="soLuong" value="@it.SoLuong" min="0" max="@it.Ton" class="form-control form-control-sm" onchange="this.form.submit()" />
+                                    }
+                                </td>
+                                <td class="text-end fw-semibold">@it.ThanhTien.VND()</td>
+                                <td>
+                                    @using (Html.BeginForm("Xoa", "GioHang", FormMethod.Post))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="lineId" value="@it.LineId" />
+                                        <button class="btn btn-sm btn-outline-danger" title="Xóa"><i class="bi bi-trash"></i></button>
+                                    }
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+            <a class="btn btn-link mt-2" href="@Url.Action("Index", "SanPham")">&larr; Tiếp tục mua sắm</a>
+        </div>
+
+        <div class="col-lg-4">
+            <div class="box">
+                <h5 class="mb-3">Tóm tắt đơn hàng</h5>
+                <div class="d-flex justify-content-between mb-2"><span>Tạm tính (@Model.TongSoLuong sản phẩm)</span><strong>@Model.TongTien.VND()</strong></div>
+                <div class="small text-muted mb-3">Phí vận chuyển và mã giảm giá được tính ở bước tiếp theo.</div>
+                <a class="btn btn-accent w-100 @(Model.CoLoi ? "disabled" : "")" href="@Url.Action("Index", "DatHang")">Tiến hành đặt hàng</a>
+            </div>
+        </div>
+    </div>
+}
