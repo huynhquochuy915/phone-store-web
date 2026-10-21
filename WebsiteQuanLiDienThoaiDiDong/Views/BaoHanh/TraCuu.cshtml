@@ -1,0 +1,119 @@
+﻿@using System.Data
+@{
+    ViewBag.Title = "Tra cứu bảo hành";
+    DataRow ketQua = ViewBag.KetQua as DataRow;
+}
+
+<div class="warranty-page">
+    <div class="warranty-title">
+        <h1><i class="bi bi-shield-check text-danger"></i> Tra cứu bảo hành</h1>
+        <p>Kiểm tra thông tin và thời hạn bảo hành điện thoại của bạn</p>
+    </div>
+
+    <div class="warranty-box">
+        <form method="get" action="@Url.Action("TraCuu", "BaoHanh")">
+            <label for="imei" class="form-label fw-semibold">
+                Nhập mã IMEI gồm 15 chữ số
+            </label>
+
+            <div class="warranty-search">
+                <input type="text"
+                       id="imei"
+                       name="imei"
+                       value="@ViewBag.Imei"
+                       class="form-control"
+                       maxlength="15"
+                       inputmode="numeric"
+                       autocomplete="off"
+                       placeholder="Nhập IMEI điện thoại..."
+                       required />
+
+                <button type="submit">
+                    <i class="bi bi-search"></i> Tra cứu
+                </button>
+            </div>
+        </form>
+
+        @if (ViewBag.ThongBao != null)
+        {
+            <div class="alert mt-3 mb-0">
+                <i style="color:red" class=" bi-exclamation-circle"> </i>
+                <b style="color:red">@ViewBag.ThongBao</b>                
+            </div>
+        }
+    </div>
+
+    @if (ketQua != null)
+    {
+        var tinhTrang = Convert.ToString(ketQua["TinhTrang"]);
+        var conBaoHanh = tinhTrang == "Còn bảo hành";
+
+        <div class="warranty-box">
+
+            <div class="d-flex align-items-center gap-2 mb-4">
+                <i class="bi bi-shield-check"></i><span><h1 class="h5 fw-bold mb-0">Thông tin bảo hành</h1></span>
+            </div>
+
+            <div class="warranty-result">
+
+                <div class="warranty-image">
+                    @if (ViewBag.AnhDaiDien != null &&
+                         !string.IsNullOrWhiteSpace(Convert.ToString(ViewBag.AnhDaiDien)))
+                    {
+                        <img src="@Url.Content(Convert.ToString(ViewBag.AnhDaiDien))"
+                             alt="Ảnh sản phẩm" />
+                    }
+                    else
+                    {
+                        <div class="text-center text-secondary">
+                            <i class="bi bi-phone fs-1"></i>
+                            <div>Chưa có ảnh sản phẩm</div>
+                        </div>
+                    }
+                </div>
+
+                <div class="warranty-info">
+                    <h2>@ketQua["TenSanPham"]</h2>
+
+                    <p>
+                        <strong>IMEI:</strong>
+                        @ketQua["Imei"]
+                    </p>
+
+                    <p>
+                        <strong>Mã đơn hàng:</strong>
+                        @ketQua["MaDonHang"]
+                    </p>
+
+                    <p>
+                        <strong>Ngày bán:</strong>
+                        @Convert.ToDateTime(ketQua["NgayBan"]).ToString("dd/MM/yyyy")
+                    </p>
+
+                    <p>
+                        <strong>Ngày hết bảo hành:</strong>
+                        @Convert.ToDateTime(ketQua["NgayHetBaoHanh"]).ToString("dd/MM/yyyy")
+                    </p>
+
+                    <p>
+                        <strong>Tình trạng:</strong>
+                        <span class="warranty-status @(conBaoHanh ? "" : "expired")">
+                            @tinhTrang
+                        </span>
+                    </p>
+
+                    @if (conBaoHanh)
+                    {
+                        <p>
+                            <strong>Số ngày còn lại:</strong>
+                            <span class="text-success fw-bold">
+                                @ketQua["SoNgayConLai"] ngày
+                            </span>
+                        </p>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
