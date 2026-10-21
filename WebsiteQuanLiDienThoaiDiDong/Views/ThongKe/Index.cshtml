@@ -1,0 +1,343 @@
+﻿@using System
+@using System.Data
+@using System.Linq
+@using System.Web.Helpers
+
+@{
+    ViewBag.Title = "Thống kê Doanh Thu";
+
+    int nam = Convert.ToInt32(ViewBag.Nam);
+    int? thangChon = ViewBag.ThangChon == null
+        ? (int?)null
+        : Convert.ToInt32(ViewBag.ThangChon);
+
+    DataTable doanhThu = ViewBag.DoanhThuTheoThang as DataTable;
+    DataTable danhSachDonHang = ViewBag.DanhSachDonHang as DataTable;
+
+    string[] tenThang = {
+        "Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4",
+        "Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8",
+        "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"
+    };
+
+    decimal[] doanhThuThang = new decimal[12];
+    decimal[] tongThuThang = new decimal[12];
+    int[] soDonThang = new int[12];
+
+    if (doanhThu != null)
+    {
+        foreach (DataRow row in doanhThu.Rows)
+        {
+            int i = Convert.ToInt32(row["Thang"]) - 1;
+
+            if (i >= 0 && i < 12)
+            {
+                doanhThuThang[i] = Convert.ToDecimal(row["DoanhThu"]);
+                tongThuThang[i] = Convert.ToDecimal(row["TongThu"]);
+                soDonThang[i] = Convert.ToInt32(row["SoDon"]);
+            }
+        }
+    }
+}
+
+<div class="dashboard-page">
+
+    <div class="dashboard-heading">
+        <div>
+            <h1><i class="bi bi-speedometer2 text-danger"></i> Dashboard</h1>
+            <p>Thống kê doanh thu và tình hình đơn hàng</p>
+        </div>
+
+        <form method="get" action="@Url.Action("Index", "ThongKe")"
+              class="dashboard-filter">
+            <div>
+                <label for="nam" class="form-label fw-semibold mb-1">Năm thống kê</label>
+                <input type="number" id="nam" name="nam"
+                       class="form-control" value="@nam"
+                       min="2000" max="2100" required />
+            </div>
+            <button type="submit" class="btn-dashboard">
+                <i class="bi bi-search"></i> Tra cứu
+            </button>
+        </form>
+    </div>
+
+    @if (ViewBag.ThongBao != null)
+    {
+        <div class="alert alert-warning">
+            <i class="bi bi-exclamation-circle"></i>
+            @ViewBag.ThongBao
+        </div>
+    }
+
+    <div class="row g-3 mb-4">
+        <div class="col-12 col-md-4">
+            <div class="dashboard-card">
+                <div class="d-flex justify-content-between align-items-start gap-2">
+                    <div>
+                        <div class="stat-label">Doanh thu năm @nam</div>
+                        <div class="stat-value text-danger">
+                            @String.Format("{0:N0} đ", ViewBag.TongDoanhThuNam)
+                        </div>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="bi bi-currency-dollar"></i>
+                    </div>
+                </div>
+                <div class="text-secondary small mt-3">
+                    Tổng tiền hàng sau giảm giá
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+            <div class="dashboard-card">
+                <div class="d-flex justify-content-between align-items-start gap-2">
+                    <div>
+                        <div class="stat-label">Tổng thanh toán năm @nam</div>
+                        <div class="stat-value">
+                            @String.Format("{0:N0} đ", ViewBag.TongThuNam)
+                        </div>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="bi bi-wallet2"></i>
+                    </div>
+                </div>
+                <div class="text-secondary small mt-3">
+                    Bao gồm phí vận chuyển sau giảm giá
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-4">
+            <div class="dashboard-card">
+                <div class="d-flex justify-content-between align-items-start gap-2">
+                    <div>
+                        <div class="stat-label">Đơn hàng hoàn tất</div>
+                        <div class="stat-value">
+                            @String.Format("{0:N0}", ViewBag.TongSoDonNam)
+                        </div>
+                    </div>
+                    <div class="stat-icon">
+                        <i class="bi bi-receipt"></i>
+                    </div>
+                </div>
+                <div class="text-secondary small mt-3">
+                    Trong năm @nam
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-card mb-4">
+        <h2 class="dashboard-section-title">
+            <i class="bi bi-bar-chart-line text-danger"></i>
+            Biểu đồ doanh thu năm @nam
+        </h2>
+
+        <div class="chart-container">
+            <canvas id="doanhThuChart"></canvas>
+        </div>
+    </div>
+
+    <div class="dashboard-card mb-4">
+        <h2 class="dashboard-section-title">
+            <i class="bi bi-calendar3 text-danger"></i>
+            Doanh thu từng tháng
+        </h2>
+
+        <div class="row g-3">
+            @for (int i = 0; i < 12; i++)
+            {
+                int thang = i + 1;
+                bool dangChon = thangChon.HasValue && thangChon.Value == thang;
+
+                <div class="col-6 col-md-4 col-xl-3">
+                    <a class="month-card @(dangChon ? "active" : "")"
+                       href="@Url.Action("Index", "ThongKe", new { nam = nam, thang = thang })">
+                        <div class="month-card-name">
+                            @tenThang[i]
+                            @if (dangChon)
+                            {
+                                <i class="bi bi-check-circle-fill text-danger"></i>
+                            }
+                        </div>
+                        <div class="month-card-revenue">
+                            @doanhThuThang[i].ToString("N0") đ
+                        </div>
+                        <div class="month-card-orders">
+                            <i class="bi bi-receipt"></i>
+                            @soDonThang[i] đơn hoàn tất
+                        </div>
+                        <div class="small text-danger mt-2">
+                            Xem đơn hàng <i class="bi bi-arrow-right"></i>
+                        </div>
+                    </a>
+                </div>
+            }
+        </div>
+    </div>
+
+    @if (thangChon.HasValue)
+    {
+        <div class="dashboard-card">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
+                <div>
+                    <h2 class="dashboard-section-title mb-1">
+                        <i class="bi bi-receipt text-danger"></i>
+                        Đơn hàng hoàn tất - Tháng @thangChon/@nam
+                    </h2>
+                    <div class="text-secondary small">
+                        Doanh thu tháng:
+                        <strong class="text-danger">
+                            @doanhThuThang[thangChon.Value - 1].ToString("N0") đ
+                        </strong>
+                    </div>
+                </div>
+
+                <a href="@Url.Action("Index", "ThongKe", new { nam = nam })"
+                   class="btn btn-outline-secondary btn-sm">
+                    <i class="bi bi-x-lg"></i> Đóng danh sách
+                </a>
+            </div>
+
+            @if (danhSachDonHang != null && danhSachDonHang.Rows.Count > 0)
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover dashboard-table">
+                        <thead>
+                            <tr>
+                                <th>Mã đơn hàng</th>
+                                <th>Người nhận</th>
+                                <th>Số điện thoại</th>
+                                <th class="text-end">Tiền hàng</th>
+                                <th class="text-end">Tiền giảm</th>
+                                <th class="text-end">Tổng thanh toán</th>
+                                <th>Ngày giao xong</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (DataRow don in danhSachDonHang.Rows)
+                            {
+                                <tr>
+                                    <td class="fw-semibold">
+                                        @don["MaDonHang"]
+                                    </td>
+                                    <td>@don["TenNguoiNhan"]</td>
+                                    <td>@don["SoDienThoai"]</td>
+                                    <td class="text-end">
+                                        @Convert.ToDecimal(don["TongTienHang"]).ToString("N0") đ
+                                    </td>
+                                    <td class="text-end">
+                                        @Convert.ToDecimal(don["TienGiam"]).ToString("N0") đ
+                                    </td>
+                                    <td class="text-end fw-bold text-danger">
+                                        @Convert.ToDecimal(don["TongThanhToan"]).ToString("N0") đ
+                                    </td>
+                                    <td>
+                                        @if (don["NgayGiaoXong"] != DBNull.Value)
+                                        {
+                                            @Convert.ToDateTime(don["NgayGiaoXong"]).ToString("dd/MM/yyyy")
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            }
+            else
+            {
+                <div class="dashboard-empty">
+                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
+                    Không có đơn hàng hoàn tất trong tháng này.
+                </div>
+            }
+        </div>
+    }
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+    const nhanThang = @Html.Raw(Json.Encode(tenThang));
+    const duLieuDoanhThu = @Html.Raw(Json.Encode(doanhThuThang));
+    const duLieuSoDon = @Html.Raw(Json.Encode(soDonThang));
+
+    const ctx = document.getElementById('doanhThuChart');
+
+    new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: nhanThang,
+            datasets: [
+                {
+                    label: 'Doanh thu (VNĐ)',
+                    data: duLieuDoanhThu,
+                    backgroundColor: 'rgba(215, 0, 24, 0.78)',
+                    borderColor: '#d70018',
+                    borderWidth: 1,
+                    borderRadius: 6,
+                    yAxisID: 'y'
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            interaction: {
+                intersect: false,
+                mode: 'index'
+            },
+            plugins: {
+                legend: {
+                    display: true
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function (context) {
+                            return 'Doanh thu: ' +
+                                new Intl.NumberFormat('vi-VN').format(context.raw) + ' đ';
+                        },
+                        afterBody: function (items) {
+                            if (!items.length) return '';
+                            return 'Số đơn hoàn tất: ' +
+                                new Intl.NumberFormat('vi-VN').format(
+                                    duLieuSoDon[items[0].dataIndex]
+                                );
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function (value) {
+                            return new Intl.NumberFormat('vi-VN', {
+                                notation: 'compact',
+                                maximumFractionDigits: 1
+                            }).format(value) + ' đ';
+                        }
+                    }
+                },
+                x: {
+                    grid: {
+                        display: false
+                    }
+                }
+            },
+            onClick: function (event, elements) {
+                if (elements.length > 0) {
+                    const index = elements[0].index;
+                    const thang = index + 1;
+
+                    window.location.href =
+                        '@Url.Action("Index", "ThongKe")' +
+                        '?nam=' + @nam + '&thang=' + thang;
+                }
+            }
+        }
+    });
+</script>
+
