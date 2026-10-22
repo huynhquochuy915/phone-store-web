@@ -1385,3 +1385,163 @@ body {
     }
 }
 
+/*khuyen mai - index*/
+.km-page {
+    padding: 28px 0 45px;
+}
+
+.km-title {
+    color: #d70018;
+    font-weight: 700;
+}
+
+.km-list-card {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.05);
+}
+
+    .km-list-card .table-responsive {
+        margin: 0;
+    }
+
+.km-card {
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.05);
+}
+
+.km-table {
+    margin-bottom: 0;
+}
+
+.km-table th {
+    background: #f8f8f8;
+    white-space: nowrap;
+}
+
+.km-table td {
+    vertical-align: middle;
+}
+
+.km-code {
+    color: #d70018;
+    font-weight: 700;
+}
+
+.km-btn {
+    background: #d70018;
+    color: #fff;
+    border: none;
+}
+
+    .km-btn:hover {
+        background: #a80012;
+        color: #fff;
+    }
+
+.km-filter {
+    min-width: 170px;
+}
+
+.km-actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.km-card .form-label {
+    display: block;
+    margin-bottom: 6px;
+}
+
+.km-card .form-control,
+.km-card .form-select {
+    height: 38px;
+}
+
+.km-card .km-btn {
+    height: 38px;
+    white-space: nowrap;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+}
+
+/*KHUYEN MAI - CREATE*/
+.km-page {
+    padding: 28px 0 45px;
+}
+
+.km-title {
+    color: #d70018;
+    font-weight: 700;
+}
+
+.km-card {
+    max-width: 1200px;
+    margin: auto;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.05);
+}
+
+.km-btn {
+    background: #d70018;
+    color: #fff;
+    border: none;
+}
+
+    .km-btn:hover {
+        background: #a80012;
+        color: #fff;
+    }
+
+.field-validation-error {
+    color: #d70018;
+    font-size: .875rem;
+}
+
+/*KHUYEN MAI - EDIT*/
+.km-page {
+    padding: 28px 0 45px;
+}
+
+.km-title {
+    color: #d70018;
+    font-weight: 700;
+}
+
+.km-card {
+    margin: auto;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.05);
+}
+
+.km-btn {
+    background: #d70018;
+    color: #fff;
+    border: none;
+}
+
+    .km-btn:hover {
+        background: #a80012;
+        color: #fff;
+    }
+
+.field-validation-error {
+    color: #d70018;
+    font-size: .875rem;
+}
+
+
