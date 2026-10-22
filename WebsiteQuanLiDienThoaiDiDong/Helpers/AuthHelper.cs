@@ -37,7 +37,7 @@ namespace WebsiteQuanLiDienThoaiDiDong.Helpers
         public override void OnActionExecuting(ActionExecutingContext ctx)
         {
             if (!AuthHelper.IsLoggedIn)
-                ctx.Result = new RedirectResult("~/TaiKhoan/DangNhap?returnUrl=" +
+                ctx.Result = new RedirectResult("~/Account/Login?returnUrl=" +
                     HttpUtility.UrlEncode(ctx.HttpContext.Request.RawUrl));
         }
     }

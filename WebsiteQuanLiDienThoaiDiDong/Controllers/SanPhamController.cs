@@ -11,7 +11,6 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
     public class SanPhamController : Controller
     {
         private const int SoDongMoiTrang = 12;
-        private const string SoSanhSessionKey = "SanPhamSoSanh";
         private readonly QL_DienThoaiEntities db = new QL_DienThoaiEntities();
 
         [HttpGet]
@@ -234,49 +233,34 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
             return RedirectToAction("ChiTiet", new { id = model.SanPhamId });
         }
 
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult ThemSoSanh(int id)
-        {
-            var ids = LayDanhSachSoSanh();
-            if (!db.SanPhams.Any(x => x.Id == id && x.HienThi))
-                TempData["Err"] = "Sản phẩm không tồn tại hoặc đã ngừng bán.";
-            else if (!ids.Contains(id) && ids.Count >= 4)
-                TempData["Err"] = "Bạn chỉ có thể so sánh tối đa 4 sản phẩm.";
-            else
-            {
-                if (!ids.Contains(id)) ids.Add(id);
-                Session[SoSanhSessionKey] = ids;
-                TempData["Msg"] = "Đã thêm sản phẩm vào danh sách so sánh.";
-            }
-            return RedirectToAction("SoSanh");
-        }
+
 
         [HttpGet]
-        public ActionResult SoSanh()
+        public ActionResult SoSanh(int[] ids)
         {
-            var ids = LayDanhSachSoSanh();
-            var vm = new SoSanhVM
+            var userId = Session["UserId"] as int?;
+            if (!userId.HasValue)
+                return RedirectToAction("Login", "Account", new { returnUrl = Url.Action("SoSanh") });
+
+            var yeuThichIds = db.YeuThiches.Where(x => x.NguoiDungId == userId.Value)
+                .OrderByDescending(x => x.NgayThem).Select(x => x.SanPhamId).ToList();
+
+            // chỉ lấy điện thoại (LoaiId = 1), so sánh phụ kiện với điện thoại không có ý nghĩa
+            var yeuThich = db.SanPhams
+                .Include(x => x.BienTheSanPhams).Include(x => x.HinhAnhSanPhams).Include(x => x.ThuongHieu)
+                .Where(x => yeuThichIds.Contains(x.Id) && x.HienThi && x.LoaiId == 1)
+                .ToList()
+                .OrderBy(x => yeuThichIds.IndexOf(x.Id)).ToList();
+
+            var hopLe = yeuThich.Select(x => x.Id).ToList();
+            var chon = (ids ?? new int[0]).Distinct().Where(hopLe.Contains).Take(3).ToList();
+
+            return View(new SoSanhVM
             {
-                SanPhams = db.SanPhams.Include(x => x.BienTheSanPhams)
-                    .Where(x => ids.Contains(x.Id) && x.HienThi).ToList()
-            };
-            return View(vm);
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult XoaSoSanh(int id)
-        {
-            var ids = LayDanhSachSoSanh();
-            ids.Remove(id);
-            Session[SoSanhSessionKey] = ids;
-            return RedirectToAction("SoSanh");
-        }
-
-        private List<int> LayDanhSachSoSanh()
-        {
-            return Session[SoSanhSessionKey] as List<int> ?? new List<int>();
+                YeuThichs = yeuThich,
+                DaChon = chon,
+                SanPhams = chon.Select(id => yeuThich.First(x => x.Id == id)).ToList()
+            });
         }
 
         protected override void Dispose(bool disposing)

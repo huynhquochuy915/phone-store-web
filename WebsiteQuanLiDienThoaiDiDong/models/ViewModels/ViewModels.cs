@@ -79,7 +79,9 @@ namespace WebsiteQuanLiDienThoaiDiDong.Models.ViewModels
 
     public class SoSanhVM
     {
-        public List<SanPham> SanPhams { get; set; } = new List<SanPham>();
+        public List<SanPham> YeuThichs { get; set; } = new List<SanPham>();  // điện thoại trong yêu thích
+        public List<int> DaChon { get; set; } = new List<int>();
+        public List<SanPham> SanPhams { get; set; } = new List<SanPham>();   // các máy được chọn để so
     }
 
     public class CartItemVM
