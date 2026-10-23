@@ -65,16 +65,87 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
                     return View(model);
                 }
 
-                model.MatKhauHash = ComputeSha256Hash(model.MatKhauHash);
-                model.VaiTroId = 3;
-                model.TrangThai = true;
-                model.NgayTao = DateTime.Now;
-                db.NguoiDungs.Add(model);
-                db.SaveChanges();
-                TempData["SuccessMessage"] = "Đăng ký thành công! Vui lòng đăng nhập.";
-                return RedirectToAction("Login", new { returnUrl = returnUrl });
+                Session["pendingReg"] = new PendingRegister
+                {
+                    HoTen = model.HoTen,
+                    Email = model.Email,
+                    SoDienThoai = model.SoDienThoai,
+                    MatKhauHash = ComputeSha256Hash(model.MatKhauHash)
+                };
+                Session["pendingRegReturn"] = returnUrl;
+
+                string loi;
+                if (!OtpHelper.Send("register", model.Email, model.HoTen,
+                        "Dùng mã dưới đây để hoàn tất đăng ký tài khoản:", out loi))
+                {
+                    ModelState.AddModelError("", "Không gửi được email xác thực: " + loi);
+                    return View(model);
+                }
+                return RedirectToAction("VerifyEmail");
             }
             return View(model);
+        }
+        [HttpGet]
+        public ActionResult VerifyEmail()
+        {
+            var p = Session["pendingReg"] as PendingRegister;
+            if (p == null) return RedirectToAction("Register");
+            ViewBag.Email = p.Email;
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult VerifyEmail(string code)
+        {
+            var p = Session["pendingReg"] as PendingRegister;
+            if (p == null) return RedirectToAction("Register");
+            ViewBag.Email = p.Email;
+
+            string loi = OtpHelper.Verify("register", p.Email, code);
+            if (loi != null) { ModelState.AddModelError("", loi); return View(); }
+
+            if (db.NguoiDungs.Any(x => x.Email == p.Email))
+            {
+                Session.Remove("pendingReg");
+                TempData["Err"] = "Email này đã được sử dụng.";
+                return RedirectToAction("Register");
+            }
+
+            db.NguoiDungs.Add(new NguoiDung
+            {
+                HoTen = p.HoTen,
+                Email = p.Email,
+                SoDienThoai = p.SoDienThoai,
+                MatKhauHash = p.MatKhauHash,
+                VaiTroId = 3,
+                TrangThai = true,
+                NgayTao = DateTime.Now
+            });
+            db.SaveChanges();
+
+            string returnUrl = Session["pendingRegReturn"] as string;
+            Session.Remove("pendingReg");
+            Session.Remove("pendingRegReturn");
+            OtpHelper.Clear("register");
+
+            TempData["SuccessMessage"] = "Xác thực thành công! Vui lòng đăng nhập.";
+            return RedirectToAction("Login", new { returnUrl = returnUrl });
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ResendRegisterCode()
+        {
+            var p = Session["pendingReg"] as PendingRegister;
+            if (p == null) return RedirectToAction("Register");
+
+            string loi;
+            if (OtpHelper.Send("register", p.Email, p.HoTen, "Dùng mã dưới đây để hoàn tất đăng ký tài khoản:", out loi))
+                TempData["Msg"] = "Đã gửi lại mã xác thực.";
+            else
+                TempData["Err"] = loi;
+            return RedirectToAction("VerifyEmail");
         }
         // Phần ĐĂNG NHẬP
         [HttpGet]
@@ -136,29 +207,85 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
         {
             return View();
         }
-
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult ForgotPassword(string email)
         {
-            if (string.IsNullOrEmpty(email))
+            if (string.IsNullOrWhiteSpace(email))
             {
                 ModelState.AddModelError("", "Vui lòng nhập email của bạn.");
                 return View();
             }
 
-            var user = db.NguoiDungs.FirstOrDefault(u => u.Email == email && u.TrangThai == true);
+            email = email.Trim();
+            Session["resetEmail"] = email;
+            var user = db.NguoiDungs.FirstOrDefault(u => u.Email == email && u.TrangThai);
             if (user != null)
             {
-                // Ở đây sau này có thể tích hợp gửi mail cấp mật khẩu mới hoặc token đặt lại mật khẩu.
-                TempData["SuccessMessage"] = "Yêu cầu đặt lại mật khẩu đã được gửi. Vui lòng kiểm tra email của bạn!";
-                return RedirectToAction("Login");
+                string loi;
+                if (!OtpHelper.Send("reset", email, user.HoTen, "Dùng mã dưới đây để đặt lại mật khẩu:", out loi))
+                {
+                    ModelState.AddModelError("", "Không gửi được email: " + loi);
+                    return View();
+                }
             }
-            else
+            // luôn chuyển sang trang nhập mã, không để lộ email nào có trong hệ thống
+            return RedirectToAction("ResetPassword");
+        }
+
+        [HttpGet]
+        public ActionResult ResetPassword()
+        {
+            var email = Session["resetEmail"] as string;
+            if (string.IsNullOrEmpty(email)) return RedirectToAction("ForgotPassword");
+            ViewBag.Email = email;
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ResetPassword(string code, string matKhauMoi, string xacNhan)
+        {
+            var email = Session["resetEmail"] as string;
+            if (string.IsNullOrEmpty(email)) return RedirectToAction("ForgotPassword");
+            ViewBag.Email = email;
+
+            if (string.IsNullOrEmpty(matKhauMoi) || matKhauMoi.Length < 6)
+            { ModelState.AddModelError("", "Mật khẩu phải có ít nhất 6 ký tự."); return View(); }
+            if (matKhauMoi != xacNhan)
+            { ModelState.AddModelError("", "Mật khẩu xác nhận không khớp."); return View(); }
+
+            string loi = OtpHelper.Verify("reset", email, code);
+            if (loi != null) { ModelState.AddModelError("", loi); return View(); }
+
+            var user = db.NguoiDungs.FirstOrDefault(u => u.Email == email && u.TrangThai);
+            if (user == null) { ModelState.AddModelError("", "Tài khoản không tồn tại."); return View(); }
+
+            user.MatKhauHash = ComputeSha256Hash(matKhauMoi);
+            db.SaveChanges();
+            OtpHelper.Clear("reset");
+            Session.Remove("resetEmail");
+
+            TempData["SuccessMessage"] = "Đặt lại mật khẩu thành công! Vui lòng đăng nhập bằng mật khẩu mới.";
+            return RedirectToAction("Login");
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ResendResetCode()
+        {
+            var email = Session["resetEmail"] as string;
+            if (string.IsNullOrEmpty(email)) return RedirectToAction("ForgotPassword");
+
+            var user = db.NguoiDungs.FirstOrDefault(u => u.Email == email && u.TrangThai);
+            if (user != null)
             {
-                ModelState.AddModelError("", "Email này không tồn tại trong hệ thống hoặc tài khoản đã bị khóa.");
-                return View();
+                string loi;
+                if (!OtpHelper.Send("reset", email, user.HoTen, "Dùng mã dưới đây để đặt lại mật khẩu:", out loi))
+                { TempData["Err"] = loi; return RedirectToAction("ResetPassword"); }
             }
+            TempData["Msg"] = "Đã gửi lại mã xác thực.";
+            return RedirectToAction("ResetPassword");
         }
     }
 }

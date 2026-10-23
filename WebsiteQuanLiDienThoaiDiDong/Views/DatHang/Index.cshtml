@@ -1,0 +1,159 @@
+﻿@model WebsiteQuanLiDienThoaiDiDong.Models.ViewModels.CheckoutVM
+@{
+    ViewBag.Title = "Đặt hàng";
+    var noImg = Url.Content("~/Content/images/no-image.png");
+    var nganHang = CauHinh.Get("NganHang_Ma", "");
+    var soTk = CauHinh.Get("NganHang_SoTaiKhoan", "");
+    var tenTk = CauHinh.Get("NganHang_TenChuTK", "");
+    var hetHanPhut = CauHinh.Get("QR_HetHan_Phut", "30");
+}
+
+<h1 class="h3 fw-bold mb-3">Xác nhận đặt hàng</h1>
+
+@using (Html.BeginForm("Index", "DatHang", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+    <div class="row g-3">
+        <div class="col-lg-7">
+            <div class="box mb-3">
+                <h5>Thông tin nhận hàng</h5>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Họ tên người nhận</label>
+                        @Html.TextBoxFor(m => m.TenNguoiNhan, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.TenNguoiNhan, "", new { @class = "text-danger small" })
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Số điện thoại</label>
+                        @Html.TextBoxFor(m => m.SoDienThoai, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.SoDienThoai, "", new { @class = "text-danger small" })
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Email</label>
+                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger small" })
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Tỉnh/thành</label>
+                        @Html.DropDownListFor(m => m.TinhThanh, new SelectList(Model.DanhSachTinh, Model.TinhThanh), "-- Chọn tỉnh/thành --", new { @class = "form-select" })
+                        @Html.ValidationMessageFor(m => m.TinhThanh, "", new { @class = "text-danger small" })
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Địa chỉ giao hàng</label>
+                        @Html.TextBoxFor(m => m.DiaChiGiao, new { @class = "form-control", placeholder = "Số nhà, đường, phường/xã, quận/huyện" })
+                        @Html.ValidationMessageFor(m => m.DiaChiGiao, "", new { @class = "text-danger small" })
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Ghi chú (không bắt buộc)</label>
+                        @Html.TextAreaFor(m => m.GhiChu, 2, 20, new { @class = "form-control" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="box mb-3">
+                <h5>Phương thức thanh toán</h5>
+                <label class="pay-opt">
+                    @Html.RadioButtonFor(m => m.PhuongThucThanhToan, "COD", new { id = "payCOD" })
+                    <span><b>Thanh toán khi nhận hàng (COD)</b></span>
+                </label>
+                <label class="pay-opt">
+                    @Html.RadioButtonFor(m => m.PhuongThucThanhToan, "QR", new { id = "payQR" })
+                    <span><b>Chuyển khoản QR (VietQR)</b></span>
+                </label>
+                @Html.ValidationMessageFor(m => m.PhuongThucThanhToan, "", new { @class = "text-danger small" })
+
+                <div id="qrPreview" class="qr-box" style="display:none">
+                    <h2>Quét mã để chuyển khoản</h2>
+                    <img id="qrImg" alt="Mã QR chuyển khoản" />
+                    <div class="qr-info">
+                        <div><span>Ngân hàng</span><b>@nganHang</b></div>
+                        <div><span>Số tài khoản</span><b>@soTk</b></div>
+                        <div><span>Chủ tài khoản</span><b>@tenTk</b></div>
+                        <div><span>Số tiền</span><b class="text-danger" id="qrAmount"></b></div>
+                        <div><span>Nội dung</span><b>Mã đơn hàng (có sau khi đặt hàng)</b></div>
+                    </div>
+                    <p class="text-muted small mb-0">
+                        Đây là mã xem trước. Hãy bấm "Đặt hàng" để nhận mã QR chính thức có mã đơn.
+                        Đơn chưa thanh toán sẽ tự hủy sau @hetHanPhut phút.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="box">
+                <h5>Đơn hàng của bạn</h5>
+                @foreach (var it in Model.Cart.Items)
+                {
+                    <div class="co-item">
+                        <img src="@(string.IsNullOrEmpty(it.Anh) ? noImg : Url.Content("~" + it.Anh))" alt="@it.Ten"
+                             onerror="this.onerror=null;this.src='@noImg'" />
+                        <div class="flex-grow-1">
+                            <div class="fw-semibold">@it.Ten</div>
+                            <div class="text-muted small">@it.MauSac @it.DungLuong &times; @it.SoLuong</div>
+                        </div>
+                        <div class="fw-semibold">@it.ThanhTien.VND()</div>
+                    </div>
+                }
+
+                <div class="input-group my-3">
+                    @Html.TextBoxFor(m => m.MaKhuyenMai, new { @class = "form-control", placeholder = "Mã giảm giá" })
+                    <button type="button" id="btnMa" class="btn btn-outline-danger">Áp dụng</button>
+                </div>
+                <div id="maMsg" class="small mb-2"></div>
+
+                <div class="co-row"><span>Tiền hàng</span><b>@Model.Cart.TongTien.VND()</b></div>
+                <div class="co-row"><span>Phí vận chuyển</span><b id="phiShip">@Model.PhiShip.VND()</b></div>
+                <div class="co-row"><span>Giảm giá</span><b id="tienGiam">-@Model.TienGiam.VND()</b></div>
+                <div class="co-row co-total">
+                    <span>Tổng thanh toán</span>
+                    <b class="text-danger" id="tong" data-value="@((long)Model.TongThanhToan)">@Model.TongThanhToan.VND()</b>
+                </div>
+
+                <button type="submit" class="btn btn-brand w-100 mt-3">Đặt hàng</button>
+                <a class="btn btn-link w-100" href="@Url.Action("Index", "GioHang")">Quay lại giỏ hàng</a>
+            </div>
+        </div>
+    </div>
+}
+
+@section scripts {
+    <script>
+        var QR = {
+            bank: @Html.Raw(Json.Encode(nganHang)),
+            acc: @Html.Raw(Json.Encode(soTk)),
+            name: @Html.Raw(Json.Encode(tenTk))
+        };
+        function vnd(n) { return Number(n).toLocaleString('vi-VN') + 'đ'; }
+
+        function capNhatQR() {
+            var laQR = $('input[name=PhuongThucThanhToan]:checked').val() === 'QR';
+            $('#qrPreview').toggle(laQR);
+            if (!laQR || !QR.bank || !QR.acc) return;
+            var tien = parseInt($('#tong').attr('data-value') || '0', 10);
+            $('#qrAmount').text(vnd(tien));
+            $('#qrImg').attr('src', 'https://img.vietqr.io/image/' + QR.bank + '-' + QR.acc + '-compact2.png'
+                + '?amount=' + tien + '&accountName=' + encodeURIComponent(QR.name));
+        }
+
+        function tinhLaiTien() {
+            $.post('@Url.Action("TinhTien", "DatHang")', {
+                tinhThanh: $('#TinhThanh').val(),
+                maKhuyenMai: $('#MaKhuyenMai').val()
+            }, function (r) {
+                $('#phiShip').text(vnd(r.phiShip));
+                $('#tienGiam').text('-' + vnd(r.tienGiam));
+                $('#tong').text(vnd(r.tong)).attr('data-value', Math.round(r.tong));
+                $('#maMsg').text(r.message).attr('class', 'small mb-2 ' + (r.tienGiam > 0 ? 'text-success' : 'text-danger'));
+                capNhatQR();
+            });
+        }
+
+        $(document).on('change', 'input[name=PhuongThucThanhToan]', capNhatQR);
+        $('#TinhThanh').on('change', tinhLaiTien);
+        $('#btnMa').on('click', tinhLaiTien);
+        $(capNhatQR);
+    </script>
+}

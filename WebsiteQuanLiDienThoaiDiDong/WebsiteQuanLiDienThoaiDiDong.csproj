@@ -146,7 +146,11 @@
     </Compile>
     <Compile Include="Helpers\AuthHelper.cs" />
     <Compile Include="Helpers\CauHinh.cs" />
+    <Compile Include="Helpers\EmailHelper.cs" />
+    <Compile Include="Helpers\OtpHelper.cs" />
+    <Compile Include="Helpers\ResetTokenHelper.cs" />
     <Compile Include="Helpers\SecurityHelper.cs" />
+    <Compile Include="Helpers\VietQrHelper.cs" />
     <Compile Include="Models\BienTheSanPham.cs">
       <DependentUpon>QuanLiDiDong.tt</DependentUpon>
     </Compile>
@@ -399,6 +403,8 @@
     <Content Include="Views\KhuyenMai\Index.cshtml" />
     <Content Include="Views\KhuyenMai\Create.cshtml" />
     <Content Include="Views\KhuyenMai\Edit.cshtml" />
+    <Content Include="Views\DatHang\Index.cshtml" />
+    <Content Include="Views\Account\ResetPassword.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
