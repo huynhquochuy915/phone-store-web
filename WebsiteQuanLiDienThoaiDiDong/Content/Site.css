@@ -1707,5 +1707,68 @@ body {
     color: #d70018;
     font-size: .875rem;
 }
+/* ===== TRANG ĐẶT HÀNG ===== */
+.pay-opt {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    border: 1px solid #e5e7eb;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+    .pay-opt:hover {
+        border-color: #fca5a5;
+    }
+
+    .pay-opt input {
+        accent-color: #d70018;
+        width: 18px;
+        height: 18px;
+    }
+
+.co-item {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+    padding: 10px 0;
+    border-bottom: 1px solid #f0f0f0;
+}
+
+    .co-item img {
+        width: 56px;
+        height: 56px;
+        object-fit: contain;
+        border: 1px solid #eee;
+        border-radius: 8px;
+    }
+
+.co-row {
+    display: flex;
+    justify-content: space-between;
+    padding: 5px 0;
+}
+
+.co-total {
+    border-top: 1px solid #e5e7eb;
+    margin-top: 6px;
+    padding-top: 10px;
+    font-size: 1.15rem;
+}
+/* ===== MÃ XÁC THỰC EMAIL ===== */
+.otp-box {
+    max-width: 440px;
+    margin: 28px auto;
+}
+
+.otp-input {
+    text-align: center;
+    font-size: 1.8rem;
+    font-weight: 800;
+    letter-spacing: .5rem;
+    height: 58px;
+}
 
 
