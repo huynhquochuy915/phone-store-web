@@ -6,6 +6,7 @@
 
 <div class="container km-page">
     <div class="km-form-card p-4 p-md-5">
+
         <div class="mb-4">
             <h2 class="km-title">Thêm khuyến mãi</h2>
             <p class="text-muted mb-0">Nhập thông tin voucher mới</p>
@@ -15,7 +16,6 @@
         {
             @Html.AntiForgeryToken()
             <hr />
-            @*@Html.ValidationSummary(false, "", new { @class = "alert" })*@
 
             <div class="row g-3">
                 <div class="col-md-6">
@@ -48,9 +48,8 @@
                         {
                             new { Value = "PHANTRAM", Text = "Giảm theo phần trăm" },
                             new { Value = "SOTIEN", Text = "Giảm số tiền cố định" }
-                        }, "Value", "Text"),
-                        "-- Chọn loại giảm --",
-                        new { @class = "form-select" })
+                        }, "Value", "Text", Model == null ? "PHANTRAM" : Model.LoaiGiam),
+                        new { @class = "form-select", id = "LoaiGiam_Them" })
                     @Html.ValidationMessageFor(m => m.LoaiGiam)
                 </div>
 
@@ -75,7 +74,8 @@
                         type = "number",
                         min = "1",
                         step = "1",
-                        placeholder = "Để trống nếu không giới hạn"
+                        placeholder = "Để trống nếu không giới hạn",
+                        id = "GiamToiDa_Them"
                     })
                     @Html.ValidationMessageFor(m => m.GiamToiDa)
                 </div>
@@ -163,3 +163,21 @@
     @Scripts.Render("~/bundles/jqueryval")
 }
 
+<script>
+    function xuLyLoaiGiamThem() {
+        var loaiGiam = document.getElementById("LoaiGiam_Them");
+        var giamToiDa = document.getElementById("GiamToiDa_Them");
+
+        if (loaiGiam.value === "SOTIEN") {
+            giamToiDa.value = "";
+            giamToiDa.disabled = true;
+        } else {
+            giamToiDa.disabled = false;
+        }
+    }
+
+    document.getElementById("LoaiGiam_Them")
+        .addEventListener("change", xuLyLoaiGiamThem);
+
+    xuLyLoaiGiamThem();
+</script>
