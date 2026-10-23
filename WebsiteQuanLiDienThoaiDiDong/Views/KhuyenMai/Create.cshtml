@@ -1,0 +1,165 @@
+﻿@model WebsiteQuanLiDienThoaiDiDong.Models.KhuyenMai
+
+@{
+    ViewBag.Title = "Thêm khuyến mãi";
+}
+
+<div class="container km-page">
+    <div class="km-form-card p-4 p-md-5">
+        <div class="mb-4">
+            <h2 class="km-title">Thêm khuyến mãi</h2>
+            <p class="text-muted mb-0">Nhập thông tin voucher mới</p>
+        </div>
+
+        @using (Html.BeginForm("Create", "KhuyenMai", FormMethod.Post))
+        {
+            @Html.AntiForgeryToken()
+            <hr />
+            @*@Html.ValidationSummary(false, "", new { @class = "alert" })*@
+
+            <div class="row g-3">
+                <div class="col-md-6">
+                    @Html.LabelFor(m => m.MaCode, "Mã voucher", new { @class = "form-label" })
+                    @Html.TextBoxFor(m => m.MaCode, new
+                                                   {
+                                                       @class = "form-control",
+                                                       //placeholder = "VD: CHAOBAN10",
+                                                       maxlength = "30",
+                                                       style = "text-transform:uppercase"
+                                                   })
+                    @Html.ValidationMessageFor(m => m.MaCode)
+                </div>
+
+                <div class="col-md-6">
+                    @Html.LabelFor(m => m.TenKhuyenMai, "Tên khuyến mãi", new { @class = "form-label" })
+                    @Html.TextBoxFor(m => m.TenKhuyenMai, new
+                    {
+                        @class = "form-control",
+                        placeholder = "Nhập tên chương trình",
+                        maxlength = "150"
+                    })
+                    @Html.ValidationMessageFor(m => m.TenKhuyenMai)
+                </div>
+
+                <div class="col-md-6">
+                    @Html.LabelFor(m => m.LoaiGiam, "Loại giảm", new { @class = "form-label" })
+                    @Html.DropDownListFor(m => m.LoaiGiam,
+                        new SelectList(new[]
+                        {
+                            new { Value = "PHANTRAM", Text = "Giảm theo phần trăm" },
+                            new { Value = "SOTIEN", Text = "Giảm số tiền cố định" }
+                        }, "Value", "Text"),
+                        "-- Chọn loại giảm --",
+                        new { @class = "form-select" })
+                    @Html.ValidationMessageFor(m => m.LoaiGiam)
+                </div>
+
+                <div class="col-md-6">
+                    @Html.LabelFor(m => m.GiaTriGiam, "Giá trị giảm", new { @class = "form-label" })
+                    @Html.TextBoxFor(m => m.GiaTriGiam, new
+                    {
+                        @class = "form-control",
+                        type = "number",
+                        min = "0.01",
+                        step = "0.01",
+                        placeholder = "Nhập giá trị giảm"
+                    })
+                    @Html.ValidationMessageFor(m => m.GiaTriGiam)
+                </div>
+
+                <div class="col-md-6">
+                    @Html.LabelFor(m => m.GiamToiDa, "Giảm tối đa (đ)", new { @class = "form-label" })
+                    @Html.TextBoxFor(m => m.GiamToiDa, new
+                    {
+                        @class = "form-control",
+                        type = "number",
+                        min = "1",
+                        step = "1",
+                        placeholder = "Để trống nếu không giới hạn"
+                    })
+                    @Html.ValidationMessageFor(m => m.GiamToiDa)
+                </div>
+
+                <div class="col-md-6">
+                    @Html.LabelFor(m => m.DonToiThieu, "Giá trị đơn tối thiểu (đ)", new { @class = "form-label" })
+                    @Html.TextBoxFor(m => m.DonToiThieu, new
+                    {
+                        @class = "form-control",
+                        type = "number",
+                        min = "0",
+                        step = "1",
+                        Value = "0"
+                    })
+                    @Html.ValidationMessageFor(m => m.DonToiThieu)
+                </div>
+
+                <div class="col-md-6">
+                    @Html.LabelFor(m => m.NgayBatDau, "Ngày bắt đầu", new { @class = "form-label" })
+                    @Html.TextBoxFor(m => m.NgayBatDau, "{0:yyyy-MM-ddTHH:mm}",
+                        new { @class = "form-control", type = "datetime-local" })
+                    @Html.ValidationMessageFor(m => m.NgayBatDau)
+                </div>
+
+                <div class="col-md-6">
+                    @Html.LabelFor(m => m.NgayKetThuc, "Ngày kết thúc", new { @class = "form-label" })
+                    @Html.TextBoxFor(m => m.NgayKetThuc, "{0:yyyy-MM-ddTHH:mm}",
+                        new { @class = "form-control", type = "datetime-local" })
+                    @Html.ValidationMessageFor(m => m.NgayKetThuc)
+                </div>
+
+                <div class="col-md-6">
+                    @Html.LabelFor(m => m.SoLuong, "Số lượng khuyến mãi", new { @class = "form-label" })
+                    @Html.TextBoxFor(m => m.SoLuong, new
+                    {
+                        @class = "form-control",
+                        type = "number",
+                        min = "1",
+                        step = "1",
+                        placeholder = "Để trống nếu không giới hạn"
+                    })
+                    @Html.ValidationMessageFor(m => m.SoLuong)
+                </div>
+
+                <div class="col-md-6">
+                    @Html.LabelFor(m => m.GioiHanMoiNguoi, "Giới hạn mỗi người", new { @class = "form-label" })
+                    @Html.TextBoxFor(m => m.GioiHanMoiNguoi, new
+                    {
+                        @class = "form-control",
+                        type = "number",
+                        min = "1",
+                        step = "1",
+                        placeholder = "Để trống nếu không giới hạn"
+                    })
+                    @Html.ValidationMessageFor(m => m.GioiHanMoiNguoi)
+                </div>
+
+                <div class="col-12">
+                    <div class="form-check form-switch">
+                        @Html.CheckBoxFor(m => m.TrangThai, new { @class = "form-check-input", role = "switch" })
+                        @Html.LabelFor(m => m.TrangThai, "Kích hoạt khuyến mãi", new { @class = "form-check-label" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-4">
+
+                <a href="@Url.Action("Index", "KhuyenMai")"
+                   class="btn btn-outline-secondary">
+                    Quay lại
+                </a>
+
+                <button type="submit" class="btn km-btn">
+                    <i class="bi bi-check-lg"></i> Lưu khuyến mãi
+                </button>
+
+            </div>
+
+        }
+
+    </div>
+</div>
+
+@section Scripts {
+    @Scripts.Render("~/bundles/jqueryval")
+}
+
