@@ -7,7 +7,8 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
 using WebsiteQuanLiDienThoaiDiDong.Models;
-
+using System.Data.Entity;
+using WebsiteQuanLiDienThoaiDiDong.Helpers;
 namespace WebsiteQuanLiDienThoaiDiDong.Controllers
 {
     public class AccountController : Controller
@@ -97,33 +98,24 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
             // Mã hóa mật khẩu người dùng nhập để so sánh
             string hashedPassword = ComputeSha256Hash(matKhau);
 
-         
+
             var taiKhoan = email.Trim();
-            var user = db.NguoiDungs.FirstOrDefault(u =>
+            var user = db.NguoiDungs.Include("VaiTro").FirstOrDefault(u =>
                 (u.Email == taiKhoan || u.SoDienThoai == taiKhoan) &&
                 u.MatKhauHash == hashedPassword && u.TrangThai);
 
             if (user != null)
             {
-                Session["UserId"] = user.Id;
-                Session["HoTen"] = user.HoTen;
-                Session["VaiTroId"] = user.VaiTroId;
+                AuthHelper.SignIn(user, db);          // lưu UserId, HoTen, VaiTro và gộp giỏ hàng
+                Session["VaiTroId"] = user.VaiTroId;  // giữ lại cho code cũ nếu có chỗ dùng
                 Session["Email"] = user.Email;
 
-                if (user.VaiTroId == 1)
-                {
-                    return RedirectToAction("Index", "Admin");
-                }
-                else if (user.VaiTroId == 2)
-                {
-                    return RedirectToAction("Index", "Staff");
-                }
-                else
-                {
-                    if (!String.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
-                        return Redirect(returnUrl);
-                    return RedirectToAction("Index", "Home");
-                }
+                if (AuthHelper.IsStaff)
+                    return Redirect("~/Admin");
+
+                if (!String.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl))
+                    return Redirect(returnUrl);
+                return RedirectToAction("Index", "Home");
             }
             else
             {
@@ -135,8 +127,7 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
         // Phần ĐĂNG XUẤT
         public ActionResult Logout()
         {
-            Session.Clear();
-            FormsAuthentication.SignOut();
+            AuthHelper.SignOut();
             return RedirectToAction("Login", "Account");
         }
         //Phần QUÊN MẬT KHẨU

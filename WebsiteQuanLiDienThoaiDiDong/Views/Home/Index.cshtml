@@ -80,3 +80,43 @@
         {@Html.Partial("_SanPhamCard", sp)}
     </div>
 </section>
+@{
+    var capSoSanh = Model.BanChay.Where(x => x.LoaiId == 1).Take(2).ToList();
+    var noImg2 = Url.Content("~/Content/images/no-image.png");
+}
+@if (capSoSanh.Count == 2)
+{
+    <section class="cmp">
+        <div class="cmp-left">
+            <span class="cmp-eyebrow">SO SÁNH THÔNG MINH</span>
+            <h2>Đặt cạnh nhau.<br />Chọn đúng hơn.</h2>
+            <p>So sánh chi tiết hiệu năng, camera, pin và mức giá để tìm ra chiếc điện thoại thực sự dành cho bạn.</p>
+            <ul>
+                <li><i class="bi bi-check2"></i> Thông số cập nhật chính xác</li>
+                <li><i class="bi bi-check2"></i> So sánh nhiều sản phẩm cùng lúc</li>
+            </ul>
+            <a class="cmp-btn" href="@Url.Action("SoSanh", "SanPham", new { area = "" })">
+                Bắt đầu so sánh <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+        <div class="cmp-right">
+            @for (int i = 0; i < capSoSanh.Count; i++)
+            {
+                var sp = capSoSanh[i];
+                <div class="cmp-item">
+                    <img src="@(sp.AnhDaiDien != null ? Url.Content("~" + sp.AnhDaiDien) : noImg2)" alt="@sp.TenSanPham"
+                         onerror="this.onerror=null;this.src='@noImg2'" />
+                    <div>
+                        <div class="cmp-name">@sp.TenSanPham</div>
+                        <div class="cmp-price">@sp.GiaThapNhat.VND()</div>
+                    </div>
+                </div>
+                if (i == 0)
+                { <div class="cmp-vs">VS</div>}
+            }
+            <a class="cmp-item cmp-add" href="@Url.Action("SoSanh", "SanPham", new { area = "" })">
+                <i class="bi bi-plus-circle"></i> Thêm sản phẩm
+            </a>
+        </div>
+    </section>
+}

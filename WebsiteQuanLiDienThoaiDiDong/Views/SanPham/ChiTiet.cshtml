@@ -29,10 +29,10 @@
             <div id="ketQuaTraGop" class="small mt-2 text-muted">Chọn kỳ hạn và mức trả trước để xem số tiền dự kiến.</div>
         </div>
 
-        <form method="post" action="@Url.Action("ThemSoSanh")" class="mt-3">
+        @*<form method="post" action="@Url.Action("ThemSoSanh")" class="mt-3">
             @Html.AntiForgeryToken()<input type="hidden" name="id" value="@sp.Id" /><button class="btn btn-outline-secondary" type="submit"><i class="bi bi-arrow-left-right"></i> Thêm vào so sánh</button>
             <a class="btn btn-link" href="@Url.Action("SoSanh")">Mở bảng so sánh</a>
-        </form>
+        </form>*@
         <form class="favorite-form detail-favorite-form mt-2" method="post" action="@Url.Action("ChuyenYeuThich", "SanPham", new { area = "" })">
             @Html.AntiForgeryToken()<input type="hidden" name="sanPhamId" value="@sp.Id" />
             <button type="button" class="favorite-toggle detail-favorite-toggle btn btn-outline-danger" data-status-url="@Url.Action("YeuThichIds", "SanPham", new { area = "" })" aria-pressed="false">

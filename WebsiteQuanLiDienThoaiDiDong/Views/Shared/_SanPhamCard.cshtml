@@ -38,11 +38,11 @@
             </button>
         </form>
         <div class="pcard-actions">
-            <form method="post" action="@Url.Action("ThemSoSanh", "SanPham", new { area = "" })" class="compare-form">
+            @*<form method="post" action="@Url.Action("ThemSoSanh", "SanPham", new { area = "" })" class="compare-form">*@
                 @Html.AntiForgeryToken()
                 <input type="hidden" name="id" value="@Model.Id" />
                 <button class="btn btn-sm btn-outline-secondary w-100" type="submit">Thêm so sánh</button>
-            </form>
+            @*</form>*@
         </div>
     </div>
 </div>

@@ -7,10 +7,10 @@ using System.Web;
 using System.Web.Mvc;
 using WebsiteQuanLiDienThoaiDiDong.Models;
 
-namespace WebsiteQuanLiDienThoaiDiDong.Controllers
+namespace WebsiteQuanLiDienThoaiDiDong.Areas.Admin.Controllers   // đổi từ ...Controllers
 {
-    public class ThongKeController : Controller
-    {
+    public class ThongKeController : AdminBaseController          // đổi từ : Controller
+                                                                  {
         // GET: ThongKe
 
         QL_DienThoaiEntities db = new QL_DienThoaiEntities();

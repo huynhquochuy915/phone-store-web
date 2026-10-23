@@ -36,9 +36,8 @@
 
         @if (ViewBag.ThongBao != null)
         {
-            <div class="alert mt-3 mb-0">
-                <i style="color:red" class=" bi-exclamation-circle"> </i>
-                <b style="color:red">@ViewBag.ThongBao</b>                
+            <div class="alert alert-danger mt-3 mb-0">
+                <i class="bi bi-exclamation-circle"></i> @ViewBag.ThongBao
             </div>
         }
     </div>
@@ -51,7 +50,7 @@
         <div class="warranty-box">
 
             <div class="d-flex align-items-center gap-2 mb-4">
-                <i class="bi bi-shield-check"></i><span><h1 class="h5 fw-bold mb-0">Thông tin bảo hành</h1></span>
+                <i class="bi bi-shield-check"></i><h2 class="h5 fw-bold mb-0">Thông tin bảo hành</h2>
             </div>
 
             <div class="warranty-result">
@@ -60,8 +59,9 @@
                     @if (ViewBag.AnhDaiDien != null &&
                          !string.IsNullOrWhiteSpace(Convert.ToString(ViewBag.AnhDaiDien)))
                     {
-                        <img src="@Url.Content(Convert.ToString(ViewBag.AnhDaiDien))"
-                             alt="Ảnh sản phẩm" />
+                       <img src="@Url.Content("~" + Convert.ToString(ViewBag.AnhDaiDien))"
+                            alt="Ảnh sản phẩm"
+                            onerror="this.onerror=null;this.src='@Url.Content("~/Content/images/no-image.png")'" />
                     }
                     else
                     {
