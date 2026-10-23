@@ -7,7 +7,7 @@
     string trangThai = ViewBag.TrangThai as string ?? "";
 }
 
-@*//ValidationMessageFor*@
+
 
 <div class="container km-page">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
@@ -22,17 +22,17 @@
         </a>
     </div>
 
-    @*@if (TempData["ThongBao"] != null)
+    @if (TempData["ThongBao"] != null)
         {
             <div class="alert alert-info alert-dismissible fade show">
                 @TempData["ThongBao"]
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
-        }*@
+        }
 
     <div class="km-card p-3 mb-4">
-        <div class="row g-3 align-items-end">
 
+        <div class="row g-3 align-items-end">
             <div class="col-lg-5">
                 @using (Html.BeginForm("TimKiem", "KhuyenMai", FormMethod.Get))
                 {
@@ -59,12 +59,36 @@
                     <label class="form-label">Trạng thái</label>
 
                     <select name="trangThai" class="form-select">
-                        <option value="">Tất cả</option>
-                        <option value="DangApDung">Đang áp dụng</option>
-                        <option value="ChuaDenNgay">Chưa đến ngày</option>
-                        <option value="HetHan">Hết hạn</option>
-                        <option value="HetLuot">Hết lượt</option>
-                        <option value="Ngung">Đã tắt</option>
+
+                        <option value="" @(ViewBag.TrangThaiDangChon == null || ViewBag.TrangThaiDangChon == "" ? "selected" : "")>
+                            Tất cả
+                        </option>
+
+                        <option value="DangApDung"
+                                @(ViewBag.TrangThaiDangChon == "DangApDung" ? "selected" : "")>
+                            Đang áp dụng
+                        </option>
+
+                        <option value="ChuaDenNgay"
+                                @(ViewBag.TrangThaiDangChon == "ChuaDenNgay" ? "selected" : "")>
+                            Chưa đến ngày
+                        </option>
+
+                        <option value="HetHan"
+                                @(ViewBag.TrangThaiDangChon == "HetHan" ? "selected" : "")>
+                            Hết hạn
+                        </option>
+
+                        <option value="HetLuot"
+                                @(ViewBag.TrangThaiDangChon == "HetLuot" ? "selected" : "")>
+                            Hết lượt
+                        </option>
+
+                        <option value="Ngung"
+                                @(ViewBag.TrangThaiDangChon == "Ngung" ? "selected" : "")>
+                            Đã tắt
+                        </option>
+
                     </select>
                 }
             </div>
@@ -99,6 +123,7 @@
                         <th style="min-width: 190px;">Thao tác</th>
                     </tr>
                 </thead>
+
                 <tbody>
                     @if (Model != null && Model.Any())
                     {
@@ -112,21 +137,25 @@
                                 tinhTrang = "Đã tắt";
                                 mauTrangThai = "bg-secondary";
                             }
+
                             else if (km.NgayKetThuc < DateTime.Now)
                             {
                                 tinhTrang = "Hết hạn";
                                 mauTrangThai = "bg-danger";
                             }
+
                             else if (km.NgayBatDau > DateTime.Now)
                             {
                                 tinhTrang = "Chưa đến ngày";
                                 mauTrangThai = "bg-info text-dark";
                             }
+
                             else if (km.SoLuong.HasValue && km.DaDung >= km.SoLuong.Value)
                             {
                                 tinhTrang = "Hết lượt";
                                 mauTrangThai = "bg-warning text-dark";
                             }
+
                             else
                             {
                                 tinhTrang = "Đang áp dụng";
@@ -134,40 +163,57 @@
                             }
 
                             <tr>
+
                                 <td>
                                     <span class="km-code">@km.MaCode</span>
                                 </td>
+
                                 <td>@km.TenKhuyenMai</td>
+
                                 <td>
                                     @if (km.LoaiGiam == "PHANTRAM")
                                     {
                                         <span>@km.GiaTriGiam.ToString("0.##")%</span>
+
                                         if (km.GiamToiDa.HasValue)
                                         {
                                             <div class="small text-muted">
                                                 Tối đa @km.GiamToiDa.Value.ToString("N0") đ
                                             </div>
                                         }
+
+                                        else
+                                        {
+                                            <div class="small text-muted">
+                                                Không giới hạn
+                                            </div>
+                                        }
                                     }
+
                                     else
                                     {
                                         <span>@km.GiaTriGiam.ToString("N0") đ</span>
                                     }
                                 </td>
+
                                 <td>@km.DonToiThieu.ToString("N0") đ</td>
+
                                 <td>
                                     <div>@km.NgayBatDau.ToString("dd/MM/yyyy HH:mm")</div>
                                     <div class="text-muted small">
                                         đến @km.NgayKetThuc.ToString("dd/MM/yyyy HH:mm")
                                     </div>
                                 </td>
+
                                 <td>
                                     @km.DaDung /
                                     @(km.SoLuong.HasValue ? km.SoLuong.Value.ToString() : "∞")
                                 </td>
+
                                 <td>
                                     <span class="badge @mauTrangThai">@tinhTrang</span>
                                 </td>
+
                                 <td>
                                     <div class="km-actions">
                                         <a href="@Url.Action("Edit", "KhuyenMai", new { id = km.Id })"
@@ -194,7 +240,7 @@
                                             new
                                             {
                                                 @class = "d-inline",
-                                                onsubmit = "return confirm('Bà có chắc muốn xóa khuyến mãi này không?');"
+                                                onsubmit = "return confirm('Bạn có chắc muốn xóa khuyến mãi này không?');"
                                             }))
                                         {
                                             @Html.AntiForgeryToken()
@@ -204,11 +250,13 @@
                                                 <i class="bi bi-trash"></i>
                                             </button>
                                         }
+
                                     </div>
                                 </td>
                             </tr>
                         }
                     }
+
                     else
                     {
                         <tr>

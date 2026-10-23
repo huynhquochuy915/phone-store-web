@@ -67,6 +67,7 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
         }
 
         // Lọc trạng thái khuyến mãi
+
         public ActionResult Loc(string trangThai)
         {
             var kiemTra = KiemTraAdmin();
@@ -109,6 +110,7 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
                 danhSach = danhSach.Where(x => !x.TrangThai);
             }
 
+            ViewBag.TrangThaiDangChon = trangThai;
 
             return View("Index", danhSach
                 .OrderByDescending(x => x.Id)
@@ -121,7 +123,8 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
         public ActionResult DoiTrangThai(int id)
         {
             var kiemTra = KiemTraAdmin();
-            if (kiemTra != null) return kiemTra;
+            if (kiemTra != null) 
+                return kiemTra;
 
             var khuyenMai = db.KhuyenMais.Find(id);
 
@@ -137,65 +140,6 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
 
             return RedirectToAction("Index");
         }
-
-        // Thêm khuyến mãi
-        [HttpGet]
-        public ActionResult Create()
-        {
-            var kiemTra = KiemTraAdmin();
-            if (kiemTra != null) return kiemTra;
-
-            return View();
-        }
-
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public ActionResult Create(KhuyenMai khuyenMai)
-        {
-            var kiemTra = KiemTraAdmin();
-            if (kiemTra != null) return kiemTra;
-
-            if (string.IsNullOrWhiteSpace(khuyenMai.MaCode))
-            {
-                ModelState.AddModelError("MaCode",
-                    "Vui lòng nhập mã voucher.");
-            }
-            else
-            {
-                khuyenMai.MaCode = khuyenMai.MaCode.Trim().ToUpper();
-
-                if (db.KhuyenMais.Any(x => x.MaCode == khuyenMai.MaCode))
-                {
-                    ModelState.AddModelError("MaCode",
-                        "Mã khuyến mãi đã tồn tại.");
-                }
-            }
-
-            if (string.IsNullOrWhiteSpace(khuyenMai.TenKhuyenMai))
-            {
-                ModelState.AddModelError("TenKhuyenMai",
-                    "Vui lòng nhập tên khuyến mãi.");
-            }
-            else
-            {
-                khuyenMai.TenKhuyenMai = khuyenMai.TenKhuyenMai.Trim();
-            }
-
-            KiemTraDuLieu(khuyenMai);
-
-            if (!ModelState.IsValid)
-                return View(khuyenMai);
-
-            khuyenMai.DaDung = 0;
-
-            db.KhuyenMais.Add(khuyenMai);
-            db.SaveChanges();
-
-            TempData["ThongBao"] = "Thêm khuyến mãi thành công.";
-
-            return RedirectToAction("Index");
-        }
-
 
         // Kiểm tra dữ liệu
         private void KiemTraDuLieu(KhuyenMai km)
@@ -244,7 +188,7 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
                 ModelState.AddModelError("NgayKetThuc",
                     "Ngày kết thúc phải sau ngày bắt đầu.");
             }
-            
+
             if (km.SoLuong.HasValue && km.SoLuong.Value <= 0)
             {
                 ModelState.AddModelError("SoLuong",
@@ -257,6 +201,75 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
                 ModelState.AddModelError("GioiHanMoiNguoi",
                     "Giới hạn mỗi người phải lớn hơn 0 hoặc để trống.");
             }
+        }
+
+        // Thêm khuyến mãi
+        [HttpGet]
+        public ActionResult Create()
+        {
+            var kiemTra = KiemTraAdmin();
+            if (kiemTra != null) 
+                return kiemTra;
+
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult Create(KhuyenMai khuyenMai)
+        {
+            var kiemTra = KiemTraAdmin();
+            if (kiemTra != null) 
+                return kiemTra;
+
+            if (string.IsNullOrWhiteSpace(khuyenMai.MaCode))
+            {
+                ModelState.AddModelError("MaCode",
+                    "Vui lòng nhập mã voucher.");
+            }
+
+            else
+            {
+                khuyenMai.MaCode = khuyenMai.MaCode.Trim().ToUpper();
+
+                if (db.KhuyenMais.Any(x => x.MaCode == khuyenMai.MaCode))
+                {
+                    ModelState.AddModelError("MaCode",
+                        "Mã khuyến mãi đã tồn tại.");
+                }
+
+                khuyenMai.MaCode = khuyenMai.MaCode.Trim().ToUpper();
+            }
+
+            if (string.IsNullOrWhiteSpace(khuyenMai.TenKhuyenMai))
+            {
+                ModelState.AddModelError("TenKhuyenMai",
+                    "Vui lòng nhập tên khuyến mãi.");
+            }
+
+            else
+            {
+                khuyenMai.TenKhuyenMai = khuyenMai.TenKhuyenMai.Trim();
+            }
+
+            if (khuyenMai.LoaiGiam == "SOTIEN")
+            {
+                khuyenMai.GiamToiDa = null;
+            }
+
+            KiemTraDuLieu(khuyenMai);
+
+            if (!ModelState.IsValid)
+                return View(khuyenMai);
+
+            khuyenMai.DaDung = 0;
+
+            db.KhuyenMais.Add(khuyenMai);
+            db.SaveChanges();
+
+            TempData["ThongBao"] = "Thêm khuyến mãi thành công.";
+
+            return RedirectToAction("Index");
         }
 
         // Sửa khuyến mãi
@@ -293,6 +306,7 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
                 ModelState.AddModelError("MaCode",
                     "Vui lòng nhập mã voucher.");
             }
+
             else
             {
                 khuyenMai.MaCode = khuyenMai.MaCode.Trim().ToUpper();
@@ -311,6 +325,7 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
                 ModelState.AddModelError("TenKhuyenMai",
                     "Vui lòng nhập tên khuyến mãi.");
             }
+
             else
             {
                 khuyenMai.TenKhuyenMai = khuyenMai.TenKhuyenMai.Trim();
@@ -347,16 +362,14 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
             return RedirectToAction("Index");
         }
 
-
-
-
         // Xóa khuyến mãi chưa được sử dụng
         [HttpPost]
         [ValidateAntiForgeryToken]
         public ActionResult Delete(int id)
         {
             var kiemTra = KiemTraAdmin();
-            if (kiemTra != null) return kiemTra;
+            if (kiemTra != null) 
+                return kiemTra;
 
             var khuyenMai = db.KhuyenMais.Find(id);
 
@@ -383,10 +396,9 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
             db.SaveChanges();
 
             TempData["ThongBao"] = "Đã xóa khuyến mãi.";
+
             return RedirectToAction("Index");
         }
-
-
 
         protected override void Dispose(bool disposing)
         {
@@ -395,15 +407,5 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
 
             base.Dispose(disposing);
         }
-
-
-
-
-
-
-
-
-
-
     }
 }
