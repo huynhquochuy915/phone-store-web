@@ -1,0 +1,226 @@
+﻿@model IEnumerable<WebsiteQuanLiDienThoaiDiDong.Models.KhuyenMai>
+
+@{
+    ViewBag.Title = "Quản lý khuyến mãi";
+
+    string tuKhoa = ViewBag.TuKhoa as string ?? "";
+    string trangThai = ViewBag.TrangThai as string ?? "";
+}
+
+@*//ValidationMessageFor*@
+
+<div class="container km-page">
+    <div class="d-flex justify-content-between align-items-center flex-wrap gap-3 mb-4">
+        <div>
+            <h2 class="km-title mb-1">Quản lý khuyến mãi</h2>
+            <div class="text-muted">Quản lý mã giảm giá và chương trình ưu đãi</div>
+        </div>
+
+        <a href="@Url.Action("Create", "KhuyenMai")"
+           class="btn km-btn">
+            <i class="bi bi-plus-lg"></i> Thêm khuyến mãi
+        </a>
+    </div>
+
+    @*@if (TempData["ThongBao"] != null)
+        {
+            <div class="alert alert-info alert-dismissible fade show">
+                @TempData["ThongBao"]
+                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+            </div>
+        }*@
+
+    <div class="km-card p-3 mb-4">
+        <div class="row g-3 align-items-end">
+
+            <div class="col-lg-5">
+                @using (Html.BeginForm("TimKiem", "KhuyenMai", FormMethod.Get))
+                {
+                    <label class="form-label">Tìm kiếm</label>
+
+                    <div class="d-flex gap-2">
+                        <input type="text"
+                               name="tuKhoa"
+                               value="@Request.QueryString["tuKhoa"]"
+                               class="form-control"
+                               placeholder="Nhập mã hoặc tên khuyến mãi..." />
+
+                        <button type="submit" class="btn km-btn flex-fill">
+                            <i class="bi bi-search"></i> Tìm
+                        </button>
+                    </div>
+                }
+            </div>
+
+            <div class="col-lg-4">
+                @using (Html.BeginForm("Loc", "KhuyenMai", FormMethod.Get,
+                    new { id = "formLoc" }))
+                {
+                    <label class="form-label">Trạng thái</label>
+
+                    <select name="trangThai" class="form-select">
+                        <option value="">Tất cả</option>
+                        <option value="DangApDung">Đang áp dụng</option>
+                        <option value="ChuaDenNgay">Chưa đến ngày</option>
+                        <option value="HetHan">Hết hạn</option>
+                        <option value="HetLuot">Hết lượt</option>
+                        <option value="Ngung">Đã tắt</option>
+                    </select>
+                }
+            </div>
+
+            <div class="col-lg-3 d-flex gap-2">
+                <button type="submit" form="formLoc"
+                        class="btn km-btn flex-fill">
+                    <i class="bi bi-funnel"></i> Lọc
+                </button>
+
+                <a href="@Url.Action("Index", "KhuyenMai")"
+                   class="btn btn-outline-secondary">
+                    Xóa lọc
+                </a>
+            </div>
+
+        </div>
+    </div>
+
+    <div class="km-card km-list-card">
+        <div class="table-responsive">
+            <table class="table table-hover km-table mb-0">
+                <thead>
+                    <tr>
+                        <th>Mã voucher</th>
+                        <th>Tên khuyến mãi</th>
+                        <th>Mức giảm</th>
+                        <th>Đơn tối thiểu</th>
+                        <th>Thời gian áp dụng</th>
+                        <th>Lượt dùng</th>
+                        <th>Trạng thái</th>
+                        <th style="min-width: 190px;">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @if (Model != null && Model.Any())
+                    {
+                        foreach (var km in Model)
+                        {
+                            string tinhTrang;
+                            string mauTrangThai;
+
+                            if (!km.TrangThai)
+                            {
+                                tinhTrang = "Đã tắt";
+                                mauTrangThai = "bg-secondary";
+                            }
+                            else if (km.NgayKetThuc < DateTime.Now)
+                            {
+                                tinhTrang = "Hết hạn";
+                                mauTrangThai = "bg-danger";
+                            }
+                            else if (km.NgayBatDau > DateTime.Now)
+                            {
+                                tinhTrang = "Chưa đến ngày";
+                                mauTrangThai = "bg-info text-dark";
+                            }
+                            else if (km.SoLuong.HasValue && km.DaDung >= km.SoLuong.Value)
+                            {
+                                tinhTrang = "Hết lượt";
+                                mauTrangThai = "bg-warning text-dark";
+                            }
+                            else
+                            {
+                                tinhTrang = "Đang áp dụng";
+                                mauTrangThai = "bg-success";
+                            }
+
+                            <tr>
+                                <td>
+                                    <span class="km-code">@km.MaCode</span>
+                                </td>
+                                <td>@km.TenKhuyenMai</td>
+                                <td>
+                                    @if (km.LoaiGiam == "PHANTRAM")
+                                    {
+                                        <span>@km.GiaTriGiam.ToString("0.##")%</span>
+                                        if (km.GiamToiDa.HasValue)
+                                        {
+                                            <div class="small text-muted">
+                                                Tối đa @km.GiamToiDa.Value.ToString("N0") đ
+                                            </div>
+                                        }
+                                    }
+                                    else
+                                    {
+                                        <span>@km.GiaTriGiam.ToString("N0") đ</span>
+                                    }
+                                </td>
+                                <td>@km.DonToiThieu.ToString("N0") đ</td>
+                                <td>
+                                    <div>@km.NgayBatDau.ToString("dd/MM/yyyy HH:mm")</div>
+                                    <div class="text-muted small">
+                                        đến @km.NgayKetThuc.ToString("dd/MM/yyyy HH:mm")
+                                    </div>
+                                </td>
+                                <td>
+                                    @km.DaDung /
+                                    @(km.SoLuong.HasValue ? km.SoLuong.Value.ToString() : "∞")
+                                </td>
+                                <td>
+                                    <span class="badge @mauTrangThai">@tinhTrang</span>
+                                </td>
+                                <td>
+                                    <div class="km-actions">
+                                        <a href="@Url.Action("Edit", "KhuyenMai", new { id = km.Id })"
+                                           class="btn btn-sm btn-outline-primary"
+                                           title="Sửa">
+                                            <i class="bi bi-pencil-square"></i>
+                                        </a>
+
+                                        @using (Html.BeginForm("DoiTrangThai", "KhuyenMai",
+                                            new { id = km.Id }, FormMethod.Post,
+                                            new { @class = "d-inline" }))
+                                        {
+                                            @Html.AntiForgeryToken()
+
+                                            <button type="submit"
+                                                    class="btn btn-sm @(km.TrangThai ? "btn-outline-secondary" : "btn-outline-success")"
+                                                    title="Bật/tắt">
+                                                <i class="bi @(km.TrangThai ? "bi-toggle-on" : "bi-toggle-off")"></i>
+                                            </button>
+                                        }
+
+                                        @using (Html.BeginForm("Delete", "KhuyenMai",
+                                            new { id = km.Id }, FormMethod.Post,
+                                            new
+                                            {
+                                                @class = "d-inline",
+                                                onsubmit = "return confirm('Bà có chắc muốn xóa khuyến mãi này không?');"
+                                            }))
+                                        {
+                                            @Html.AntiForgeryToken()
+
+                                            <button type="submit" class="btn btn-sm btn-outline-danger"
+                                                    title="Xóa">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        }
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    }
+                    else
+                    {
+                        <tr>
+                            <td colspan="8" class="text-center py-5 text-muted">
+                                <i class="bi bi-ticket-perforated fs-2 d-block mb-2"></i>
+                                Không tìm thấy khuyến mãi phù hợp.
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+

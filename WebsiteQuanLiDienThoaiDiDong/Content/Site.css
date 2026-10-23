@@ -1549,153 +1549,163 @@ body {
     margin-top: 6px;
 }
 
-.cmp-col-name {
+/*khuyen mai - index*/
+.km-page {
+    padding: 28px 0 45px;
+}
+
+.km-title {
+    color: #d70018;
     font-weight: 700;
 }
-/* ===== TRA CỨU BẢO HÀNH ===== */
-.warranty-page {
-    max-width: 760px;
-    margin: 0 auto 40px;
+
+.km-list-card {
+    width: 100%;
+    max-width: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.05);
 }
 
-.warranty-title {
-    text-align: center;
-    margin: 10px 0 22px;
-}
-
-    .warranty-title h1 {
-        font-size: 1.6rem;
-        font-weight: 800;
+    .km-list-card .table-responsive {
         margin: 0;
     }
 
-    .warranty-title p {
-        color: #6b7280;
-        margin: 6px 0 0;
-    }
-
-.warranty-box {
+.km-card {
     background: #fff;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    padding: 22px 24px;
-    margin-bottom: 18px;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, .06);
-}
-
-.warranty-search {
-    display: flex;
-    gap: 10px;
-}
-
-    .warranty-search .form-control {
-        height: 46px;
-    }
-
-    .warranty-search button {
-        flex-shrink: 0;
-        background: #d70018;
-        color: #fff;
-        border: 0;
-        border-radius: 8px;
-        padding: 0 22px;
-        font-weight: 700;
-        cursor: pointer;
-    }
-
-        .warranty-search button:hover {
-            background: #b80014;
-        }
-
-.warranty-result {
-    display: flex;
-    gap: 24px;
-    align-items: flex-start;
-}
-
-.warranty-image {
-    width: 190px;
-    height: 190px;
-    flex-shrink: 0;
     border: 1px solid #eee;
     border-radius: 12px;
-    background: #fff;
+    box-shadow: 0 3px 12px rgba(0,0,0,.05);
+}
+
+.km-table {
+    margin-bottom: 0;
+}
+
+.km-table th {
+    background: #f8f8f8;
+    white-space: nowrap;
+}
+
+.km-table td {
+    vertical-align: middle;
+}
+
+.km-code {
+    color: #d70018;
+    font-weight: 700;
+}
+
+.km-btn {
+    background: #d70018;
+    color: #fff;
+    border: none;
+}
+
+    .km-btn:hover {
+        background: #a80012;
+        color: #fff;
+    }
+
+.km-filter {
+    min-width: 170px;
+}
+
+.km-actions {
     display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+.km-card .form-label {
+    display: block;
+    margin-bottom: 6px;
+}
+
+.km-card .form-control,
+.km-card .form-select {
+    height: 38px;
+}
+
+.km-card .km-btn {
+    height: 38px;
+    white-space: nowrap;
+    display: inline-flex;
     align-items: center;
     justify-content: center;
-    overflow: hidden;
+    gap: 5px;
 }
 
-    .warranty-image img {
-        width: 100%;
-        height: 100%;
-        object-fit: contain;
-    }
-
-.warranty-info {
-    flex: 1;
-    min-width: 0;
+/*KHUYEN MAI - CREATE*/
+.km-page {
+    padding: 28px 0 45px;
 }
 
-    .warranty-info h2 {
-        font-size: 1.25rem;
-        font-weight: 800;
-        margin-bottom: 12px;
-    }
-
-    .warranty-info p {
-        display: grid;
-        grid-template-columns: 160px 1fr;
-        align-items: center;
-        column-gap: 8px;
-        margin: 0 0 10px;
-        color: #374151;
-    }
-
-    .warranty-info strong {
-        color: #6b7280;
-        font-weight: 600;
-        white-space: nowrap;
-    }
-
-.warranty-status {
-    display: inline-block;
-    justify-self: start;
-    padding: 3px 12px;
-    border-radius: 999px;
+.km-title {
+    color: #d70018;
     font-weight: 700;
-    font-size: .9rem;
-    background: #dcfce7;
-    color: #15803d;
-}
-.warranty-info p > span {
-    justify-self: start;
 }
 
-    .warranty-status.expired {
-        background: #fee2e2;
-        color: #b91c1c;
-    }
-@media (max-width: 600px) {
-    .warranty-search {
-        flex-direction: column;
-    }
-
-        .warranty-search button {
-            height: 44px;
-        }
-
-    .warranty-result {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .warranty-info {
-        width: 100%;
-    }
-
-        .warranty-info p {
-            grid-template-columns: 1fr;
-            row-gap: 2px;
-        }
+.km-card {
+    max-width: 1200px;
+    margin: auto;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.05);
 }
+
+.km-btn {
+    background: #d70018;
+    color: #fff;
+    border: none;
+}
+
+    .km-btn:hover {
+        background: #a80012;
+        color: #fff;
+    }
+
+.field-validation-error {
+    color: #d70018;
+    font-size: .875rem;
+}
+
+/*KHUYEN MAI - EDIT*/
+.km-page {
+    padding: 28px 0 45px;
+}
+
+.km-title {
+    color: #d70018;
+    font-weight: 700;
+}
+
+.km-card {
+    margin: auto;
+    background: #fff;
+    border: 1px solid #eee;
+    border-radius: 12px;
+    box-shadow: 0 3px 12px rgba(0,0,0,.05);
+}
+
+.km-btn {
+    background: #d70018;
+    color: #fff;
+    border: none;
+}
+
+    .km-btn:hover {
+        background: #a80012;
+        color: #fff;
+    }
+
+.field-validation-error {
+    color: #d70018;
+    font-size: .875rem;
+}
+
+
