@@ -34,8 +34,12 @@ namespace WebsiteQuanLiDienThoaiDiDong.Models.ViewModels
     }
     public class TrangChuVM
     {
+        public List<WebsiteQuanLiDienThoaiDiDong.Services.NewsItem> Tin { get; set; } = new List<WebsiteQuanLiDienThoaiDiDong.Services.NewsItem>();
+        public List<WebsiteQuanLiDienThoaiDiDong.Services.VideoItem> Video { get; set; } = new List<WebsiteQuanLiDienThoaiDiDong.Services.VideoItem>();
         public List<SanPhamCardVM> NoiBat { get; set; }
         public List<SanPhamCardVM> BanChay { get; set; }
+        public List<SanPhamCardVM> DienThoai { get; set; } = new List<SanPhamCardVM>();
+        public List<SanPhamCardVM> PhuKien { get; set; } = new List<SanPhamCardVM>();
     }
 
     public class DanhSachSanPhamVM
@@ -94,6 +98,9 @@ namespace WebsiteQuanLiDienThoaiDiDong.Models.ViewModels
         public string DungLuong { get; set; }
         public string Anh { get; set; }
         public decimal DonGia { get; set; }
+        
+        public decimal GiaGoc { get; set; }                                   // THÊM
+        public decimal TietKiem { get { return GiaGoc > DonGia ? (GiaGoc - DonGia) * SoLuong : 0; } }   // THÊM
         public int SoLuong { get; set; }
         public int Ton { get; set; }
         public decimal ThanhTien { get { return DonGia * SoLuong; } }
@@ -103,6 +110,8 @@ namespace WebsiteQuanLiDienThoaiDiDong.Models.ViewModels
         public List<CartItemVM> Items { get; set; } = new List<CartItemVM>();
         public decimal TongTien { get { return Items.Sum(i => i.ThanhTien); } }
         public int TongSoLuong { get { return Items.Sum(i => i.SoLuong); } }
+        public decimal TongGiaGoc { get { return Items.Sum(i => i.GiaGoc > i.DonGia ? i.GiaGoc * i.SoLuong : i.ThanhTien); } }   // THÊM
+        public decimal TongGiamGia { get { return Items.Sum(i => i.TietKiem); } }                                              // THÊM
         public bool CoLoi { get { return Items.Any(i => i.SoLuong > i.Ton); } }
     }
 

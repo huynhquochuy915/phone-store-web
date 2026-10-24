@@ -1,344 +1,323 @@
-﻿@using System
-@using System.Data
-@using System.Linq
+﻿@model WebsiteQuanLiDienThoaiDiDong.Areas.Admin.Controllers.ThongKeVM
 @using System.Web.Helpers
-
-
-@{
-    ViewBag.Title = "Thống kê Doanh Thu";
-
-    int nam = Convert.ToInt32(ViewBag.Nam);
-    int? thangChon = ViewBag.ThangChon == null
-        ? (int?)null
-        : Convert.ToInt32(ViewBag.ThangChon);
-
-    DataTable doanhThu = ViewBag.DoanhThuTheoThang as DataTable;
-    DataTable danhSachDonHang = ViewBag.DanhSachDonHang as DataTable;
-
-    string[] tenThang = {
-        "Tháng 1", "Tháng 2", "Tháng 3", "Tháng 4",
-        "Tháng 5", "Tháng 6", "Tháng 7", "Tháng 8",
-        "Tháng 9", "Tháng 10", "Tháng 11", "Tháng 12"
-    };
-
-    decimal[] doanhThuThang = new decimal[12];
-    decimal[] tongThuThang = new decimal[12];
-    int[] soDonThang = new int[12];
-
-    if (doanhThu != null)
+@functions {
+    static readonly System.Globalization.CultureInfo Vi = new System.Globalization.CultureInfo("vi-VN");
+    static string Gon(decimal v)
     {
-        foreach (DataRow row in doanhThu.Rows)
-        {
-            int i = Convert.ToInt32(row["Thang"]) - 1;
-
-            if (i >= 0 && i < 12)
-            {
-                doanhThuThang[i] = Convert.ToDecimal(row["DoanhThu"]);
-                tongThuThang[i] = Convert.ToDecimal(row["TongThu"]);
-                soDonThang[i] = Convert.ToInt32(row["SoDon"]);
-            }
-        }
+        if (v >= 1000000000m) return (v / 1000000000m).ToString("0.##", Vi) + " tỷ";
+        if (v >= 1000000m) return (v / 1000000m).ToString("0.#", Vi) + " tr";
+        if (v >= 1000m) return (v / 1000m).ToString("0", Vi) + "k";
+        return v.ToString("0", Vi);
     }
 }
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewBag.Title = "Thống kê";
+    int homNay = DateTime.Now.Year;
+    int tuNam = Math.Min(Model.Nam, homNay - 6), denNam = Math.Max(Model.Nam, homNay);
+    int maxBan = Model.TopBanChay.Any() ? Model.TopBanChay.Max(x => x.SoLuong) : 1;
+    bool coDon = Model.TrangThaiDon.Sum(x => x.SoLuong) > 0;
+}
 
-<div class="dashboard-page">
-
-    <div class="dashboard-heading">
-        <div>
-            <h1><i class="bi bi-speedometer2 text-danger"></i> Dashboard</h1>
-            <p>Thống kê doanh thu và tình hình đơn hàng</p>
-        </div>
-
-        <form method="get" action="@Url.Action("Index", "ThongKe")"
-              class="dashboard-filter">
-            <div>
-                <label for="nam" class="form-label fw-semibold mb-1">Năm thống kê</label>
-                <input type="number" id="nam" name="nam"
-                       class="form-control" value="@nam"
-                       min="2000" max="2100" required />
-            </div>
-            <button type="submit" class="btn-dashboard">
-                <i class="bi bi-search"></i> Tra cứu
-            </button>
-        </form>
-    </div>
-
-    @if (ViewBag.ThongBao != null)
-    {
-        <div class="alert alert-warning">
-            <i class="bi bi-exclamation-circle"></i>
-            @ViewBag.ThongBao
-        </div>
-    }
-
-    <div class="row g-3 mb-4">
-        <div class="col-12 col-md-4">
-            <div class="dashboard-card">
-                <div class="d-flex justify-content-between align-items-start gap-2">
-                    <div>
-                        <div class="stat-label">Doanh thu năm @nam</div>
-                        <div class="stat-value text-danger">
-                            @String.Format("{0:N0} đ", ViewBag.TongDoanhThuNam)
-                        </div>
-                    </div>
-                    <div class="stat-icon">
-                        <i class="bi bi-currency-dollar"></i>
-                    </div>
-                </div>
-                <div class="text-secondary small mt-3">
-                    Tổng tiền hàng sau giảm giá
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-md-4">
-            <div class="dashboard-card">
-                <div class="d-flex justify-content-between align-items-start gap-2">
-                    <div>
-                        <div class="stat-label">Tổng thanh toán năm @nam</div>
-                        <div class="stat-value">
-                            @String.Format("{0:N0} đ", ViewBag.TongThuNam)
-                        </div>
-                    </div>
-                    <div class="stat-icon">
-                        <i class="bi bi-wallet2"></i>
-                    </div>
-                </div>
-                <div class="text-secondary small mt-3">
-                    Bao gồm phí vận chuyển sau giảm giá
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-md-4">
-            <div class="dashboard-card">
-                <div class="d-flex justify-content-between align-items-start gap-2">
-                    <div>
-                        <div class="stat-label">Đơn hàng hoàn tất</div>
-                        <div class="stat-value">
-                            @String.Format("{0:N0}", ViewBag.TongSoDonNam)
-                        </div>
-                    </div>
-                    <div class="stat-icon">
-                        <i class="bi bi-receipt"></i>
-                    </div>
-                </div>
-                <div class="text-secondary small mt-3">
-                    Trong năm @nam
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div class="dashboard-card mb-4">
-        <h2 class="dashboard-section-title">
-            <i class="bi bi-bar-chart-line text-danger"></i>
-            Biểu đồ doanh thu năm @nam
-        </h2>
-
-        <div class="chart-container">
-            <canvas id="doanhThuChart"></canvas>
-        </div>
-    </div>
-
-    <div class="dashboard-card mb-4">
-        <h2 class="dashboard-section-title">
-            <i class="bi bi-calendar3 text-danger"></i>
-            Doanh thu từng tháng
-        </h2>
-
-        <div class="row g-3">
-            @for (int i = 0; i < 12; i++)
+<form method="get" action="@Url.Action("Index", "ThongKe")" class="adm-toolbar">
+    <div>
+        <label class="form-label small mb-1">Năm thống kê</label>
+        <select name="nam" class="form-select" onchange="this.form.submit()">
+            @for (int y = denNam; y >= tuNam; y--)
             {
-                int thang = i + 1;
-                bool dangChon = thangChon.HasValue && thangChon.Value == thang;
-
-                <div class="col-6 col-md-4 col-xl-3">
-                    <a class="month-card @(dangChon ? "active" : "")"
-                       href="@Url.Action("Index", "ThongKe", new { nam = nam, thang = thang })">
-                        <div class="month-card-name">
-                            @tenThang[i]
-                            @if (dangChon)
-                            {
-                                <i class="bi bi-check-circle-fill text-danger"></i>
-                            }
-                        </div>
-                        <div class="month-card-revenue">
-                            @doanhThuThang[i].ToString("N0") đ
-                        </div>
-                        <div class="month-card-orders">
-                            <i class="bi bi-receipt"></i>
-                            @soDonThang[i] đơn hoàn tất
-                        </div>
-                        <div class="small text-danger mt-2">
-                            Xem đơn hàng <i class="bi bi-arrow-right"></i>
-                        </div>
-                    </a>
-                </div>
+                <option value="@y" @(y == Model.Nam ? "selected" : "")>@y</option>
             }
+        </select>
+    </div>
+    <a class="btn btn-outline-secondary ms-auto" href="@Url.Action("Index", "Kho")"><i class="bi bi-box-seam"></i> Quản lý kho</a>
+</form>
+
+<!-- KPI -->
+<div class="row g-3 mb-3">
+    <div class="col-sm-6 col-xl-3">
+        <div class="adm-card adm-kpi">
+            <div class="adm-kpi-ico red"><i class="bi bi-cash-coin"></i></div>
+            <div>
+                <div class="adm-kpi-label">Doanh thu năm @Model.Nam</div>
+                <div class="adm-kpi-value">@Model.DoanhThuNam.VND()</div>
+                <div class="adm-kpi-sub">
+                    @if (Model.TangTruong.HasValue)
+                    {
+                        <span class="@(Model.TangTruong.Value >= 0 ? "adm-up" : "adm-down")">
+                            <i class="bi @(Model.TangTruong.Value >= 0 ? "bi-arrow-up-short" : "bi-arrow-down-short")"></i>@(Math.Abs(Model.TangTruong.Value))%
+                        </span> <span>so với năm @(Model.Nam - 1)</span>
+                    }
+                    else
+                    {
+                        <span>Chưa có số liệu năm @(Model.Nam - 1)</span>
+                    }
+                </div>
+            </div>
         </div>
     </div>
-
-    @if (thangChon.HasValue)
-    {
-        <div class="dashboard-card">
-            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-3">
-                <div>
-                    <h2 class="dashboard-section-title mb-1">
-                        <i class="bi bi-receipt text-danger"></i>
-                        Đơn hàng hoàn tất - Tháng @thangChon/@nam
-                    </h2>
-                    <div class="text-secondary small">
-                        Doanh thu tháng:
-                        <strong class="text-danger">
-                            @doanhThuThang[thangChon.Value - 1].ToString("N0") đ
-                        </strong>
-                    </div>
-                </div>
-
-                <a href="@Url.Action("Index", "ThongKe", new { nam = nam })"
-                   class="btn btn-outline-secondary btn-sm">
-                    <i class="bi bi-x-lg"></i> Đóng danh sách
-                </a>
+    <div class="col-sm-6 col-xl-3">
+        <div class="adm-card adm-kpi">
+            <div class="adm-kpi-ico green"><i class="bi bi-bag-check"></i></div>
+            <div>
+                <div class="adm-kpi-label">Đơn hoàn tất</div>
+                <div class="adm-kpi-value">@Model.SoDonHoanTat.ToString("N0")</div>
+                <div class="adm-kpi-sub">Trong năm @Model.Nam</div>
             </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <div class="adm-card adm-kpi">
+            <div class="adm-kpi-ico blue"><i class="bi bi-receipt-cutoff"></i></div>
+            <div>
+                <div class="adm-kpi-label">Giá trị đơn trung bình</div>
+                <div class="adm-kpi-value">@Model.GiaTriTrungBinh.VND()</div>
+                <div class="adm-kpi-sub">Doanh thu / số đơn hoàn tất</div>
+            </div>
+        </div>
+    </div>
+    <div class="col-sm-6 col-xl-3">
+        <a class="adm-card adm-kpi text-decoration-none text-reset" href="@Url.Action("Index", "DonHang", new { tt = "ChoXacNhan" })">
+            <div class="adm-kpi-ico amber"><i class="bi bi-hourglass-split"></i></div>
+            <div>
+                <div class="adm-kpi-label">Đơn chờ xác nhận</div>
+                <div class="adm-kpi-value">@Model.DonChoXacNhan</div>
+                <div class="adm-kpi-sub">Bấm để xử lý</div>
+            </div>
+        </a>
+    </div>
+</div>
 
-            @if (danhSachDonHang != null && danhSachDonHang.Rows.Count > 0)
+<!-- Biểu đồ -->
+<div class="row g-3 mb-3">
+    <div class="col-lg-8">
+        <div class="adm-card h-100">
+            <h5 class="adm-card-title">
+                <span><i class="bi bi-bar-chart-line text-danger"></i> Doanh thu theo tháng</span>
+                <small class="text-muted fw-normal">Bấm vào cột để xem đơn của tháng</small>
+            </h5>
+            <div class="adm-chart"><canvas id="chartDoanhThu"></canvas></div>
+        </div>
+    </div>
+    <div class="col-lg-4">
+        <div class="adm-card h-100">
+            <h5 class="adm-card-title"><span><i class="bi bi-pie-chart text-danger"></i> Đơn hàng theo trạng thái</span></h5>
+            @if (coDon)
             {
-                <div class="table-responsive">
-                    <table class="table table-hover dashboard-table">
-                        <thead>
-                            <tr>
-                                <th>Mã đơn hàng</th>
-                                <th>Người nhận</th>
-                                <th>Số điện thoại</th>
-                                <th class="text-end">Tiền hàng</th>
-                                <th class="text-end">Tiền giảm</th>
-                                <th class="text-end">Tổng thanh toán</th>
-                                <th>Ngày giao xong</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (DataRow don in danhSachDonHang.Rows)
-                            {
-                                <tr>
-                                    <td class="fw-semibold">
-                                        @don["MaDonHang"]
-                                    </td>
-                                    <td>@don["TenNguoiNhan"]</td>
-                                    <td>@don["SoDienThoai"]</td>
-                                    <td class="text-end">
-                                        @Convert.ToDecimal(don["TongTienHang"]).ToString("N0") đ
-                                    </td>
-                                    <td class="text-end">
-                                        @Convert.ToDecimal(don["TienGiam"]).ToString("N0") đ
-                                    </td>
-                                    <td class="text-end fw-bold text-danger">
-                                        @Convert.ToDecimal(don["TongThanhToan"]).ToString("N0") đ
-                                    </td>
-                                    <td>
-                                        @if (don["NgayGiaoXong"] != DBNull.Value)
-                                        {
-                                            @Convert.ToDateTime(don["NgayGiaoXong"]).ToString("dd/MM/yyyy")
-                                        }
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
+                <div class="adm-chart"><canvas id="chartTrangThai"></canvas></div>
             }
             else
             {
-                <div class="dashboard-empty">
-                    <i class="bi bi-inbox fs-1 d-block mb-2"></i>
-                    Không có đơn hàng hoàn tất trong tháng này.
+                <div class="adm-empty"><i class="bi bi-inbox"></i>Chưa có đơn hàng trong năm @Model.Nam.</div>
+            }
+        </div>
+    </div>
+</div>
+
+<!-- Bán chạy + cảnh báo tồn -->
+<div class="row g-3 mb-3">
+    <div class="col-lg-7">
+        <div class="adm-card h-100">
+            <h5 class="adm-card-title"><span><i class="bi bi-trophy text-danger"></i> Sản phẩm bán chạy năm @Model.Nam</span></h5>
+            @if (!Model.TopBanChay.Any())
+            {
+                <div class="adm-empty"><i class="bi bi-inbox"></i>Chưa có đơn hoàn tất.</div>
+            }
+            else
+            {
+                <table class="adm-table">
+                    <thead><tr><th style="width:44px">#</th><th>Sản phẩm</th><th class="num">Đã bán</th><th class="num">Doanh thu</th></tr></thead>
+                    <tbody>
+                        @{ int hang = 0; }
+                        @foreach (var t in Model.TopBanChay)
+                        {
+                            hang++;
+                            <tr>
+                                <td><strong>@hang</strong></td>
+                                <td>
+                                    <div class="adm-prod-name">@t.Ten</div>
+                                    <div class="adm-bar"><span style="width:@((int)Math.Round(t.SoLuong * 100.0 / maxBan))%"></span></div>
+                                </td>
+                                <td class="num">@t.SoLuong</td>
+                                <td class="num"><strong>@t.DoanhThu.VND()</strong></td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            }
+        </div>
+    </div>
+    <div class="col-lg-5">
+        <div class="adm-card h-100">
+            <h5 class="adm-card-title">
+                <span>
+                    <i class="bi bi-exclamation-triangle text-danger"></i> Cảnh báo tồn kho
+                    @if (Model.SoCanhBaoTon > 0)
+                    {<span class="adm-badge adm-badge-red ms-1">@Model.SoCanhBaoTon</span>}
+                </span>
+                <a class="small" href="@Url.Action("Index", "Kho", new { tt = "sap" })">Xem kho</a>
+            </h5>
+            @if (!Model.CanhBaoTon.Any())
+            {
+                <div class="adm-empty"><i class="bi bi-check-circle"></i>Tồn kho ổn định.</div>
+            }
+            else
+            {
+                foreach (var c in Model.CanhBaoTon)
+                {
+                    var bt = string.Join(" · ", new[] { c.DungLuong, c.MauSac }.Where(s => !string.IsNullOrWhiteSpace(s)));
+                    <div class="adm-stock-item">
+                        <div>
+                            <div class="adm-prod-name">@c.Ten</div>
+                            <div class="adm-prod-sub">
+                                @bt ·
+                            <span class="@(c.SoLuongTon <= 0 ? "adm-out" : "text-warning")">@(c.SoLuongTon <= 0 ? "Hết hàng" : "Còn " + c.SoLuongTon)</span>
+                        </div>
+                    </div>
+                    <a class="btn btn-sm btn-outline-success" href="@Url.Action("PhieuKho", "Kho", new { bienTheId = c.BienTheId, loai = "Nhap" })">Nhập kho</a>
                 </div>
             }
+        }
+        </div>
+    </div>
+</div>
+
+<!-- Đơn gần đây -->
+<div class="adm-card mb-3">
+    <h5 class="adm-card-title"><span><i class="bi bi-receipt text-danger"></i> Đơn hàng gần đây</span></h5>
+    @if (!Model.DonGanDay.Any())
+    {
+        <div class="adm-empty"><i class="bi bi-inbox"></i>Chưa có đơn hàng.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="adm-table">
+                <thead><tr><th>Mã đơn</th><th>Người nhận</th><th>Ngày đặt</th><th>Trạng thái</th><th class="num">Tổng thanh toán</th></tr></thead>
+                <tbody>
+                    @foreach (var d in Model.DonGanDay)
+                    {
+                        <tr>
+                            <td><strong>@d.MaDonHang</strong></td>
+                            <td>@d.TenNguoiNhan</td>
+                            <td>@d.NgayDat.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td><span class="adm-badge adm-badge-@d.Mau">@d.TenTrangThai</span></td>
+                            <td class="num"><strong>@((d.Tong ?? 0m).VND())</strong></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
         </div>
     }
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<!-- Chi tiết theo tháng -->
+<div class="adm-card" id="chi-tiet">
+    <h5 class="adm-card-title"><span><i class="bi bi-calendar3 text-danger"></i> Chi tiết theo tháng</span></h5>
+    <div class="adm-months mb-3">
+        @for (int i = 0; i < 12; i++)
+        {
+            <a class="adm-month @(Model.Thang == i + 1 ? "active" : "")" href="@(Url.Action("Index", "ThongKe", new { nam = Model.Nam, thang = i + 1 }) + "#chi-tiet")">
+                <small>Tháng @(i + 1)</small>
+                <strong>@Gon(Model.DoanhThuThang[i])</strong>
+                <small>@Model.SoDonThang[i] đơn</small>
+            </a>
+        }
+    </div>
 
+    @if (Model.Thang.HasValue)
+    {
+        <h6>
+            Đơn hoàn tất tháng @Model.Thang/@Model.Nam
+            <a class="small ms-2" href="@Url.Action("Index", "ThongKe", new { nam = Model.Nam })">Đóng</a>
+        </h6>
+        if (!Model.DonTrongThang.Any())
+        {
+            <div class="adm-empty"><i class="bi bi-inbox"></i>Không có đơn hoàn tất trong tháng này.</div>
+        }
+        else
+        {
+            <div class="table-responsive">
+                <table class="adm-table">
+                    <thead>
+                        <tr><th>Mã đơn</th><th>Người nhận</th><th>SĐT</th><th class="num">Tiền hàng</th><th class="num">Giảm</th><th class="num">Thanh toán</th><th>Ngày giao</th></tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var d in Model.DonTrongThang)
+                        {
+                            <tr>
+                                <td><strong>@d.MaDonHang</strong></td>
+                                <td>@d.TenNguoiNhan</td>
+                                <td>@d.SoDienThoai</td>
+                                <td class="num">@d.TongTienHang.VND()</td>
+                                <td class="num">@d.TienGiam.VND()</td>
+                                <td class="num"><strong>@((d.TongThanhToan ?? 0m).VND())</strong></td>
+                                <td>@(d.NgayGiaoXong.HasValue ? d.NgayGiaoXong.Value.ToString("dd/MM/yyyy") : "")</td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
+    }
+    else
+    {
+        <div class="text-muted small">Chọn một tháng để xem danh sách đơn hoàn tất.</div>
+    }
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.3/dist/chart.umd.min.js"></script>
 <script>
-    const nhanThang = @Html.Raw(Json.Encode(tenThang));
-    const duLieuDoanhThu = @Html.Raw(Json.Encode(doanhThuThang));
-    const duLieuSoDon = @Html.Raw(Json.Encode(soDonThang));
+    var hienTai = @Html.Raw(Json.Encode(Model.DoanhThuThang));
+    var namTruoc = @Html.Raw(Json.Encode(Model.DoanhThuNamTruoc));
+    var soDon = @Html.Raw(Json.Encode(Model.SoDonThang));
+    var nhan = ['T1', 'T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'T8', 'T9', 'T10', 'T11', 'T12'];
+    var vnd = new Intl.NumberFormat('vi-VN');
+    Chart.defaults.font.family = "'Be Vietnam Pro', sans-serif";
 
-    const ctx = document.getElementById('doanhThuChart');
-
-    new Chart(ctx, {
+    new Chart(document.getElementById('chartDoanhThu'), {
         type: 'bar',
         data: {
-            labels: nhanThang,
+            labels: nhan,
             datasets: [
-                {
-                    label: 'Doanh thu (VNĐ)',
-                    data: duLieuDoanhThu,
-                    backgroundColor: 'rgba(215, 0, 24, 0.78)',
-                    borderColor: '#d70018',
-                    borderWidth: 1,
-                    borderRadius: 6,
-                    yAxisID: 'y'
-                }
+                { type: 'bar', label: 'Năm @Model.Nam', data: hienTai, backgroundColor: 'rgba(215,0,24,.85)', borderRadius: 6, order: 2 },
+                { type: 'line', label: 'Năm @(Model.Nam - 1)', data: namTruoc, borderColor: '#9ca3af', borderDash: [5, 4], pointRadius: 3, tension: .3, order: 1 }
             ]
         },
         options: {
-            responsive: true,
-            maintainAspectRatio: false,
-            interaction: {
-                intersect: false,
-                mode: 'index'
-            },
+            responsive: true, maintainAspectRatio: false,
+            interaction: { mode: 'index', intersect: false },
             plugins: {
-                legend: {
-                    display: true
-                },
+                legend: { position: 'bottom' },
                 tooltip: {
                     callbacks: {
-                        label: function (context) {
-                            return 'Doanh thu: ' +
-                                new Intl.NumberFormat('vi-VN').format(context.raw) + ' đ';
-                        },
-                        afterBody: function (items) {
-                            if (!items.length) return '';
-                            return 'Số đơn hoàn tất: ' +
-                                new Intl.NumberFormat('vi-VN').format(
-                                    duLieuSoDon[items[0].dataIndex]
-                                );
-                        }
+                        label: function (c) { return c.dataset.label + ': ' + vnd.format(c.raw) + ' đ'; },
+                        afterBody: function (items) { return items.length ? 'Số đơn hoàn tất: ' + soDon[items[0].dataIndex] : ''; }
                     }
                 }
             },
             scales: {
-                y: {
-                    beginAtZero: true,
-                    ticks: {
-                        callback: function (value) {
-                            return new Intl.NumberFormat('vi-VN', {
-                                notation: 'compact',
-                                maximumFractionDigits: 1
-                            }).format(value) + ' đ';
-                        }
-                    }
-                },
-                x: {
-                    grid: {
-                        display: false
-                    }
-                }
+                x: { grid: { display: false } },
+                y: { beginAtZero: true, ticks: { callback: function (v) { return new Intl.NumberFormat('vi-VN', { notation: 'compact' }).format(v); } } }
             },
-            onClick: function (event, elements) {
-                if (elements.length > 0) {
-                    const index = elements[0].index;
-                    const thang = index + 1;
-
-                    window.location.href =
-                        '@Url.Action("Index", "ThongKe")' +
-                        '?nam=' + @nam + '&thang=' + thang;
-                }
+            onClick: function (e, els) {
+                if (els.length) location.href = '@Url.Action("Index", "ThongKe", new { nam = Model.Nam })' + '&thang=' + (els[0].index + 1) + '#chi-tiet';
             }
         }
     });
-</script>
 
+    var elTT = document.getElementById('chartTrangThai');
+    if (elTT) {
+        new Chart(elTT, {
+            type: 'doughnut',
+            data: {
+                labels: @Html.Raw(Json.Encode(Model.TrangThaiDon.Select(x => x.Ten).ToArray())),
+                datasets: [{
+                    data: @Html.Raw(Json.Encode(Model.TrangThaiDon.Select(x => x.SoLuong).ToArray())),
+                    backgroundColor: ['#f59e0b', '#3b82f6', '#8b5cf6', '#16a34a', '#9ca3af'],
+                    borderWidth: 2
+                }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, cutout: '62%', plugins: { legend: { position: 'bottom' } } }
+        });
+    }
+</script>

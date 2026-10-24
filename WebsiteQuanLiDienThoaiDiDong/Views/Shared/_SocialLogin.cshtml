@@ -1,0 +1,82 @@
+﻿@{
+    var gId = CauHinh.Get("Google_ClientId", "");
+    var fbId = CauHinh.Get("Facebook_AppId", "");
+    var rUrl = Request.QueryString["returnUrl"] ?? "";
+}
+@if (gId != "" || fbId != "")
+{
+    <div id="socialLogin" class="social-login">
+        <div class="social-or"><span>hoặc</span></div>
+        @Html.AntiForgeryToken()
+        <div id="socialMsg" class="alert alert-danger py-2" style="display:none"></div>
+        @if (gId != "")
+        {<div id="gBtn" class="social-g"></div>}
+        @if (fbId != "")
+        {<button type="button" id="fbBtn" class="btn-fb"><i class="bi bi-facebook"></i> Tiếp tục với Facebook</button>}
+    </div>
+
+    <script>
+        (function () {
+            var box = document.getElementById('socialLogin');
+            var csrf = box.querySelector('input[name=__RequestVerificationToken]').value;
+            var returnUrl = @Html.Raw(Json.Encode(rUrl));
+            var msg = document.getElementById('socialMsg');
+
+            function fail(t) { msg.textContent = t; msg.style.display = 'block'; }
+
+            function send(provider, token) {
+                msg.style.display = 'none';
+                var body = new URLSearchParams();
+                body.append('provider', provider);
+                body.append('token', token);
+                body.append('returnUrl', returnUrl);
+                body.append('__RequestVerificationToken', csrf);
+                fetch('@Url.Action("SocialLogin", "Account", new { area = "" })', {
+                    method: 'POST',
+                    credentials: 'same-origin',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8' },
+                    body: body.toString()
+                }).then(function (r) { return r.json(); })
+                  .then(function (r) { if (r.ok) { location.href = r.url; } else { fail(r.message); } })
+                  .catch(function () { fail('Không kết nối được máy chủ. Vui lòng thử lại.'); });
+            }
+
+            window.initGoogle = function () {
+    var w = Math.min(400, Math.max(200, box.clientWidth));
+    google.accounts.id.initialize({
+        client_id: @Html.Raw(Json.Encode(gId)),
+        callback: function (resp) { send('google', resp.credential); }
+    });
+    google.accounts.id.renderButton(document.getElementById('gBtn'),
+        { theme: 'outline', size: 'large', text: 'continue_with', width: w, locale: 'vi' });
+};
+
+            @if (fbId != "")
+            {
+            <text>
+            window.fbAsyncInit = function () {
+                FB.init({ appId: @Html.Raw(Json.Encode(fbId)), cookie: true, xfbml: false, version: 'v26.0' });
+            };
+            document.getElementById('fbBtn').onclick = function () {
+                if (!window.FB) { fail('Chưa tải được Facebook. Vui lòng thử lại.'); return; }
+                FB.login(function (res) {
+                    if (res.authResponse) { send('facebook', res.authResponse.accessToken); }
+                    else { fail('Bạn đã hủy đăng nhập Facebook.'); }
+                }, { scope: 'public_profile,email' });
+            };
+            </text>
+            }
+        })();
+    </script>
+    if (gId != "")
+    {
+        <script src="https://accounts.google.com/gsi/client"
+                async defer onload="initGoogle()"></script>
+    }
+
+    if (fbId != "")
+    {
+        <script async defer crossorigin="anonymous"
+                src="https://connect.facebook.net/vi_VN/sdk.js"></script>
+    }
+}

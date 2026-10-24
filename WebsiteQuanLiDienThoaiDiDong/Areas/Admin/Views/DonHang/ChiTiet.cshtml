@@ -1,0 +1,212 @@
+﻿@model WebsiteQuanLiDienThoaiDiDong.Areas.Admin.Controllers.DonHangChiTietVM
+@{
+    ViewBag.Title = "Đơn hàng " + Model.MaDonHang;
+    bool choGanImei = Model.TrangThai == "DaXacNhan" || Model.TrangThai == "DangGiao" || Model.TrangThai == "HoanTat";
+    bool qrChuaTra = Model.PhuongThuc == "QR" && Model.TrangThaiThanhToan == "ChuaThanhToan" && Model.TrangThai != "DaHuy";
+}
+
+<div class="d-flex flex-wrap align-items-center gap-2 mb-3">
+    <a class="btn btn-outline-secondary btn-sm" href="@Url.Action("Index")"><i class="bi bi-arrow-left"></i> Danh sách đơn</a>
+    <span class="adm-badge adm-badge-@Model.MauTrangThai">@Model.TenTrangThai</span>
+    <span class="adm-badge adm-badge-@Model.MauThanhToan">@Model.TenThanhToan</span>
+    <span class="text-muted small ms-auto">Đặt lúc @Model.NgayDat.ToString("dd/MM/yyyy HH:mm")</span>
+</div>
+
+<div class="row g-3">
+    <!-- ======== CỘT TRÁI ======== -->
+    <div class="col-lg-8">
+        <div class="adm-card mb-3">
+            <h5 class="adm-card-title"><span><i class="bi bi-box-seam text-danger"></i> Sản phẩm trong đơn</span></h5>
+            <div class="table-responsive">
+                <table class="adm-table">
+                    <thead><tr><th>Sản phẩm</th><th class="num">SL</th><th class="num">Đơn giá</th><th class="num">Thành tiền</th></tr></thead>
+                    <tbody>
+                        @foreach (var it in Model.Items)
+                        {
+                            <tr>
+                                <td><div class="adm-prod-name">@it.Ten</div></td>
+                                <td class="num">@it.SoLuong</td>
+                                <td class="num">@it.DonGia.VND()</td>
+                                <td class="num"><strong>@((it.SoLuong * it.DonGia).VND())</strong></td>
+                            </tr>
+                            if (it.LaDienThoai)
+                            {
+                                var du = it.Imeis.Count >= it.SoLuong;
+                                <tr class="adm-imei-row">
+                                    <td colspan="4">
+                                        <div class="small text-muted mb-1">IMEI đã gán: @it.Imeis.Count/@it.SoLuong</div>
+                                        @foreach (var im in it.Imeis)
+                                        {
+                                            <span class="adm-chip">@im</span>
+                                        }
+                                        @if (!du && choGanImei)
+                                        {
+                                            using (Html.BeginForm("GanImei", "DonHang", new { area = "Admin" }, FormMethod.Post, new { @class = "adm-inline-form" }))
+                                            {
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="chiTietId" value="@it.Id" />
+                                                <input type="text" name="imei" class="form-control form-control-sm" maxlength="15"
+                                                       pattern="\d{15}" inputmode="numeric" placeholder="Nhập 15 số IMEI" required />
+                                                <button class="btn btn-sm btn-outline-primary text-nowrap" type="submit">Gán IMEI</button>
+                                            }
+                                        }
+                                        else if (!du && Model.TrangThai == "ChoXacNhan")
+                                        {
+                                            <span class="small text-muted">Xác nhận đơn để bắt đầu gán IMEI.</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <div class="adm-card">
+            <h5 class="adm-card-title"><span><i class="bi bi-clock-history text-danger"></i> Lịch sử đơn hàng</span></h5>
+            @if (!Model.LichSu.Any())
+            {
+                <div class="text-muted small">Chưa có lịch sử.</div>
+            }
+            else
+            {
+                <ul class="adm-timeline">
+                    @foreach (var h in Model.LichSu)
+                    {
+                        <li>
+                            <div><strong>@h.Ten</strong> <span class="text-muted small">· @h.Ngay.ToString("dd/MM/yyyy HH:mm")@(string.IsNullOrEmpty(h.NguoiCapNhat) ? "" : " · " + h.NguoiCapNhat)</span></div>
+                            @if (!string.IsNullOrWhiteSpace(h.GhiChu))
+                            {<div class="small text-muted">@h.GhiChu</div>}
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+    </div>
+
+    <!-- ======== CỘT PHẢI ======== -->
+    <div class="col-lg-4">
+        <div class="adm-card mb-3">
+            <h5 class="adm-card-title"><span><i class="bi bi-lightning-charge text-danger"></i> Xử lý đơn</span></h5>
+            @if (Model.HanhDong.Any())
+            {
+                if (qrChuaTra && Model.TrangThai == "ChoXacNhan")
+                {
+                    <div class="alert alert-warning py-2 small">Đơn QR này <strong>chưa nhận được tiền</strong>. Nên xác nhận thanh toán trước khi xác nhận đơn.</div>
+                }
+                using (Html.BeginForm("CapNhatTrangThai", "DonHang", new { area = "Admin" }, FormMethod.Post))
+                {
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <textarea name="ghiChu" class="form-control mb-2" rows="2" maxlength="200" placeholder="Ghi chú (không bắt buộc)"></textarea>
+                    foreach (var h in Model.HanhDong)
+                    {
+                        if (h.Ma == "DaHuy")
+                        {
+                            <button type="submit" name="trangThaiMoi" value="@h.Ma" class="btn @h.Css w-100 mb-2"
+                                    onclick="return confirm('Hủy đơn này? Tồn kho sẽ được hoàn lại và lượt dùng mã giảm giá được trả cho khách.');">
+                                <i class="bi @h.Icon"></i> @h.Ten
+                            </button>
+                        }
+                        else
+                        {
+                            <button type="submit" name="trangThaiMoi" value="@h.Ma" class="btn @h.Css w-100 mb-2"><i class="bi @h.Icon"></i> @h.Ten</button>
+                        }
+                    }
+                }
+            }
+            else
+            {
+                <div class="text-muted small">Đơn đã kết thúc nên không thể đổi trạng thái.</div>
+            }
+        </div>
+
+        <div class="adm-card mb-3">
+            <h5 class="adm-card-title"><span><i class="bi bi-credit-card text-danger"></i> Thanh toán</span></h5>
+            <dl class="adm-info mb-0">
+                <dt>Phương thức</dt>
+                <dd>@Model.TenPhuongThuc</dd>
+                <dt>Trạng thái</dt>
+                <dd><span class="adm-badge adm-badge-@Model.MauThanhToan">@Model.TenThanhToan</span></dd>
+                @if (Model.NgayThanhToan.HasValue)
+                {
+                    <dt>Thanh toán lúc</dt>
+                    <dd>@Model.NgayThanhToan.Value.ToString("dd/MM/yyyy HH:mm")</dd>
+                }
+                @if (Model.NgayGiaoXong.HasValue)
+                {
+                    <dt>Giao xong lúc</dt>
+                    <dd>@Model.NgayGiaoXong.Value.ToString("dd/MM/yyyy HH:mm")</dd>
+                }
+            </dl>
+
+            @if (Model.TrangThaiThanhToan == "HoanTien")
+            {
+                <div class="alert alert-danger py-2 small mt-3 mb-0">Đơn đã hủy sau khi khách thanh toán. Cần <strong>hoàn tiền thủ công</strong> cho khách.</div>
+            }
+            @if (qrChuaTra)
+            {
+                using (Html.BeginForm("XacNhanThanhToan", "DonHang", new { area = "Admin" }, FormMethod.Post, new { @class = "mt-3" }))
+                {
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="id" value="@Model.Id" />
+                    <input type="text" name="maGiaoDich" class="form-control form-control-sm mb-2" maxlength="50" placeholder="Mã giao dịch ngân hàng (không bắt buộc)" />
+                    <button type="submit" class="btn btn-outline-success btn-sm w-100"><i class="bi bi-cash-coin"></i> Xác nhận đã nhận tiền</button>
+                }
+            }
+            else if (Model.PhuongThuc == "COD" && Model.TrangThaiThanhToan == "ChuaThanhToan" && Model.TrangThai != "DaHuy")
+            {
+                <div class="small text-muted mt-3">COD: hệ thống tự ghi nhận đã thanh toán khi đơn chuyển sang <strong>Hoàn tất</strong>.</div>
+            }
+
+            @if (Model.GiaoDich.Any())
+            {
+                <hr />
+                <div class="small fw-semibold mb-1">Giao dịch</div>
+                foreach (var g in Model.GiaoDich)
+                {
+                    <div class="small">
+                        @g.SoTien.VND() · @g.PhuongThuc · @g.Ngay.ToString("dd/MM/yyyy HH:mm")
+                        @if (!string.IsNullOrEmpty(g.MaGiaoDich))
+                        {<span>· Mã: @g.MaGiaoDich</span>}
+                        @if (!string.IsNullOrEmpty(g.NguoiXacNhan))
+                        {<span class="text-muted">· @g.NguoiXacNhan</span>}
+                    </div>
+                }
+            }
+        </div>
+
+        <div class="adm-card mb-3">
+            <h5 class="adm-card-title"><span><i class="bi bi-person-lines-fill text-danger"></i> Giao hàng</span></h5>
+            <dl class="adm-info mb-0">
+                <dt>Người nhận</dt>
+                <dd>@Model.TenNguoiNhan</dd>
+                <dt>Số điện thoại</dt>
+                <dd><a href="tel:@Model.SoDienThoai">@Model.SoDienThoai</a></dd>
+                @if (!string.IsNullOrEmpty(Model.Email))
+                {
+                    <dt>Email</dt>
+                    <dd>@Model.Email</dd>
+}
+                <dt>Địa chỉ</dt>
+                <dd>@Model.DiaChiGiao, @Model.TinhThanh</dd>
+                @if (!string.IsNullOrWhiteSpace(Model.GhiChu))
+                {
+                    <dt>Ghi chú của khách</dt>
+                    <dd>@Model.GhiChu</dd>
+}
+                <dt>Tài khoản đặt</dt>
+                <dd>@Model.TaiKhoan</dd>
+            </dl>
+        </div>
+
+        <div class="adm-card">
+            <h5 class="adm-card-title"><span><i class="bi bi-receipt text-danger"></i> Tổng kết</span></h5>
+            <div class="adm-sum"><span>Tiền hàng</span><span>@Model.TongTienHang.VND()</span></div>
+            <div class="adm-sum"><span>Phí vận chuyển</span><span>@Model.PhiShip.VND()</span></div>
+            <div class="adm-sum"><span>Giảm giá@(string.IsNullOrEmpty(Model.MaKhuyenMai) ? "" : " (" + Model.MaKhuyenMai + ")")</span><span>-@Model.TienGiam.VND()</span></div>
+            <div class="adm-sum total"><span>Tổng thanh toán</span><strong>@Model.TongCong.VND()</strong></div>
+        </div>
+    </div>
+</div>

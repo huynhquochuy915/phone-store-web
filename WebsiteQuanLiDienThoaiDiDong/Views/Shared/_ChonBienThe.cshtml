@@ -12,79 +12,130 @@
 else
 {
     <div id="variantBox" data-variants="@Json.Encode(bienThes)">
-        <div id="vbDl" class="mb-3"><div class="fw-semibold mb-2">Dung lượng</div><div class="d-flex flex-wrap gap-2" data-role="dl"></div></div>
-        <div class="mb-3"><div class="fw-semibold mb-2">Màu sắc</div><div class="d-flex flex-wrap gap-2" data-role="mau"></div></div>
-        <div class="mb-1"><span id="vbGia" class="price"></span> <del id="vbGoc" class="text-muted ms-2"></del></div>
-        <div id="vbTon" class="small mb-3"></div>
+        <div class="pd-pricebox">
+            <span id="vbGia" class="pd-price"></span>
+            <del id="vbGoc" class="pd-old"></del>
+            <span id="vbOff" class="pd-off"></span>
+        </div>
+        <div id="vbTon" class="pd-stock"></div>
+
+        <div id="vbDl" class="pd-group">
+            <div class="pd-group-title">Phiên bản</div>
+            <div class="pd-opts" data-role="dl"></div>
+        </div>
+        <div class="pd-group">
+            <div class="pd-group-title">Màu sắc</div>
+            <div class="pd-opts" data-role="mau"></div>
+        </div>
 
         @using (Html.BeginForm("Them", "GioHang", new { area = "" }, FormMethod.Post, new { id = "frmThemGio" }))
         {
             @Html.AntiForgeryToken()
             <input type="hidden" name="bienTheId" id="vbId" />
-            <div class="d-flex gap-2 align-items-center">
-                <input type="number" name="soLuong" id="vbSl" value="1" min="1" class="form-control" style="width:90px" />
-                <button type="submit" class="btn btn-outline-brand" id="btnThem"><i class="bi bi-cart-plus"></i> Thêm vào giỏ</button>
-                <button type="submit" name="muaNgay" value="true" class="btn btn-accent" id="btnMua">Mua ngay</button>
+            <div class="pd-qty">
+                <label for="vbSl">Số lượng</label>
+                <input type="number" name="soLuong" id="vbSl" value="1" min="1" class="form-control" />
+            </div>
+            <div class="pd-actions">
+                <button type="submit" class="btn btn-outline-brand pd-cart" id="btnThem">
+                    <i class="bi bi-cart-plus"></i><small>Thêm vào giỏ</small>
+                </button>
+                <button type="submit" name="muaNgay" value="true" class="btn btn-accent pd-buy" id="btnMua">
+                    <b>MUA NGAY</b><small>Giao nhanh hoặc nhận tại cửa hàng</small>
+                </button>
             </div>
         }
     </div>
 
     <script>
-    (function () {
-        var box = document.getElementById('variantBox');
-        var vs = JSON.parse(box.dataset.variants);
-        var fmt = function (n) { return Number(n).toLocaleString('vi-VN') + '₫'; };
-        var dls = Array.from(new Set(vs.map(function (v) { return v.dl || ''; })));
-        var maus = Array.from(new Set(vs.map(function (v) { return v.mau; })));
-        if (dls.length === 1 && dls[0] === '') document.getElementById('vbDl').style.display = 'none';
+        (function () {
+            var box = document.getElementById('variantBox');
+            var vs = JSON.parse(box.dataset.variants);
+            var fmt = function (n) { return Number(n).toLocaleString('vi-VN') + '₫'; };
+            var dls = Array.from(new Set(vs.map(function (v) { return v.dl || ''; })));
+            var maus = Array.from(new Set(vs.map(function (v) { return v.mau; })));
+            if (dls.length === 1 && dls[0] === '') document.getElementById('vbDl').style.display = 'none';
 
-        var first = vs.find(function (v) { return v.ton > 0; }) || vs[0];
-        var selDl = first.dl || '', selMau = first.mau;
+            var first = vs.find(function (v) { return v.ton > 0; }) || vs[0];
+            var selDl = first.dl || '', selMau = first.mau;
 
-        function has(dl, mau) { return vs.some(function (v) { return (v.dl || '') === dl && v.mau === mau; }); }
-        function btn(text, active, disabled, onclick) {
-            var b = document.createElement('button');
-            b.type = 'button'; b.textContent = text; b.disabled = disabled; b.onclick = onclick;
-            b.className = 'btn btn-sm ' + (active ? 'btn-brand' : 'btn-outline-secondary');
-            return b;
-        }
-        function render() {
-            var gDl = box.querySelector('[data-role=dl]'), gMau = box.querySelector('[data-role=mau]');
-            gDl.innerHTML = ''; gMau.innerHTML = '';
-            dls.forEach(function (d) {
-                if (d === '') return;
-                gDl.appendChild(btn(d, d === selDl, false, function () {
-                    selDl = d;
-                    if (!has(selDl, selMau)) selMau = vs.find(function (v) { return (v.dl || '') === selDl; }).mau;
-                    render();
-                }));
-            });
-            maus.forEach(function (m) {
-                gMau.appendChild(btn(m, m === selMau, !has(selDl, m), function () { selMau = m; render(); }));
-            });
+            function find(dl, mau) { return vs.find(function (v) { return (v.dl || '') === dl && v.mau === mau; }); }
+            function has(dl, mau) { return !!find(dl, mau); }
+            function minPrice(dl) {
+                return Math.min.apply(null, vs.filter(function (v) { return (v.dl || '') === dl; }).map(function (v) { return v.gia; }));
+            }
+            function dlHetHang(dl) {
+                return vs.filter(function (v) { return (v.dl || '') === dl; }).every(function (v) { return v.ton <= 0; });
+            }
 
-            var v = vs.find(function (x) { return (x.dl || '') === selDl && x.mau === selMau; });
-            document.getElementById('vbGia').textContent = fmt(v.gia);
-            document.getElementById('vbGoc').textContent = v.goc > v.gia ? fmt(v.goc) : '';
-            var t = document.getElementById('vbTon');
-            t.textContent = v.ton <= 0 ? 'Hết hàng' : (v.ton <= 5 ? 'Chỉ còn ' + v.ton + ' sản phẩm' : 'Còn hàng');
-            t.className = 'small mb-3 ' + (v.ton <= 0 ? 'text-danger' : (v.ton <= 5 ? 'text-warning' : 'text-success'));
-            document.getElementById('vbId').value = v.id;
-            document.getElementById('vbSl').max = Math.max(v.ton, 1);
-            document.getElementById('btnThem').disabled = document.getElementById('btnMua').disabled = v.ton <= 0;
-        }
-        render();
+            function opt(label, sub, active, disabled, out, onclick) {
+                var b = document.createElement('button');
+                b.type = 'button'; b.disabled = disabled; b.onclick = onclick;
+                b.className = 'pd-opt' + (active ? ' on' : '') + (out ? ' out' : '');
+                var n = document.createElement('span'); n.className = 'pd-opt-name'; n.textContent = label; b.appendChild(n);
+                if (sub) { var s = document.createElement('span'); s.className = 'pd-opt-sub'; s.textContent = sub; b.appendChild(s); }
+                return b;
+            }
 
-        // "Thêm vào giỏ" gửi AJAX, "Mua ngay" submit thường để chuyển trang
-        $('#frmThemGio').on('submit', function (e) {
-            var sub = e.originalEvent && e.originalEvent.submitter;
-            if (sub && sub.name === 'muaNgay') return;
-            e.preventDefault();
-            $.post(this.action, $(this).serialize(), function (r) {
-                showToast(r.message, r.ok);
-                if (r.ok) { var b = $('.cart-badge'); if (b.length) b.text(r.count); else $('.bi-cart3').after('<span class="cart-badge">' + r.count + '</span>'); }
-            }, 'json');
-        });
-    })();
+            // báo cho khung "Ước tính trả góp" tính lại và cho thanh dính đáy cập nhật giá
+            function daDoiPhienBan(cur) {
+                if (window.jQuery) jQuery('#traGopThang').trigger('change');
+                document.dispatchEvent(new CustomEvent('variantchange', { detail: { price: fmt(cur.gia) } }));
+            }
+
+            function render(notify) {
+                var gDl = box.querySelector('[data-role=dl]'), gMau = box.querySelector('[data-role=mau]');
+                gDl.innerHTML = ''; gMau.innerHTML = '';
+
+                dls.forEach(function (d) {
+                    if (d === '') return;
+                    var het = dlHetHang(d);
+                    gDl.appendChild(opt(d, het ? 'Hết hàng' : fmt(has(d, selMau) ? find(d, selMau).gia : minPrice(d)), d === selDl, false, het, function () {
+                        selDl = d;
+                        if (!has(selDl, selMau)) selMau = vs.find(function (v) { return (v.dl || '') === selDl; }).mau;
+                        render(true);
+                    }));
+                });
+
+                maus.forEach(function (m) {
+                    var v = find(selDl, m);
+                    var sub = !v ? '' : (v.ton <= 0 ? 'Hết hàng' : fmt(v.gia));
+                    gMau.appendChild(opt(m, sub, m === selMau, !v, v && v.ton <= 0, function () {
+                        selMau = m; render(true);
+                    }));
+                });
+
+                var cur = find(selDl, selMau);
+                document.getElementById('vbGia').textContent = fmt(cur.gia);
+                var coGiam = cur.goc > cur.gia;
+                document.getElementById('vbGoc').textContent = coGiam ? fmt(cur.goc) : '';
+                document.getElementById('vbOff').textContent = coGiam ? 'Giảm ' + Math.round((cur.goc - cur.gia) * 100 / cur.goc) + '%' : '';
+
+                var t = document.getElementById('vbTon');
+                t.textContent = cur.ton <= 0 ? 'Hết hàng' : (cur.ton <= 5 ? 'Chỉ còn ' + cur.ton + ' sản phẩm' : 'Còn hàng');
+                t.className = 'pd-stock ' + (cur.ton <= 0 ? 'out' : (cur.ton <= 5 ? 'low' : 'ok'));
+                document.getElementById('vbId').value = cur.id;
+                document.getElementById('vbSl').max = Math.max(cur.ton, 1);
+                document.getElementById('btnThem').disabled = document.getElementById('btnMua').disabled = cur.ton <= 0;
+
+                if (notify) daDoiPhienBan(cur);
+            }
+            render(false);
+
+            // "Thêm vào giỏ" gửi AJAX, "Mua ngay" submit thường để chuyển trang.
+            // Đợi trang tải xong vì jQuery được nạp ở cuối trang.
+            function bindAjax() {
+                $('#frmThemGio').on('submit', function (e) {
+                    var sub = e.originalEvent && e.originalEvent.submitter;
+                    if (sub && sub.name === 'muaNgay') return;
+                    e.preventDefault();
+                    $.post(this.action, $(this).serialize(), function (r) {
+                        showToast(r.message, r.ok);
+                        if (r.ok) { var b = $('.cart-badge'); if (b.length) b.text(r.count); else $('.bi-cart3').after('<span class="cart-badge">' + r.count + '</span>'); }
+                    }, 'json');
+                });
+            }
+            if (window.jQuery) bindAjax(); else document.addEventListener('DOMContentLoaded', bindAjax);
+        })();
     </script>
 }

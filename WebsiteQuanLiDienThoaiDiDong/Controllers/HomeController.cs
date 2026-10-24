@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using WebsiteQuanLiDienThoaiDiDong.Models;
 using WebsiteQuanLiDienThoaiDiDong.Models.ViewModels;
+using WebsiteQuanLiDienThoaiDiDong.Services;
 
 namespace WebsiteQuanLiDienThoaiDiDong.Controllers
 {
@@ -20,7 +21,13 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
                 NoiBat = db.Database.SqlQuery<SanPhamCardVM>(
                     cot + "WHERE v.NoiBat = 1 ORDER BY v.DaBan DESC, v.LuotXem DESC").ToList(),
                 BanChay = db.Database.SqlQuery<SanPhamCardVM>(
-                    cot + "ORDER BY v.DaBan DESC, v.LuotXem DESC").ToList()
+                    cot + "ORDER BY v.DaBan DESC, v.LuotXem DESC").ToList(),
+                DienThoai = db.Database.SqlQuery<SanPhamCardVM>(
+                     cot + "WHERE v.LoaiId = 1 ORDER BY v.DaBan DESC, v.LuotXem DESC").ToList(),
+                PhuKien = db.Database.SqlQuery<SanPhamCardVM>(
+                     cot + "WHERE v.LoaiId <> 1 ORDER BY v.DaBan DESC, v.LuotXem DESC").ToList(),
+                Tin = NewsService.GetNews(4),
+                Video = NewsService.GetVideos(3)
             };
             return View(vm);
         }

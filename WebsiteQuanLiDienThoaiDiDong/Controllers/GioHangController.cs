@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System.Linq;
+using System.Web.Mvc;
 using WebsiteQuanLiDienThoaiDiDong.Models;
 using WebsiteQuanLiDienThoaiDiDong.Services;
 
@@ -27,6 +28,25 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
             if (muaNgay) return RedirectToAction("Index", "DatHang");   // chưa đăng nhập sẽ bị chuyển sang đăng nhập
             TempData["Msg"] = "Đã thêm vào giỏ hàng";
             return QuayLai(returnUrl);
+        }
+        [HttpPost, ValidateAntiForgeryToken]
+        public ActionResult MuaNgay(int sanPhamId)
+        {
+            var bt = db.BienTheSanPhams
+                .Where(b => b.SanPhamId == sanPhamId && b.HienThi && b.SoLuongTon > 0 && b.SanPham.HienThi)
+                .OrderBy(b => b.GiaBan)
+                .FirstOrDefault();
+
+            if (bt == null)
+            {
+                TempData["Err"] = "Sản phẩm này hiện đã hết hàng";
+                return QuayLai(null);
+            }
+
+            var loi = cart.AddItem(bt.Id, 1);
+            if (loi != null) { TempData["Err"] = loi; return QuayLai(null); }
+
+            return RedirectToAction("Index", "DatHang");   // chưa đăng nhập sẽ bị chuyển sang đăng nhập
         }
 
         [HttpPost, ValidateAntiForgeryToken]

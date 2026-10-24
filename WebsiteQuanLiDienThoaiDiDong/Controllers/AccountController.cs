@@ -219,6 +219,9 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
 
             email = email.Trim();
             Session["resetEmail"] = email;
+            Session.Remove("resetVerifiedEmail");
+            Session.Remove("resetVerifiedAt");
+
             var user = db.NguoiDungs.FirstOrDefault(u => u.Email == email && u.TrangThai);
             if (user != null)
             {
@@ -229,12 +232,13 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
                     return View();
                 }
             }
-            // luôn chuyển sang trang nhập mã, không để lộ email nào có trong hệ thống
-            return RedirectToAction("ResetPassword");
+            // luôn sang bước nhập mã, không để lộ email nào có trong hệ thống
+            return RedirectToAction("VerifyResetCode");
         }
 
+        // ===== BƯỚC 2: nhập mã OTP =====
         [HttpGet]
-        public ActionResult ResetPassword()
+        public ActionResult VerifyResetCode()
         {
             var email = Session["resetEmail"] as string;
             if (string.IsNullOrEmpty(email)) return RedirectToAction("ForgotPassword");
@@ -244,10 +248,55 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public ActionResult ResetPassword(string code, string matKhauMoi, string xacNhan)
+        public ActionResult VerifyResetCode(string code)
         {
             var email = Session["resetEmail"] as string;
             if (string.IsNullOrEmpty(email)) return RedirectToAction("ForgotPassword");
+            ViewBag.Email = email;
+
+            string loi = OtpHelper.Verify("reset", email, code);
+            if (loi != null) { ModelState.AddModelError("", loi); return View(); }
+
+            // OTP đúng: xóa mã, đánh dấu đã xác thực (có hiệu lực 10 phút)
+            OtpHelper.Clear("reset");
+            Session["resetVerifiedEmail"] = email;
+            Session["resetVerifiedAt"] = DateTime.Now;
+            return RedirectToAction("ResetPassword");
+        }
+
+        // ===== BƯỚC 3: nhập mật khẩu mới (chỉ vào được khi đã qua bước 2) =====
+        private bool DaXacThucOtpReset(out string email)
+        {
+            email = Session["resetEmail"] as string;
+            var daXacThuc = Session["resetVerifiedEmail"] as string;
+            var luc = Session["resetVerifiedAt"] as DateTime?;
+            return !string.IsNullOrEmpty(email)
+                && email == daXacThuc
+                && luc.HasValue
+                && (DateTime.Now - luc.Value).TotalMinutes <= 10;
+        }
+
+        private ActionResult VeBuocResetTruoc()
+        {
+            return RedirectToAction(string.IsNullOrEmpty(Session["resetEmail"] as string)
+                ? "ForgotPassword" : "VerifyResetCode");
+        }
+
+        [HttpGet]
+        public ActionResult ResetPassword()
+        {
+            string email;
+            if (!DaXacThucOtpReset(out email)) return VeBuocResetTruoc();
+            ViewBag.Email = email;
+            return View();
+        }
+
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public ActionResult ResetPassword(string matKhauMoi, string xacNhan)
+        {
+            string email;
+            if (!DaXacThucOtpReset(out email)) return VeBuocResetTruoc();
             ViewBag.Email = email;
 
             if (string.IsNullOrEmpty(matKhauMoi) || matKhauMoi.Length < 6)
@@ -255,16 +304,15 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
             if (matKhauMoi != xacNhan)
             { ModelState.AddModelError("", "Mật khẩu xác nhận không khớp."); return View(); }
 
-            string loi = OtpHelper.Verify("reset", email, code);
-            if (loi != null) { ModelState.AddModelError("", loi); return View(); }
-
             var user = db.NguoiDungs.FirstOrDefault(u => u.Email == email && u.TrangThai);
             if (user == null) { ModelState.AddModelError("", "Tài khoản không tồn tại."); return View(); }
 
             user.MatKhauHash = ComputeSha256Hash(matKhauMoi);
             db.SaveChanges();
-            OtpHelper.Clear("reset");
+
             Session.Remove("resetEmail");
+            Session.Remove("resetVerifiedEmail");
+            Session.Remove("resetVerifiedAt");
 
             TempData["SuccessMessage"] = "Đặt lại mật khẩu thành công! Vui lòng đăng nhập bằng mật khẩu mới.";
             return RedirectToAction("Login");
@@ -282,10 +330,55 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
             {
                 string loi;
                 if (!OtpHelper.Send("reset", email, user.HoTen, "Dùng mã dưới đây để đặt lại mật khẩu:", out loi))
-                { TempData["Err"] = loi; return RedirectToAction("ResetPassword"); }
+                { TempData["Err"] = loi; return RedirectToAction("VerifyResetCode"); }
             }
             TempData["Msg"] = "Đã gửi lại mã xác thực.";
-            return RedirectToAction("ResetPassword");
+            return RedirectToAction("VerifyResetCode");
+        }
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public JsonResult SocialLogin(string provider, string token, string returnUrl)
+        {
+            string email = null, name = null, loi = "Cách đăng nhập không hợp lệ.";
+            bool ok = false;
+            if (provider == "google") ok = SocialLoginHelper.VerifyGoogle(token, out email, out name, out loi);
+            else if (provider == "facebook") ok = SocialLoginHelper.VerifyFacebook(token, out email, out name, out loi);
+            if (!ok) return Json(new { ok = false, message = loi });
+
+            email = email.Trim().ToLower();
+            var user = db.NguoiDungs.Include("VaiTro").FirstOrDefault(u => u.Email == email);
+            if (user == null)
+            {
+                string hoTen = string.IsNullOrWhiteSpace(name) ? email : name.Trim();
+                if (hoTen.Length > 100) hoTen = hoTen.Substring(0, 100);
+                var moi = new NguoiDung
+                {
+                    HoTen = hoTen,
+                    Email = email,
+                    SoDienThoai = null,
+                    MatKhauHash = ComputeSha256Hash(Guid.NewGuid().ToString("N")),   // mật khẩu ngẫu nhiên, khách đăng nhập bằng mạng xã hội
+                    VaiTroId = 3,
+                    TrangThai = true,
+                    NgayTao = DateTime.Now
+                };
+                db.NguoiDungs.Add(moi);
+                db.SaveChanges();
+                user = db.NguoiDungs.Include("VaiTro").First(u => u.Id == moi.Id);
+            }
+            else if (!user.TrangThai)
+            {
+                return Json(new { ok = false, message = "Tài khoản đã bị khóa." });
+            }
+
+            AuthHelper.SignIn(user, db);
+            Session["VaiTroId"] = user.VaiTroId;
+            Session["Email"] = user.Email;
+
+            string url;
+            if (AuthHelper.IsStaff) url = Url.Content("~/Admin");
+            else if (!string.IsNullOrEmpty(returnUrl) && Url.IsLocalUrl(returnUrl)) url = returnUrl;
+            else url = Url.Action("Index", "Home");
+            return Json(new { ok = true, url = url });
         }
     }
 }
