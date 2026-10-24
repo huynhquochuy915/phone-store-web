@@ -1,0 +1,98 @@
+﻿@model WebsiteQuanLiDienThoaiDiDong.Areas.Admin.Controllers.LichSuKhoVM
+@{ ViewBag.Title = "Lịch sử xuất nhập kho"; }
+
+<div class="row g-3 mb-3">
+    <div class="col-md-4">
+        <div class="adm-card adm-kpi">
+            <div class="adm-kpi-ico green"><i class="bi bi-box-arrow-in-down"></i></div>
+            <div><div class="adm-kpi-label">Tổng nhập (theo bộ lọc)</div><div class="adm-kpi-value adm-in">+@Model.TongNhap.ToString("N0")</div></div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="adm-card adm-kpi">
+            <div class="adm-kpi-ico red"><i class="bi bi-box-arrow-up"></i></div>
+            <div><div class="adm-kpi-label">Tổng xuất (theo bộ lọc)</div><div class="adm-kpi-value adm-out">-@Model.TongXuat.ToString("N0")</div></div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="adm-card adm-kpi">
+            <div class="adm-kpi-ico blue"><i class="bi bi-list-check"></i></div>
+            <div><div class="adm-kpi-label">Số dòng ghi nhận</div><div class="adm-kpi-value">@Model.TongSoDong.ToString("N0")</div></div>
+        </div>
+    </div>
+</div>
+
+<div class="adm-card">
+    <form method="get" action="@Url.Action("LichSu")" class="adm-toolbar">
+        @if (Model.BienTheId.HasValue)
+        {
+            <input type="hidden" name="bienTheId" value="@Model.BienTheId" />
+        }
+        <div>
+            <label class="form-label small mb-1">Loại</label>
+            <select name="loai" class="form-select">
+                <option value="">Tất cả</option>
+                <option value="nhap" @(Model.Loai == "nhap" ? "selected" : "")>Tăng tồn (nhập, hoàn kho)</option>
+                <option value="xuat" @(Model.Loai == "xuat" ? "selected" : "")>Giảm tồn (xuất, bán hàng)</option>
+            </select>
+        </div>
+        <div><label class="form-label small mb-1">Từ ngày</label><input type="date" name="tuNgay" value="@Model.TuNgay" class="form-control" /></div>
+        <div><label class="form-label small mb-1">Đến ngày</label><input type="date" name="denNgay" value="@Model.DenNgay" class="form-control" /></div>
+        <button type="submit" class="btn btn-brand"><i class="bi bi-funnel"></i> Lọc</button>
+        <a class="btn btn-outline-secondary ms-auto" href="@Url.Action("Index")"><i class="bi bi-arrow-left"></i> Về kho hàng</a>
+    </form>
+
+    @if (Model.TenLoc != null)
+    {
+        <div class="alert alert-light border py-2">
+            Đang xem lịch sử của: <strong>@Model.TenLoc</strong>
+            <a class="ms-2" href="@Url.Action("LichSu")">Bỏ lọc</a>
+        </div>
+    }
+
+    @if (Model.Dong.Count == 0)
+    {
+        <div class="adm-empty"><i class="bi bi-inbox"></i>Chưa có giao dịch kho nào.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="adm-table">
+                <thead>
+                    <tr><th>Thời gian</th><th>Sản phẩm</th><th>Loại</th><th class="num">Số lượng</th><th>Lý do</th><th>Đơn hàng</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var r in Model.Dong)
+                    {
+                        var tang = r.SoLuongThayDoi > 0;
+                        var coDon = r.MaDonHang != null;
+                        var nhan = coDon ? (tang ? "Hoàn kho" : "Bán hàng") : (tang ? "Nhập kho" : "Xuất kho");
+                        var bienThe = string.Join(" · ", new[] { r.DungLuong, r.MauSac }.Where(s => !string.IsNullOrWhiteSpace(s)));
+                        <tr>
+                            <td class="text-nowrap">@r.NgayTao.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>
+                                <div class="adm-prod-name">@r.TenSanPham</div>
+                                <div class="adm-prod-sub">@bienThe · @r.SKU</div>
+                            </td>
+                            <td><span class="adm-badge @(tang ? "adm-badge-green" : "adm-badge-red")">@nhan</span></td>
+                            <td class="num @(tang ? "adm-in" : "adm-out")">@(tang ? "+" : "")@r.SoLuongThayDoi</td>
+                            <td>@r.LyDo</td>
+                            <td>@(coDon ? r.MaDonHang : "—")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        if (Model.TongSoTrang > 1)
+        {
+            <nav class="adm-pager">
+                @for (int p = 1; p <= Model.TongSoTrang; p++)
+                {
+                    <a class="@(p == Model.TrangHienTai ? "active" : "")"
+                       href="@Url.Action("LichSu", new { bienTheId = Model.BienTheId, loai = Model.Loai, tuNgay = Model.TuNgay, denNgay = Model.DenNgay, page = p })">@p</a>
+                }
+            </nav>
+        }
+    }
+</div>

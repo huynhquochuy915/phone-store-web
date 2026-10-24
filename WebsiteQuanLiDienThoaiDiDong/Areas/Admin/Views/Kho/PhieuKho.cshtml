@@ -1,0 +1,63 @@
+﻿@model WebsiteQuanLiDienThoaiDiDong.Areas.Admin.Controllers.PhieuKhoVM
+@{
+    bool nhap = Model.Loai == "Nhap";
+    ViewBag.Title = nhap ? "Nhập kho" : "Xuất kho";
+    var noImg = Url.Content("~/Content/images/no-image.png");
+    var bienThe = string.Join(" · ", new[] { Model.DungLuong, Model.MauSac }.Where(s => !string.IsNullOrWhiteSpace(s)));
+}
+
+<div class="adm-card adm-form-card">
+    <div class="adm-tabs">
+        <a class="in @(nhap ? "active" : "")" href="@Url.Action("PhieuKho", new { bienTheId = Model.BienTheId, loai = "Nhap" })"><i class="bi bi-box-arrow-in-down"></i> Nhập kho</a>
+        <a class="out @(!nhap ? "active" : "")" href="@Url.Action("PhieuKho", new { bienTheId = Model.BienTheId, loai = "Xuat" })"><i class="bi bi-box-arrow-up"></i> Xuất kho</a>
+    </div>
+
+    <div class="adm-prod mb-3">
+        <img src="@(Model.Anh != null ? Url.Content("~" + Model.Anh) : noImg)" alt="" style="width:64px;height:64px" onerror="this.onerror=null;this.src='@noImg'" />
+        <div>
+            <div class="adm-prod-name">@Model.TenSanPham</div>
+            <div class="adm-prod-sub">@bienThe · SKU: @Model.SKU</div>
+            <div class="mt-1">Tồn hiện tại: <strong>@Model.TonHienTai</strong></div>
+        </div>
+    </div>
+
+    @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+    @using (Html.BeginForm("PhieuKho", "Kho", new { area = "Admin" }, FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="bienTheId" value="@Model.BienTheId" />
+        <input type="hidden" name="loai" value="@Model.Loai" />
+
+        <label class="form-label">Số lượng @(nhap ? "nhập" : "xuất")</label>
+        <input type="number" name="soLuong" id="soLuong" class="form-control" min="1" max="@(nhap ? 100000 : Math.Max(Model.TonHienTai, 1))"
+               value="@(Model.SoLuong.HasValue ? Model.SoLuong.Value.ToString() : "")" required autofocus />
+        <div class="small text-muted mt-1">Tồn sau khi @(nhap ? "nhập" : "xuất"): <strong id="tonSau">@Model.TonHienTai</strong></div>
+
+        <label class="form-label mt-3">Lý do</label>
+        <select name="lyDo" class="form-select" required>
+            <option value="">-- Chọn lý do --</option>
+            @foreach (var l in Model.DanhSachLyDo)
+            {
+                <option value="@l" @(l == Model.LyDo ? "selected" : "")>@l</option>
+            }
+        </select>
+
+        <label class="form-label mt-3">Ghi chú <span class="text-muted small">(không bắt buộc)</span></label>
+        <input type="text" name="ghiChu" class="form-control" maxlength="50" value="@Model.GhiChu" placeholder="VD: Phiếu nhập PN-0123" />
+
+        <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn @(nhap ? "btn-success" : "btn-brand")">Xác nhận @(nhap ? "nhập kho" : "xuất kho")</button>
+            <a class="btn btn-outline-secondary" href="@Url.Action("Index")">Hủy</a>
+        </div>
+    }
+</div>
+
+<script>
+    (function () {
+        var ton = @Model.TonHienTai, dau = @(nhap ? 1 : -1);
+        var o = document.getElementById('soLuong'), out = document.getElementById('tonSau');
+        function cap() { var n = parseInt(o.value, 10) || 0; out.textContent = ton + dau * n; }
+        o.addEventListener('input', cap); cap();
+    })();
+</script>

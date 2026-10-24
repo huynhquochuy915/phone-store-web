@@ -10,23 +10,30 @@
 <div class="pcard-wrap">
     <div class="pcard">
         <a class="pcard-link" href="@Url.Action("ChiTiet", "SanPham", new { area = "", id = Model.Id })">
-            @if (giam > 0) { <span class="pcard-off">Giảm @giam%</span> }
+            @if (giam > 0)
+            {<span class="pcard-off">Giảm @giam%</span>}
             <div class="pcard-img">
                 <img src="@(Model.AnhDaiDien != null ? Url.Content("~" + Model.AnhDaiDien) : noImg)" alt="@Model.TenSanPham"
                      loading="lazy" onerror="this.onerror=null;this.src='@noImg'" />
             </div>
-            @if (Model.LoaiId == 1) { <span class="pcard-tag">Trả góp 0%</span> }
-            else { <span class="pcard-tag" style="visibility:hidden">&nbsp;</span> }
+            @if (Model.LoaiId == 1)
+            {<span class="pcard-tag">Trả góp 0%</span> }
+            else
+            { <span class="pcard-tag" style="visibility:hidden">&nbsp;</span>}
             <h3 class="pcard-name">@Model.TenSanPham</h3>
             <div class="pcard-price">
                 <strong>@Model.GiaThapNhat.VND()</strong>
-                @if (giam > 0) { <del>@Model.GiaGoc.VND()</del> }
+                @if (giam > 0)
+                {<del>@Model.GiaGoc.VND()</del>}
             </div>
             <div class="pcard-meta">
-                @if (Model.SoDanhGia > 0) { <span class="star">★ @Model.SaoTrungBinh</span> }
-                @if (Model.DaBan > 0) { <span>Đã bán @Model.DaBan</span> }
+                @if (Model.SoDanhGia > 0)
+                {<span class="star">★ @Model.SaoTrungBinh</span>}
+                @if (Model.DaBan > 0)
+                {<span>Đã bán @Model.DaBan</span>}
             </div>
-            @if ((Model.TongTon ?? 0) <= 0) { <div class="pcard-out">Tạm hết hàng</div> }
+            @if ((Model.TongTon ?? 0) <= 0)
+            {<div class="pcard-out">Tạm hết hàng</div>}
         </a>
         <form class="favorite-form" method="post" action="@Url.Action("ChuyenYeuThich", "SanPham", new { area = "" })">
             @Html.AntiForgeryToken()
@@ -38,11 +45,18 @@
             </button>
         </form>
         <div class="pcard-actions">
-            @*<form method="post" action="@Url.Action("ThemSoSanh", "SanPham", new { area = "" })" class="compare-form">*@
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="id" value="@Model.Id" />
-                <button class="btn btn-sm btn-outline-secondary w-100" type="submit">Thêm so sánh</button>
-            @*</form>*@
+            @if ((Model.TongTon ?? 0) > 0)
+            {
+                <form method="post" action="@Url.Action("MuaNgay", "GioHang", new { area = "" })">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="sanPhamId" value="@Model.Id" />
+                    <button type="submit" class="btn btn-accent btn-sm w-100">Mua ngay</button>
+                </form>
+            }
+            else
+            {
+                <button type="button" class="btn btn-secondary btn-sm w-100" disabled>Hết hàng</button>
+            }
         </div>
     </div>
 </div>

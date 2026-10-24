@@ -1,0 +1,116 @@
+﻿@model WebsiteQuanLiDienThoaiDiDong.Areas.Admin.Controllers.KhoIndexVM
+@{
+    ViewBag.Title = "Kho hàng";
+    var noImg = Url.Content("~/Content/images/no-image.png");
+}
+
+<div class="row g-3 mb-3">
+    <div class="col-6 col-xl-3">
+        <a class="adm-card adm-kpi text-decoration-none text-reset" href="@Url.Action("Index")">
+            <div class="adm-kpi-ico blue"><i class="bi bi-boxes"></i></div>
+            <div><div class="adm-kpi-label">Tổng biến thể</div><div class="adm-kpi-value">@Model.TongBienThe</div></div>
+        </a>
+    </div>
+    <div class="col-6 col-xl-3">
+        <div class="adm-card adm-kpi">
+            <div class="adm-kpi-ico green"><i class="bi bi-box-seam"></i></div>
+            <div><div class="adm-kpi-label">Tổng số máy tồn</div><div class="adm-kpi-value">@Model.TongTon.ToString("N0")</div></div>
+        </div>
+    </div>
+    <div class="col-6 col-xl-3">
+        <a class="adm-card adm-kpi text-decoration-none text-reset" href="@Url.Action("Index", new { tt = "sap" })">
+            <div class="adm-kpi-ico amber"><i class="bi bi-exclamation-triangle"></i></div>
+            <div><div class="adm-kpi-label">Sắp hết hàng</div><div class="adm-kpi-value">@Model.SapHet</div></div>
+        </a>
+    </div>
+    <div class="col-6 col-xl-3">
+        <a class="adm-card adm-kpi text-decoration-none text-reset" href="@Url.Action("Index", new { tt = "het" })">
+            <div class="adm-kpi-ico red"><i class="bi bi-x-octagon"></i></div>
+            <div><div class="adm-kpi-label">Hết hàng</div><div class="adm-kpi-value">@Model.HetHang</div></div>
+        </a>
+    </div>
+</div>
+
+<div class="adm-card">
+    <form method="get" action="@Url.Action("Index")" class="adm-toolbar">
+        <div>
+            <label class="form-label small mb-1">Tìm kiếm</label>
+            <input type="text" name="q" value="@Model.TuKhoa" class="form-control" placeholder="Tên sản phẩm hoặc SKU" />
+        </div>
+        <div>
+            <label class="form-label small mb-1">Trạng thái</label>
+            <select name="tt" class="form-select">
+                <option value="">Tất cả</option>
+                <option value="con" @(Model.TrangThai == "con" ? "selected" : "")>Còn hàng</option>
+                <option value="sap" @(Model.TrangThai == "sap" ? "selected" : "")>Sắp hết</option>
+                <option value="het" @(Model.TrangThai == "het" ? "selected" : "")>Hết hàng</option>
+            </select>
+        </div>
+        <button type="submit" class="btn btn-brand"><i class="bi bi-search"></i> Lọc</button>
+        <a class="btn btn-outline-secondary ms-auto" href="@Url.Action("LichSu")"><i class="bi bi-clock-history"></i> Lịch sử xuất nhập</a>
+    </form>
+
+    @if (Model.Dong.Count == 0)
+    {
+        <div class="adm-empty"><i class="bi bi-inbox"></i>Không có sản phẩm nào phù hợp.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="adm-table">
+                <thead>
+                    <tr>
+                        <th>Sản phẩm</th>
+                        <th>SKU</th>
+                        <th class="num">Tồn kho</th>
+                        <th class="num">Ngưỡng cảnh báo</th>
+                        <th>Trạng thái</th>
+                        <th class="num">Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var r in Model.Dong)
+                    {
+                        var het = r.SoLuongTon <= 0;
+                        var sap = !het && r.SoLuongTon <= r.NguongCanhBao;
+                        var bienThe = string.Join(" · ", new[] { r.DungLuong, r.MauSac }.Where(s => !string.IsNullOrWhiteSpace(s)));
+                        <tr>
+                            <td>
+                                <div class="adm-prod">
+                                    <img src="@(r.Anh != null ? Url.Content("~" + r.Anh) : noImg)" alt="" onerror="this.onerror=null;this.src='@noImg'" />
+                                    <div>
+                                        <div class="adm-prod-name">@r.TenSanPham</div>
+                                        <div class="adm-prod-sub">@bienThe</div>
+                                    </div>
+                                </div>
+                            </td>
+                            <td>@r.SKU</td>
+                            <td class="num"><strong>@r.SoLuongTon</strong></td>
+                            <td class="num">@r.NguongCanhBao</td>
+                            <td>
+                                <span class="adm-badge @(het ? "adm-badge-red" : sap ? "adm-badge-amber" : "adm-badge-green")">
+                                    @(het ? "Hết hàng" : sap ? "Sắp hết" : "Còn hàng")
+                                </span>
+                            </td>
+                            <td class="num">
+                                <a class="btn btn-sm btn-outline-success" href="@Url.Action("PhieuKho", new { bienTheId = r.BienTheId, loai = "Nhap" })"><i class="bi bi-box-arrow-in-down"></i> Nhập</a>
+                                <a class="btn btn-sm btn-outline-danger @(het ? "disabled" : "")" href="@Url.Action("PhieuKho", new { bienTheId = r.BienTheId, loai = "Xuat" })"><i class="bi bi-box-arrow-up"></i> Xuất</a>
+                                <a class="btn btn-sm btn-outline-secondary" title="Lịch sử" href="@Url.Action("LichSu", new { bienTheId = r.BienTheId })"><i class="bi bi-clock-history"></i></a>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        if (Model.TongSoTrang > 1)
+        {
+            <nav class="adm-pager">
+                @for (int p = 1; p <= Model.TongSoTrang; p++)
+                {
+                    <a class="@(p == Model.TrangHienTai ? "active" : "")" href="@Url.Action("Index", new { q = Model.TuKhoa, tt = Model.TrangThai, page = p })">@p</a>
+                }
+            </nav>
+        }
+    }
+</div>

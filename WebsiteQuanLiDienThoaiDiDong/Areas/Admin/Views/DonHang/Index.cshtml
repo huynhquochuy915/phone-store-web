@@ -1,0 +1,97 @@
+﻿@model WebsiteQuanLiDienThoaiDiDong.Areas.Admin.Controllers.DonHangIndexVM
+@{
+    ViewBag.Title = "Đơn hàng";
+    var tabs = new[] {
+        new { Ma = "", Ten = "Tất cả" },
+        new { Ma = "ChoXacNhan", Ten = "Chờ xác nhận" },
+        new { Ma = "DaXacNhan", Ten = "Đã xác nhận" },
+        new { Ma = "DangGiao", Ten = "Đang giao" },
+        new { Ma = "HoanTat", Ten = "Hoàn tất" },
+        new { Ma = "DaHuy", Ten = "Đã hủy" }
+    };
+}
+
+<div class="adm-pills">
+    @foreach (var t in tabs)
+    {
+        var n = Model.Dem.ContainsKey(t.Ma) ? Model.Dem[t.Ma] : 0;
+        <a class="@((Model.TrangThai ?? "") == t.Ma ? "active" : "")"
+           href="@Url.Action("Index", new { q = Model.TuKhoa, tt = t.Ma, ttt = Model.ThanhToan, pt = Model.PhuongThuc, tuNgay = Model.TuNgay, denNgay = Model.DenNgay })">@t.Ten<span>@n</span></a>
+    }
+</div>
+
+<div class="adm-card">
+    <form method="get" action="@Url.Action("Index")" class="adm-toolbar">
+        <input type="hidden" name="tt" value="@Model.TrangThai" />
+        <div>
+            <label class="form-label small mb-1">Tìm kiếm</label>
+            <input type="text" name="q" value="@Model.TuKhoa" class="form-control" placeholder="Mã đơn, tên, số điện thoại" />
+        </div>
+        <div>
+            <label class="form-label small mb-1">Thanh toán</label>
+            <select name="ttt" class="form-select">
+                <option value="">Tất cả</option>
+                <option value="ChuaThanhToan" @(Model.ThanhToan == "ChuaThanhToan" ? "selected" : "")>Chưa thanh toán</option>
+                <option value="DaThanhToan" @(Model.ThanhToan == "DaThanhToan" ? "selected" : "")>Đã thanh toán</option>
+                <option value="HoanTien" @(Model.ThanhToan == "HoanTien" ? "selected" : "")>Cần hoàn tiền</option>
+            </select>
+        </div>
+        <div>
+            <label class="form-label small mb-1">Phương thức</label>
+            <select name="pt" class="form-select">
+                <option value="">Tất cả</option>
+                <option value="COD" @(Model.PhuongThuc == "COD" ? "selected" : "")>COD</option>
+                <option value="QR" @(Model.PhuongThuc == "QR" ? "selected" : "")>Chuyển khoản QR</option>
+            </select>
+        </div>
+        <div><label class="form-label small mb-1">Từ ngày</label><input type="date" name="tuNgay" value="@Model.TuNgay" class="form-control" /></div>
+        <div><label class="form-label small mb-1">Đến ngày</label><input type="date" name="denNgay" value="@Model.DenNgay" class="form-control" /></div>
+        <button type="submit" class="btn btn-brand"><i class="bi bi-funnel"></i> Lọc</button>
+    </form>
+
+    @if (Model.Dong.Count == 0)
+    {
+        <div class="adm-empty"><i class="bi bi-inbox"></i>Không có đơn hàng nào phù hợp.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="adm-table">
+                <thead>
+                    <tr><th>Mã đơn</th><th>Khách nhận</th><th>Ngày đặt</th><th>Thanh toán</th><th>Trạng thái</th><th class="num">Tổng tiền</th><th></th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var r in Model.Dong)
+                    {
+                        <tr>
+                            <td><a href="@Url.Action("ChiTiet", new { id = r.Id })"><strong>@r.MaDonHang</strong></a></td>
+                            <td>
+                                <div class="adm-prod-name">@r.TenNguoiNhan</div>
+                                <div class="adm-prod-sub">@r.SoDienThoai</div>
+                            </td>
+                            <td class="text-nowrap">@r.NgayDat.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>
+                                <div class="adm-prod-sub">@(r.PhuongThuc == "QR" ? "QR" : "COD")</div>
+                                <span class="adm-badge adm-badge-@r.MauThanhToan">@r.TenThanhToan</span>
+                            </td>
+                            <td><span class="adm-badge adm-badge-@r.MauTrangThai">@r.TenTrangThai</span></td>
+                            <td class="num"><strong>@r.Tong.VND()</strong></td>
+                            <td class="num"><a class="btn btn-sm btn-outline-secondary" href="@Url.Action("ChiTiet", new { id = r.Id })">Chi tiết</a></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+
+        if (Model.TongSoTrang > 1)
+        {
+            <nav class="adm-pager">
+                @for (int p = 1; p <= Model.TongSoTrang; p++)
+                {
+                    <a class="@(p == Model.TrangHienTai ? "active" : "")"
+                       href="@Url.Action("Index", new { q = Model.TuKhoa, tt = Model.TrangThai, ttt = Model.ThanhToan, pt = Model.PhuongThuc, tuNgay = Model.TuNgay, denNgay = Model.DenNgay, page = p })">@p</a>
+                }
+            </nav>
+        }
+    }
+</div>

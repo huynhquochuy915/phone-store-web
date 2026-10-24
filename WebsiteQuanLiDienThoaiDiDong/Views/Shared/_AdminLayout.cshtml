@@ -13,13 +13,29 @@
 </head>
 <body class="admin-body">
     <div class="d-flex">
+        @{
+            var ctl = ((string)ViewContext.RouteData.Values["controller"] ?? "").ToLower();
+            var act = ((string)ViewContext.RouteData.Values["action"] ?? "").ToLower();
+        }
         <aside class="admin-side">
             <div class="p-3 text-white fw-bold fs-5"><i class="bi bi-shop"></i> @CauHinh.Get("TenCuaHang", "PhoneStore")</div>
-            <a href="@Url.Action("Index", "ThongKe", new { area = "Admin" })"><i class="bi bi-bar-chart"></i> Thống kê</a>
-            <a href="@Url.Action("Index", "DonHang", new { area = "Admin" })"><i class="bi bi-receipt"></i> Đơn hàng</a>
-            <a href="@Url.Action("Index", "SanPham", new { area = "Admin" })"><i class="bi bi-phone"></i> Sản phẩm</a>
-            <a href="@Url.Action("Index", "LoaiSanPham", new { area = "Admin" })"><i class="bi bi-tags"></i> Loại sản phẩm</a>
-            <a href="@Url.Action("Index", "KhuyenMai", new { area = "Admin" })"><i class="bi bi-percent"></i> Khuyến mãi</a>
+
+            <a class="@(ctl == "thongke" ? "active" : "")" href="@Url.Action("Index", "ThongKe", new { area = "Admin" })"><i class="bi bi-bar-chart-line"></i> Thống kê</a>
+            <a class="@(ctl == "donhang" ? "active" : "")" href="@Url.Action("Index", "DonHang", new { area = "Admin" })"><i class="bi bi-receipt"></i> Đơn hàng</a>
+
+            <div class="admin-side-title">Quản lý kho</div>
+            <a class="@(ctl == "kho" && act != "lichsu" ? "active" : "")" href="@Url.Action("Index", "Kho", new { area = "Admin" })"><i class="bi bi-box-seam"></i> Tồn kho</a>
+            <a class="@(ctl == "kho" && act == "lichsu" ? "active" : "")" href="@Url.Action("LichSu", "Kho", new { area = "Admin" })"><i class="bi bi-clock-history"></i> Lịch sử xuất nhập</a>
+            @if (AuthHelper.VaiTro == "Admin")
+            {
+                <a class="@(ctl == "khuyenmai" ? "active" : "")" href="@Url.Action("Index", "KhuyenMai", new { area = "" })"><i class="bi bi-percent"></i> Khuyến mãi</a>
+            }
+            @* Mở lại khi đã làm các trang này (hiện chưa có controller nên bấm vào sẽ lỗi 404):
+        <a href="@Url.Action("Index", "SanPham", new { area = "Admin" })"><i class="bi bi-phone"></i> Sản phẩm</a>
+        <a href="@Url.Action("Index", "LoaiSanPham", new { area = "Admin" })"><i class="bi bi-tags"></i> Loại sản phẩm</a>
+        <a href="@Url.Action("Index", "KhuyenMai", new { area = "Admin" })"><i class="bi bi-percent"></i> Khuyến mãi</a>
+            *@
+
             <hr class="border-secondary mx-3" />
             <a href="@Url.Action("Index", "Home", new { area = "" })"><i class="bi bi-arrow-left"></i> Về trang web</a>
             <a href="@Url.Action("Logout", "Account", new { area = "" })"><i class="bi bi-box-arrow-right"></i> Đăng xuất</a>

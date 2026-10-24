@@ -1,5 +1,10 @@
 ﻿@model WebsiteQuanLiDienThoaiDiDong.Models.ViewModels.TrangChuVM
-@{ ViewBag.Title = "Trang chủ"; }
+@{
+    ViewBag.Title = "Trang chủ";
+    var hangs = new[] { "Apple", "Samsung", "Xiaomi", "OPPO", "vivo" };
+    var capSoSanh = Model.DienThoai.Take(2).ToList();
+    var noImg2 = Url.Content("~/Content/images/no-image.png");
+}
 
 <section class="hero">
     <aside class="cat-side">@Html.Action("Menu", "Home", new { area = "" })</aside>
@@ -59,13 +64,18 @@
 @if (Model.NoiBat.Any())
 {
     <section class="sec deal">
-        <div class="sec-head">
-            <h2><i class="bi bi-lightning-charge-fill"></i> Nổi bật hôm nay</h2>
-            <a href="@Url.Action("Index", "SanPham", new { area = "" })">Xem tất cả</a>
+        <div class="deal-head">
+            <h2><i class="bi bi-lightning-charge-fill"></i> NỔI BẬT HÔM NAY</h2>
+            <div class="countdown"><span>Kết thúc sau</span><b id="cdDeal">--:--:--</b></div>
+            <a href="@Url.Action("Index", "SanPham", new { area = "" })">Xem tất cả <i class="bi bi-chevron-right"></i></a>
         </div>
-        <div class="hrow">
-            @foreach (var sp in Model.NoiBat)
-            {@Html.Partial("_SanPhamCard", sp)}
+        <div class="hrow-wrap">
+            <button type="button" class="hrow-nav prev" aria-label="Trước"><i class="bi bi-chevron-left"></i></button>
+            <div class="hrow">
+                @foreach (var sp in Model.NoiBat)
+                {@Html.Partial("_SanPhamCard", sp)}
+            </div>
+            <button type="button" class="hrow-nav next" aria-label="Sau"><i class="bi bi-chevron-right"></i></button>
         </div>
     </section>
 }
@@ -73,29 +83,46 @@
 <section class="sec">
     <div class="sec-head">
         <h2>Bán chạy nhất</h2>
-        <a href="@Url.Action("Index", "SanPham", new { area = "" })">Xem tất cả</a>
+        <a href="@Url.Action("Index", "SanPham", new { area = "", sapXep = "banchay" })">Xem tất cả</a>
     </div>
     <div class="pgrid">
         @foreach (var sp in Model.BanChay)
         {@Html.Partial("_SanPhamCard", sp)}
     </div>
 </section>
-@{
-    var capSoSanh = Model.BanChay.Where(x => x.LoaiId == 1).Take(2).ToList();
-    var noImg2 = Url.Content("~/Content/images/no-image.png");
+
+@if (Model.DienThoai.Any())
+{
+    <section class="sec">
+        <div class="sec-head">
+            <h2>Điện thoại</h2>
+            <div class="sec-tabs">
+                @foreach (var h in hangs)
+                {<a href="@Url.Action("Index", "SanPham", new { area = "", loaiId = 1, tuKhoa = h })">@h</a>}
+                <a class="all" href="@Url.Action("Index", "SanPham", new { area = "", loaiId = 1 })">Xem tất cả</a>
+            </div>
+        </div>
+        <div class="pgrid">
+            @foreach (var sp in Model.DienThoai)
+            {@Html.Partial("_SanPhamCard", sp)}
+        </div>
+    </section>
 }
+
 @if (capSoSanh.Count == 2)
 {
     <section class="cmp">
         <div class="cmp-left">
             <span class="cmp-eyebrow">SO SÁNH THÔNG MINH</span>
             <h2>Đặt cạnh nhau.<br />Chọn đúng hơn.</h2>
-            <p>So sánh chi tiết hiệu năng, camera, pin và mức giá để tìm ra chiếc điện thoại thực sự dành cho bạn.</p>
+            <p>So sánh chi tiết màn hình, chip, camera, pin và mức giá để tìm ra chiếc điện thoại thực sự dành cho bạn.</p>
             <ul>
-                <li><i class="bi bi-check2"></i> Thông số cập nhật chính xác</li>
-                <li><i class="bi bi-check2"></i> So sánh nhiều sản phẩm cùng lúc</li>
+                <li><i class="bi bi-check2"></i> Chọn từ danh sách yêu thích của bạn</li>
+                <li><i class="bi bi-check2"></i> So sánh tối đa 3 điện thoại cùng lúc</li>
             </ul>
-            <a class="cmp-btn" href="@Url.Action("SoSanh", "SanPham", new { area = "" })">
+            <a class="cmp-btn" href="@(AuthHelper.IsLoggedIn
+                    ? Url.Action("SoSanh", "SanPham", new { area = "" })
+                    : Url.Action("Login", "Account", new { area = "", returnUrl = Url.Action("SoSanh", "SanPham", new { area = "" }) }))">
                 Bắt đầu so sánh <i class="bi bi-arrow-right"></i>
             </a>
         </div>
@@ -114,9 +141,97 @@
                 if (i == 0)
                 { <div class="cmp-vs">VS</div>}
             }
-            <a class="cmp-item cmp-add" href="@Url.Action("SoSanh", "SanPham", new { area = "" })">
-                <i class="bi bi-plus-circle"></i> Thêm sản phẩm
-            </a>
+            <div class="cmp-item cmp-add"><i class="bi bi-plus-circle"></i> Thêm sản phẩm</div>
         </div>
     </section>
+}
+
+@if (Model.PhuKien.Any())
+{
+    <section class="sec">
+        <div class="sec-head">
+            <h2>Sắm thêm phụ kiện chất lượng</h2>
+            <div class="sec-tabs">
+                <a class="all" href="@Url.Action("Index", "SanPham", new { area = "", loaiId = 3 })">Xem tất cả</a>
+            </div>
+        </div>
+        <div class="pgrid">
+            @foreach (var sp in Model.PhuKien)
+            {@Html.Partial("_SanPhamCard", sp)}
+        </div>
+    </section>
+}
+@if (Model.Tin.Any() || Model.Video.Any())
+{
+    <section class="sec" id="tin-tuc">
+        <div class="sec-head"><h2>Tin công nghệ</h2></div>
+        @if (Model.Tin.Any())
+        {
+            <div class="news-grid">
+                @foreach (var n in Model.Tin)
+                {
+                    <a class="news-card" href="@n.Link" target="_blank" rel="noopener">
+                        <div class="news-img"><img src="@n.Image" alt="" referrerpolicy="no-referrer" loading="lazy" onerror="this.onerror=null;this.src='@noImg2'" /></div>
+                        <h3>@n.Title</h3>
+                        <div class="news-meta">@n.Source &middot; @n.Date.ToString("dd/MM/yyyy")</div>
+                    </a>
+                }
+            </div>
+        }
+        @if (Model.Video.Any())
+        {
+            <div class="sec-head mt-3"><h2>Video</h2></div>
+            <div class="video-grid">
+                @foreach (var v in Model.Video)
+                {
+                    <button type="button" class="video-card" data-id="@v.Id" data-title="@v.Title">
+                        <div class="video-thumb"><img src="@v.Thumb" alt="" loading="lazy" /></div>
+                        <h3>@v.Title</h3>
+                        <div class="news-meta">@v.Channel</div>
+                    </button>
+                }
+            </div>
+
+            <div class="modal fade" id="videoModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content bg-dark">
+                        <div class="modal-header border-0">
+                            <h2 class="modal-title h6 text-white" id="videoTitle"></h2>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                        </div>
+                        <div class="modal-body p-0">
+                            <iframe id="videoFrame" class="video-frame" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </section>
+}
+@section scripts {
+    <script>
+        $('.hrow-nav').on('click', function () {
+            var row = $(this).siblings('.hrow')[0];
+            row.scrollBy({ left: ($(this).hasClass('next') ? 1 : -1) * row.clientWidth * 0.8, behavior: 'smooth' });
+        });
+
+        (function () {
+            var el = document.getElementById('cdDeal');
+            if (!el) return;
+            function p(n) { return n < 10 ? '0' + n : n; }
+            function tick() {
+                var now = new Date(), end = new Date(now);
+                end.setHours(23, 59, 59, 999);
+                var s = Math.max(0, Math.floor((end - now) / 1000));
+                el.textContent = p(Math.floor(s / 3600)) + ':' + p(Math.floor((s % 3600) / 60)) + ':' + p(s % 60);
+            }
+            tick(); setInterval(tick, 1000);
+        })();
+        $('#tin-tuc .video-card[data-id]').on('click', function () {
+    $('#videoTitle').text($(this).data('title'));
+    $('#videoFrame').attr('src', 'https://www.youtube-nocookie.com/embed/' + $(this).data('id') + '?autoplay=1&rel=0');
+    bootstrap.Modal.getOrCreateInstance(document.getElementById('videoModal')).show();
+});
+$('#videoModal').on('hidden.bs.modal', function () { $('#videoFrame').attr('src', ''); });
+    </script>
 }

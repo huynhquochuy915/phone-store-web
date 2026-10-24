@@ -1,102 +1,249 @@
 ﻿@model WebsiteQuanLiDienThoaiDiDong.Models.ViewModels.SanPhamChiTietVM
 @using System.Linq
-@{ ViewBag.Title = Model.SanPham.TenSanPham; var sp = Model.SanPham; var anhChinh = Model.HinhAnhs.FirstOrDefault(); }
+@{
+    var sp = Model.SanPham;
+    ViewBag.Title = sp.TenSanPham;
+    var noImg = Url.Content("~/Content/images/no-image.png");
+    var anhChinh = Model.HinhAnhs.FirstOrDefault();
+    var srcChinh = anhChinh == null ? noImg : Url.Content("~" + anhChinh.DuongDan);
+
+    double sao = Model.DanhGias.Any() ? Model.DanhGias.Average(x => (double)x.SoSao) : 0;
+    int tongDg = Model.DanhGias.Count;
+    Func<int, int> demSao = s => Model.DanhGias.Count(x => x.SoSao == s);
+
+    var nbat = new[] {
+        new { Icon = "bi-phone", Ten = "Màn hình", Gt = Convert.ToString(sp.ManHinh) },
+        new { Icon = "bi-cpu", Ten = "Chip xử lý", Gt = Convert.ToString(sp.ChipXuLy) },
+        new { Icon = "bi-memory", Ten = "RAM", Gt = Convert.ToString(sp.RAM) },
+        new { Icon = "bi-camera", Ten = "Camera sau", Gt = Convert.ToString(sp.CameraSau) },
+        new { Icon = "bi-battery-charging", Ten = "Pin", Gt = Convert.ToString(sp.Pin) },
+        new { Icon = "bi-gear", Ten = "Hệ điều hành", Gt = Convert.ToString(sp.HeDieuHanh) }
+    }.Where(x => !string.IsNullOrWhiteSpace(x.Gt)).ToList();
+}
 
 <nav aria-label="breadcrumb"><ol class="breadcrumb"><li class="breadcrumb-item"><a href="@Url.Action("Index", "Home")">Trang chủ</a></li><li class="breadcrumb-item"><a href="@Url.Action("Index", new { loaiId = sp.LoaiId })">@sp.LoaiSanPham.TenLoai</a></li><li class="breadcrumb-item active">@sp.TenSanPham</li></ol></nav>
 
-<div class="row g-4">
-    <div class="col-lg-6">
-        <div class="card p-3 text-center"><img src="@(anhChinh == null ? Url.Content("~/Content/images/no-image.png") : Url.Content("~" + anhChinh.DuongDan))" alt="@sp.TenSanPham" style="width:100%;height:420px;object-fit:contain" onerror="this.onerror=null;this.src='@Url.Content("~/Content/images/no-image.png")'" /></div>
+<div class="pd-titlebar">
+    <h1 class="pd-title">@sp.TenSanPham</h1>
+    <div class="pd-subbar">
+        <span class="pd-rate">
+            <span class="star">★ @String.Format("{0:0.0}", sao)</span>
+            <a href="#danhGia" class="text-muted">(@tongDg đánh giá đã duyệt)</a>
+        </span>
+        <div class="pd-tools">
+            <form class="favorite-form detail-favorite-form" method="post" action="@Url.Action("ChuyenYeuThich", "SanPham", new { area = "" })">
+                @Html.AntiForgeryToken()<input type="hidden" name="sanPhamId" value="@sp.Id" />
+                <button type="button" class="favorite-toggle detail-favorite-toggle btn btn-outline-danger" data-status-url="@Url.Action("YeuThichIds", "SanPham", new { area = "" })" aria-pressed="false">
+                    <i class="bi bi-heart"></i> <span class="favorite-label">Yêu thích</span>
+                </button>
+            </form>
+            <a href="#thongso"><i class="bi bi-sliders"></i> Thông số</a>
+            <a href="@Url.Action("SoSanh", "SanPham", new { area = "" })"><i class="bi bi-arrow-left-right"></i> So sánh</a>
+        </div>
+    </div>
+</div>
+
+<div class="row g-3">
+    <div class="col-lg-5">
+        <div class="pd-main">
+            <img id="pdMain" src="@srcChinh" alt="@sp.TenSanPham" onerror="this.onerror=null;this.src='@noImg'" />
+        </div>
         @if (Model.HinhAnhs.Count > 1)
         {
-            <div class="d-flex gap-2 mt-2 flex-wrap">@foreach (var anh in Model.HinhAnhs) { <img src="@Url.Content("~" + anh.DuongDan)" alt="@sp.TenSanPham" style="width:76px;height:76px;object-fit:contain;border:1px solid #ddd;border-radius:8px" /> }</div>
+            <div class="pd-thumbs">
+                @for (int i = 0; i < Model.HinhAnhs.Count; i++)
+                {
+                    var src = Url.Content("~" + Model.HinhAnhs[i].DuongDan);
+                    <button type="button" class="pd-thumb @(i == 0 ? "on" : "")" data-src="@src">
+                        <img src="@src" alt="@sp.TenSanPham" onerror="this.onerror=null;this.src='@noImg'" />
+                    </button>
+                }
+            </div>
+        }
+        @if (nbat.Any())
+        {
+            <div class="pd-feature">
+                <h2 class="pd-card-title">Tính năng nổi bật</h2>
+                <ul>
+                    @foreach (var f in nbat)
+                    {
+                        <li><i class="bi @f.Icon"></i><span><b>@f.Ten:</b> @f.Gt</span></li>
+                    }
+                </ul>
+            </div>
         }
     </div>
-    <div class="col-lg-6">
-        <div class="text-muted">@sp.ThuongHieu.TenThuongHieu</div>
-        <h1 class="h2">@sp.TenSanPham</h1>
-        <div class="text-warning mb-2">★ @String.Format("{0:0.0}", Model.DanhGias.Any() ? Model.DanhGias.Average(x => (double)x.SoSao) : 0) <span class="text-muted">(@Model.DanhGias.Count đánh giá đã duyệt)</span></div>
-        @if (!String.IsNullOrWhiteSpace(sp.MoTa)) { <p>@sp.MoTa</p> }
+
+    <div class="col-lg-7">
+        @if (!String.IsNullOrWhiteSpace(sp.MoTa))
+        {<p class="pd-desc">@sp.MoTa</p>}
+
         @Html.Partial("_ChonBienThe", sp)
 
-        <div class="card card-body mt-4">
-            <h2 class="h5">Ước tính trả góp 0%</h2>
+        <div class="pd-promo">
+            <div class="pd-promo-title"><i class="bi bi-gift-fill"></i> Ưu đãi</div>
+            <ul>
+                <li><i class="bi bi-check-circle-fill"></i> Bảo hành chính hãng @sp.BaoHanhThang tháng</li>
+                <li><i class="bi bi-check-circle-fill"></i> Giao nhanh toàn quốc, phí ship theo tỉnh thành</li>
+                <li><i class="bi bi-check-circle-fill"></i> Thanh toán khi nhận hàng hoặc chuyển khoản QR</li>
+                @if (Model.KyHanTraGop.Any())
+                {
+                    <li><i class="bi bi-check-circle-fill"></i> Trả góp 0% kỳ hạn @String.Join(", ", Model.KyHanTraGop) tháng</li>
+                }
+            </ul>
+        </div>
+
+        <div class="pd-trust">
+            <div><i class="bi bi-patch-check"></i><span>Hàng chính hãng</span></div>
+            <div><i class="bi bi-truck"></i><span>Giao nhanh</span></div>
+            <div><i class="bi bi-shield-check"></i><span>Bảo hành @sp.BaoHanhThang tháng</span></div>
+        </div>
+
+        <div class="pd-card mt-3" id="traGop">
+            <h2 class="pd-card-title">Ước tính trả góp 0%</h2>
             <div class="row g-2 align-items-end">
-                <div class="col-4"><label class="form-label">Kỳ hạn</label><select id="traGopThang" class="form-select">@foreach (var thang in Model.KyHanTraGop) { <option value="@thang">@thang tháng</option> }</select></div>
-                <div class="col-4"><label class="form-label">Trả trước</label><select id="traGopPT" class="form-select">@foreach (var pt in new byte[] { 0, 10, 20, 30, 40, 50 }) { <option value="@pt">@pt%</option> }</select></div>
+                <div class="col-4"><label class="form-label">Kỳ hạn</label><select id="traGopThang" class="form-select">@foreach (var thang in Model.KyHanTraGop)
+                {<option value="@thang">@thang tháng</option>}</select></div>
+                <div class="col-4"><label class="form-label">Trả trước</label><select id="traGopPT" class="form-select">@foreach (var pt in new byte[] { 0, 10, 20, 30, 40, 50 })
+                {<option value="@pt">@pt%</option>}</select></div>
                 <div class="col-4"><button type="button" id="btnTinhTraGop" class="btn btn-outline-danger w-100">Tính thử</button></div>
             </div>
             <div id="ketQuaTraGop" class="small mt-2 text-muted">Chọn kỳ hạn và mức trả trước để xem số tiền dự kiến.</div>
         </div>
-
-        @*<form method="post" action="@Url.Action("ThemSoSanh")" class="mt-3">
-            @Html.AntiForgeryToken()<input type="hidden" name="id" value="@sp.Id" /><button class="btn btn-outline-secondary" type="submit"><i class="bi bi-arrow-left-right"></i> Thêm vào so sánh</button>
-            <a class="btn btn-link" href="@Url.Action("SoSanh")">Mở bảng so sánh</a>
-        </form>*@
-        <form class="favorite-form detail-favorite-form mt-2" method="post" action="@Url.Action("ChuyenYeuThich", "SanPham", new { area = "" })">
-            @Html.AntiForgeryToken()<input type="hidden" name="sanPhamId" value="@sp.Id" />
-            <button type="button" class="favorite-toggle detail-favorite-toggle btn btn-outline-danger" data-status-url="@Url.Action("YeuThichIds", "SanPham", new { area = "" })" aria-pressed="false">
-                <i class="bi bi-heart"></i> <span class="favorite-label">Lưu vào yêu thích</span>
-            </button>
-        </form>
     </div>
 </div>
 
-<section class="mt-5">
-    <h2 class="h4">Thông số kỹ thuật</h2>
-    <div class="table-responsive"><table class="table table-striped"><tbody>
-        <tr><th>Thương hiệu</th><td>@sp.ThuongHieu.TenThuongHieu</td></tr><tr><th>Màn hình</th><td>@sp.ManHinh</td></tr>
-        <tr><th>Chip xử lý</th><td>@sp.ChipXuLy</td></tr><tr><th>RAM</th><td>@sp.RAM</td></tr><tr><th>Camera sau</th><td>@sp.CameraSau</td></tr>
-        <tr><th>Camera trước</th><td>@sp.CameraTruoc</td></tr><tr><th>Pin</th><td>@sp.Pin</td></tr><tr><th>Hệ điều hành</th><td>@sp.HeDieuHanh</td></tr><tr><th>Bảo hành</th><td>@sp.BaoHanhThang tháng</td></tr>
-    </tbody></table></div>
+<section class="pd-box mt-3" id="thongso">
+    <h2 class="pd-card-title">Thông số kỹ thuật</h2>
+    <table class="table pd-spec-table mb-0">
+        <tbody>
+            <tr><th>Thương hiệu</th><td>@sp.ThuongHieu.TenThuongHieu</td></tr>
+            <tr><th>Màn hình</th><td>@sp.ManHinh</td></tr>
+            <tr><th>Chip xử lý</th><td>@sp.ChipXuLy</td></tr>
+            <tr><th>RAM</th><td>@sp.RAM</td></tr>
+            <tr><th>Camera sau</th><td>@sp.CameraSau</td></tr>
+            <tr><th>Camera trước</th><td>@sp.CameraTruoc</td></tr>
+            <tr><th>Pin</th><td>@sp.Pin</td></tr>
+            <tr><th>Hệ điều hành</th><td>@sp.HeDieuHanh</td></tr>
+            <tr><th>Bảo hành</th><td>@sp.BaoHanhThang tháng</td></tr>
+        </tbody>
+    </table>
 </section>
 
-<section class="mt-5" id="danhGia">
-    <h2 class="h4">Đánh giá sản phẩm</h2>
+<section class="pd-box mt-3" id="danhGia">
+    <h2 class="pd-card-title">Đánh giá @sp.TenSanPham</h2>
+    <div class="rv-summary">
+        <div class="rv-score">
+            <div class="rv-num">@String.Format("{0:0.0}", sao)</div>
+            <div class="rv-stars">@String.Concat(Enumerable.Repeat("★", (int)Math.Round(sao)))</div>
+            <div class="small text-muted">@tongDg đánh giá</div>
+        </div>
+        <div class="rv-bars">
+            @for (int s = 5; s >= 1; s--)
+            {
+                int c = demSao(s);
+                int pct = tongDg == 0 ? 0 : c * 100 / tongDg;
+                <div class="rv-bar"><span>@s ★</span><div class="rv-track"><i style="width:@(pct)%"></i></div><span>@c</span></div>
+            }
+        </div>
+    </div>
+
     @if (Model.CoTheDanhGia)
     {
-        <form method="post" action="@Url.Action("DanhGia")" class="card card-body mb-3">
+        <form method="post" action="@Url.Action("DanhGia")" class="rv-form">
             @Html.AntiForgeryToken()<input type="hidden" name="SanPhamId" value="@sp.Id" />
-            <div class="row g-2"><div class="col-md-3"><label class="form-label" for="SoSao">Số sao</label><select class="form-select" id="SoSao" name="SoSao" required><option value="">Chọn số sao</option>@for (byte i = 5; i >= 1; i--) { <option value="@i">@i sao</option> }</select></div>
+            <div class="row g-2">
+                <div class="col-md-3"><label class="form-label" for="SoSao">Số sao</label><select class="form-select" id="SoSao" name="SoSao" required><option value="">Chọn số sao</option>@for (byte i = 5; i >= 1; i--)
+                {<option value="@i">@i sao</option>}</select></div>
                 <div class="col-md-9"><label class="form-label" for="NoiDung">Nhận xét</label><textarea class="form-control" id="NoiDung" name="NoiDung" rows="2" maxlength="1000"></textarea></div>
-                <div class="col-12"><button class="btn btn-danger" type="submit">Gửi đánh giá</button> <small class="text-muted">Chỉ tài khoản đã nhận sản phẩm mới được đánh giá.</small></div>
+                <div class="col-12"><button class="btn btn-brand" type="submit">Gửi đánh giá</button> <small class="text-muted">Chỉ tài khoản đã nhận sản phẩm mới được đánh giá.</small></div>
             </div>
         </form>
     }
-    else if (Model.DaDanhGia) { <p class="text-muted">Bạn đã đánh giá sản phẩm này rồi.</p> }
-    else if (AuthHelper.IsLoggedIn) { <p class="text-muted">Chỉ khách đã nhận sản phẩm mới được gửi đánh giá.</p> }
-    else { <p><a href="@Url.Action("Login", "Account")">Đăng nhập</a> để đánh giá sau khi đã nhận sản phẩm.</p> }
+    else if (Model.DaDanhGia)
+    { <p class="text-muted mt-3 mb-0">Bạn đã đánh giá sản phẩm này rồi.</p> }
+    else if (AuthHelper.IsLoggedIn)
+    { <p class="text-muted mt-3 mb-0">Chỉ khách đã nhận sản phẩm mới được gửi đánh giá.</p> }
+    else
+    { <p class="mt-3 mb-0"><a href="@Url.Action("Login", "Account")">Đăng nhập</a> để đánh giá sau khi đã nhận sản phẩm.</p>}
 
-    @if (!Model.DanhGias.Any()) { <p class="text-muted">Chưa có đánh giá được duyệt.</p> }
+    @if (!Model.DanhGias.Any())
+    {<p class="text-muted mt-3 mb-0">Chưa có đánh giá được duyệt.</p>}
     @foreach (var dg in Model.DanhGias)
     {
-        <article class="border-bottom py-3"><strong>@dg.NguoiDung.HoTen</strong> <span class="text-warning">@String.Concat(Enumerable.Repeat("★", dg.SoSao))</span><small class="text-muted ms-2">@dg.NgayDanhGia.ToString("dd/MM/yyyy")</small><p class="mb-0 mt-1">@dg.NoiDung</p></article>
+        var ten = dg.NguoiDung.HoTen;
+        <article class="rv-item">
+            <div class="rv-avatar">@(String.IsNullOrEmpty(ten) ? "?" : ten.Substring(0, 1).ToUpper())</div>
+            <div>
+                <strong>@ten</strong> <span class="rv-stars">@String.Concat(Enumerable.Repeat("★", dg.SoSao))</span>
+                <small class="text-muted ms-2">@dg.NgayDanhGia.ToString("dd/MM/yyyy")</small>
+                <p class="mb-0 mt-1">@dg.NoiDung</p>
+            </div>
+        </article>
     }
 </section>
 
 @if (Model.SanPhamLienQuan.Any())
 {
-    <section class="mt-5"><h2 class="h4">Sản phẩm liên quan</h2><div class="pgrid">@foreach (var item in Model.SanPhamLienQuan) { @Html.Partial("_SanPhamCard", item) }</div></section>
+    <section class="mt-4"><h2 class="pd-card-title">Sản phẩm liên quan</h2><div class="pgrid">@foreach (var item in Model.SanPhamLienQuan)
+    {@Html.Partial("_SanPhamCard", item)}</div></section>
 }
 
+<div id="pdBar" class="pd-bar" aria-hidden="true">
+    <div class="container pd-bar-in">
+        <img src="@srcChinh" alt="" onerror="this.onerror=null;this.src='@noImg'" />
+        <div class="pd-bar-info">
+            <div class="pd-bar-name">@sp.TenSanPham</div>
+            <div class="pd-bar-price" id="pdBarPrice"></div>
+        </div>
+        <a href="#traGop" class="btn btn-outline-brand pd-bar-tg">Trả góp 0%</a>
+        <button type="button" class="btn btn-accent pd-bar-buy" id="pdBarBuy">MUA NGAY</button>
+    </div>
+</div>
+
 @section scripts {
-<script>
+    <script>
 (function () {
+    // bấm ảnh nhỏ thì đổi ảnh lớn
+    $('.pd-thumb').on('click', function () {
+        $('#pdMain').attr('src', $(this).data('src'));
+        $('.pd-thumb').removeClass('on');
+        $(this).addClass('on');
+    });
+
+    // ước tính trả góp
     var btn = document.getElementById('btnTinhTraGop'), result = document.getElementById('ketQuaTraGop');
-    if (!btn) return;
     function tinh() {
-        var id = document.getElementById('vbId').value;
-        if (!id) { result.textContent = 'Vui lòng chọn một phiên bản sản phẩm.'; return; }
+        var vb = document.getElementById('vbId');
+        if (!vb || !vb.value) { result.textContent = 'Vui lòng chọn một phiên bản sản phẩm.'; return; }
         result.textContent = 'Đang tính...';
-        $.getJSON('@Url.Action("TinhTraGop")', { bienTheId: id, soThang: $('#traGopThang').val(), traTruocPT: $('#traGopPT').val() }, function (r) {
+        $.getJSON('@Url.Action("TinhTraGop")', { bienTheId: vb.value, soThang: $('#traGopThang').val(), traTruocPT: $('#traGopPT').val() }, function (r) {
             if (!r.ok) { result.textContent = r.message; return; }
             var f = function (n) { return Number(n || 0).toLocaleString('vi-VN') + '₫'; };
             result.textContent = 'Trả trước ' + f(r.TraTruoc) + ' · mỗi tháng ' + f(r.TraMoiThang) + ' · tổng dự kiến ' + f(r.TongPhaiTra) + ' (đã gồm phí chuyển đổi ' + f(r.PhiChuyenDoi) + ').';
         });
     }
-    btn.addEventListener('click', tinh);
+    if (btn) btn.addEventListener('click', tinh);
     $('#traGopThang,#traGopPT').on('change', tinh);
-    $('#variantBox').on('click', 'button', function () { setTimeout(tinh, 0); });
+
+    // thanh mua hàng dính đáy: hiện khi các nút mua phía trên đã cuộn khỏi màn hình
+    var bar = document.getElementById('pdBar'), act = document.querySelector('.pd-actions');
+    var barPrice = document.getElementById('pdBarPrice'), gia = document.getElementById('vbGia');
+    if (barPrice && gia) barPrice.textContent = gia.textContent;
+    document.addEventListener('variantchange', function (ev) { if (barPrice) barPrice.textContent = ev.detail.price; });
+
+    if (bar && act && 'IntersectionObserver' in window) {
+        new IntersectionObserver(function (es) {
+            var e = es[0], show = !e.isIntersecting && e.boundingClientRect.top < 0;
+            bar.classList.toggle('show', show);
+            document.body.classList.toggle('has-pdbar', show);
+        }).observe(act);
+    }
+    var buy = document.getElementById('pdBarBuy');
+    if (buy) buy.addEventListener('click', function () {
+        var b = document.getElementById('btnMua');
+        if (b && !b.disabled) b.click();
+    });
 })();
-</script>
+    </script>
 }
