@@ -1,0 +1,34 @@
+﻿@model WebsiteQuanLiDienThoaiDiDong.Services.YeuCauThuCu
+@using WebsiteQuanLiDienThoaiDiDong.Services
+@{ ViewBag.Title = "Đã gửi yêu cầu thu cũ"; }
+
+<div class="tc-page" style="max-width:720px">
+    <div class="box text-center mb-3">
+        <i class="bi bi-check-circle-fill text-success" style="font-size:3rem"></i>
+        <h3 class="mt-2">Đã gửi yêu cầu thu cũ</h3>
+        <p class="mb-0">Mã yêu cầu: <strong>@Model.MaYeuCau</strong></p>
+        <p class="text-muted">Nhân viên sẽ gọi cho bạn theo số điện thoại đã đăng ký để hẹn lịch kiểm tra máy.</p>
+    </div>
+
+    <div class="box">
+        <h5>Thông tin yêu cầu</h5>
+        <table class="table mb-0">
+            <tr><th style="width:170px">Máy cần thu</th><td>@Model.TenMay</td></tr>
+            <tr><th>Ngoại hình</th><td>@ThuCuRules.Nhan("NgoaiHinh", Model.NgoaiHinh)</td></tr>
+            <tr><th>Màn hình</th><td>@ThuCuRules.Nhan("ManHinh", Model.ManHinh)</td></tr>
+            <tr><th>Pin</th><td>@ThuCuRules.Nhan("Pin", Model.Pin)</td></tr>
+            <tr><th>Chức năng</th><td>@ThuCuRules.Nhan("ChucNang", Model.ChucNang)</td></tr>
+            @if (!string.IsNullOrEmpty(Model.MayMuonMua))
+            {
+                <tr><th>Muốn lên đời</th><td>@Model.MayMuonMua</td></tr>
+}
+            <tr><th>Giá ước tính</th><td class="price">@Model.GiaUocTinh.VND()</td></tr>
+            <tr><th>Trạng thái</th><td><span class="adm-badge @ThuCuRules.MauTrangThai(Model.TrangThai)">@ThuCuRules.TenTrangThai(Model.TrangThai)</span></td></tr>
+        </table>
+        <div class="alert alert-warning mt-3 mb-0">
+            Giá trên chỉ là <b>ước tính</b>. Giá chính thức được chốt sau khi nhân viên kiểm tra máy.
+            Nhớ <b>đăng xuất iCloud / tài khoản Google</b> và mang theo căn cước công dân.
+        </div>
+        <a class="btn btn-brand mt-3" href="@Url.Action("Index", "Home", new { area = "" })">Về trang chủ</a>
+    </div>
+</div>

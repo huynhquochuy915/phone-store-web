@@ -99,6 +99,11 @@
             <strong>Giảm 500.000₫</strong>
             <span>Đơn từ 15 triệu, nhập mã GIAM500K</span>
         </a>
+        <a class="tile" href="@Url.Action("Index", "ThuCu", new { area = "" })">
+            <i class="bi bi-arrow-repeat"></i>
+            <strong>Thu cũ đổi mới</strong>
+            <span>Định giá máy cũ trong 1 phút</span>
+        </a>
     </aside>
 </section>
 <section class="policy">
@@ -151,6 +156,23 @@
         </div>
         <div class="pgrid">
             @foreach (var sp in Model.DienThoai)
+            {@Html.Partial("_SanPhamCard", sp)}
+        </div>
+    </section>
+}
+@{ var hangCuId = CauHinh.Get("LoaiId_HangCu", "0"); }
+@if (Model.MayCu.Any())
+{
+    <section class="sec" id="may-cu">
+        <div class="sec-head">
+            <h2>Máy cũ giá tốt</h2>
+            <div class="sec-tabs">
+                <a href="@Url.Action("Index", "ThuCu", new { area = "" })">Thu cũ đổi mới</a>
+                <a class="all" href="@Url.Action("Index", "SanPham", new { area = "", loaiId = hangCuId })">Xem tất cả</a>
+            </div>
+        </div>
+        <div class="pgrid">
+            @foreach (var sp in Model.MayCu)
             {@Html.Partial("_SanPhamCard", sp)}
         </div>
     </section>

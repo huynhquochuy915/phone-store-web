@@ -1,7 +1,7 @@
 ﻿@model List<WebsiteQuanLiDienThoaiDiDong.Models.ViewModels.MenuLoaiVM>
 @{
-    Func<int, string> icon = id => id == 1 ? "bi-phone" : (id == 2 ? "bi-tablet" : (id == 3 ? "bi-headphones" : "bi-grid"));
-
+    var hangCuId = CauHinh.Get("LoaiId_HangCu", "0");
+    Func<int, string> icon = id => id == 1 ? "bi-phone" : (id.ToString() == hangCuId ? "bi-recycle" : (id == 2 ? "bi-tablet" : (id == 3 ? "bi-headphones" : "bi-grid")));
     var giaDt = new[] {
         new { T = "Dưới 10 triệu", Tu = (decimal?)null, Den = (decimal?)10000000m },
         new { T = "10 - 20 triệu", Tu = (decimal?)10000000m, Den = (decimal?)20000000m },
@@ -29,7 +29,7 @@
 <ul class="cat-list">
     @foreach (var l in Model)
     {
-        bool laDt = l.Id == 1;
+        bool laDt = l.Id == 1 || l.Id.ToString() == hangCuId;
         var gia = laDt ? giaDt : giaPk;
         <li>
             <a href="@Url.Action("Index", "SanPham", new { area = "", loaiId = l.Id })"><i class="bi @(icon(l.Id))"></i> @l.Ten <i class="bi bi-chevron-right chev"></i></a>
@@ -102,6 +102,7 @@
             </div>
         </li>
     }
+    <li><a href="@Url.Action("Index", "ThuCu", new { area = "" })"><i class="bi bi-arrow-repeat"></i> Thu cũ đổi mới</a></li>
     <li class="cat-sep"></li>
     <li><a href="@Url.Action("SoSanh", "SanPham", new { area = "" })"><i class="bi bi-arrow-left-right"></i> So sánh sản phẩm</a></li>
     <li><a href="@Url.Action("TraCuu", "BaoHanh", new { area = "" })"><i class="bi bi-shield-check"></i> Tra cứu bảo hành</a></li>

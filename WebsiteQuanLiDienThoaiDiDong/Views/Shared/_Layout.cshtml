@@ -81,12 +81,18 @@
         <div class="container">
             <a href="@Url.Action("Index", "SanPham", new { area = "", loaiId = 1 })"><i class="bi bi-phone"></i> Điện thoại</a>
             <a href="@Url.Action("Index", "SanPham", new { area = "", loaiId = 3 })"><i class="bi bi-headphones"></i> Phụ kiện</a>
+            @{ var hangCuNav = CauHinh.Get("LoaiId_HangCu", "0"); }
+            @if (hangCuNav != "0")
+            {
+                <a href="@Url.Action("Index", "SanPham", new { area = "", loaiId = hangCuNav })"><i class="bi bi-recycle"></i> Máy cũ</a>
+            }
             <a href="@Url.Action("SoSanh", "SanPham", new { area = "" })"><i class="bi bi-arrow-left-right"></i> So sánh</a>
             <a href="@Url.Action("YeuThich", "SanPham", new { area = "" })"><i class="bi bi-heart"></i> Yêu thích</a>
             <a href="@Url.Action("TraCuu", "BaoHanh", new { area = "" })"><i class="bi bi-upc-scan"></i> Tra cứu bảo hành</a>
             <a href="@Url.Action("Index", "Home", new { area = "" })#tin-tuc"><i class="bi bi-newspaper"></i> Tin công nghệ</a>
             <a href="@Url.Action("Index", "Home", new { area = "" })#cua-hang"><i class="bi bi-geo-alt"></i> Cửa hàng</a>
             <a href="@Url.Action("Index", "DonHang", new { area = "" })"><i class="bi bi-receipt"></i> Đơn hàng</a>
+            <a href="@Url.Action("Index", "ThuCu", new { area = "" })"><i class="bi bi-arrow-repeat"></i> Thu cũ đổi mới</a>
         </div>
     </nav>
 

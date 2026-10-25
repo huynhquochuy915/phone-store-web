@@ -1,0 +1,76 @@
+﻿@model List<WebsiteQuanLiDienThoaiDiDong.Services.YeuCauThuCu>
+@using WebsiteQuanLiDienThoaiDiDong.Services
+@{
+    ViewBag.Title = "Thu cũ đổi mới";
+    var dem = ViewBag.Dem as List<TrangThaiDem> ?? new List<TrangThaiDem>();
+    var tt = ViewBag.TT as string;
+}
+
+<div class="adm-pills">
+    <a class="@(string.IsNullOrEmpty(tt) ? "active" : "")" href="@Url.Action("Index")">Tất cả <span>@dem.Sum(x => x.SoLuong)</span></a>
+    @foreach (var k in ThuCuRules.TrangThai)
+    {
+        <a class="@(tt == k ? "active" : "")" href="@Url.Action("Index", new { tt = k })">@ThuCuRules.TenTrangThai(k) <span>@dem.Where(x => x.TrangThai == k).Sum(x => x.SoLuong)</span></a>
+    }
+</div>
+
+<div class="adm-card">
+    @if (!Model.Any())
+    {
+        <div class="adm-empty"><i class="bi bi-inbox"></i>Chưa có yêu cầu thu cũ nào.</div>
+    }
+    else
+    {
+        <div class="table-responsive">
+            <table class="adm-table">
+                <thead>
+                    <tr><th>Mã / Ngày</th><th>Khách hàng</th><th>Máy thu</th><th>Tình trạng khai</th><th class="num">Giá ước tính</th><th>Cập nhật</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (var r in Model)
+                    {
+                        <tr>
+                            <td><b>@r.MaYeuCau</b><div class="adm-prod-sub">@r.NgayTao.ToString("dd/MM/yyyy HH:mm")</div></td>
+                            <td>
+                                @r.HoTen
+                                <div class="adm-prod-sub"><a href="tel:@r.SoDienThoai">@r.SoDienThoai</a></div>
+                                @if (!string.IsNullOrEmpty(r.Email))
+                                {<div class="adm-prod-sub">@r.Email</div>}
+                            </td>
+                            <td>
+                                <b>@r.TenMay</b>
+                                @if (!string.IsNullOrEmpty(r.MayMuonMua))
+                                {<div class="adm-prod-sub">Lên đời: @r.MayMuonMua</div>}
+                                @if (!string.IsNullOrEmpty(r.GhiChu))
+                                {<div class="adm-prod-sub">Ghi chú: @r.GhiChu</div>}
+                            </td>
+                            <td class="adm-prod-sub">
+                                @ThuCuRules.Nhan("NgoaiHinh", r.NgoaiHinh)<br />
+                                @ThuCuRules.Nhan("ManHinh", r.ManHinh)<br />
+                                Pin: @ThuCuRules.Nhan("Pin", r.Pin)<br />
+                                @ThuCuRules.Nhan("ChucNang", r.ChucNang)
+                            </td>
+                            <td class="num"><b>@r.GiaUocTinh.VND()</b></td>
+                            <td>
+                                <form method="post" action="@Url.Action("CapNhat")" class="adm-inline-form">
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@r.Id" />
+                                    <input type="hidden" name="tt" value="@tt" />
+                                    <select name="trangThai" class="form-select form-select-sm">
+                                        @foreach (var k in ThuCuRules.TrangThai)
+                                        {
+                                            <option value="@k" @(r.TrangThai == k ? "selected" : "")>@ThuCuRules.TenTrangThai(k)</option>
+                                        }
+                                    </select>
+                                    <input type="number" name="giaChot" min="0" step="10000" class="form-control form-control-sm" placeholder="Giá chốt"
+                                           value="@(r.GiaChot.HasValue ? ((long)r.GiaChot.Value).ToString() : "")" />
+                                    <button type="submit" class="btn btn-brand btn-sm">Lưu</button>
+                                </form>
+                            </td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>
