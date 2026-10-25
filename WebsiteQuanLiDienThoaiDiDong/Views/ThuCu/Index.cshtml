@@ -1,0 +1,194 @@
+﻿@model WebsiteQuanLiDienThoaiDiDong.Services.ThuCuVM
+@using WebsiteQuanLiDienThoaiDiDong.Services
+@{
+    ViewBag.Title = "Thu cũ đổi mới";
+    var f = Model.Form;
+    var hangs = Model.May.Select(m => m.HangMay).Distinct().ToList();
+
+    var factors = ThuCuRules.Nhom.ToDictionary(g => g.Field, g => g.Tiers.ToDictionary(t => t.Key, t => t.Factor));
+    var mayJson = Json.Encode(Model.May.Select(m => new { id = m.Id, hang = m.HangMay, ten = m.Nhan, gia = m.GiaToiDa }));
+    var moiJson = Json.Encode(Model.MayMoi.Select(m => new { id = m.Id, ten = m.Ten, gia = m.Gia }));
+}
+
+<div class="tc-page">
+    <div class="tc-hero">
+        <h1>Thu cũ đổi mới</h1>
+        <p>Định giá máy cũ trong 1 phút, dùng số tiền đó để lên đời điện thoại mới hoặc nhận tiền mặt.</p>
+        <div class="tc-steps">
+            <div class="tc-step"><b>1. Khai thông tin</b>Chọn máy và tình trạng</div>
+            <div class="tc-step"><b>2. Nhận giá ước tính</b>Hiện ngay trên màn hình</div>
+            <div class="tc-step"><b>3. Mang máy đến cửa hàng</b>Nhân viên kiểm tra thực tế</div>
+            <div class="tc-step"><b>4. Chốt giá</b>Nhận tiền hoặc trừ vào máy mới</div>
+        </div>
+    </div>
+
+    @using (Html.BeginForm("Index", "ThuCu", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+        <div class="tc-grid">
+            <div>
+                <div class="tc-card">
+                    <h2><span class="tc-num">1</span> Máy cần thu</h2>
+                    <div class="row g-3">
+                        <div class="col-sm-5">
+                            <label class="form-label">Hãng</label>
+                            <select id="tcHang" class="form-select">
+                                @foreach (var h in hangs)
+                                {
+                                    <option value="@h">@h</option>
+}
+                            </select>
+                        </div>
+                        <div class="col-sm-7">
+                            <label class="form-label">Dòng máy và dung lượng</label>
+                            <select id="tcMay" name="MayId" class="form-select"></select>
+                            @Html.ValidationMessage("MayId", "", new { @class = "text-danger small" })
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tc-card">
+                    <h2><span class="tc-num">2</span> Tình trạng máy</h2>
+                    @foreach (var g in ThuCuRules.Nhom)
+                    {
+                        var cur = f.Get(g.Field);
+                        <div class="tc-group">
+                            <div class="tc-group-title">@g.Title</div>
+                            <div class="tc-opts">
+                                @foreach (var t in g.Tiers)
+                                {
+                                    <label class="tc-opt">
+                                        <input type="radio" name="@g.Field" value="@t.Key" @(cur == t.Key ? "checked" : "") />
+                                        <span><b>@t.Label</b><small>@t.Hint</small></span>
+                                    </label>
+                                }
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                <div class="tc-card">
+                    <h2><span class="tc-num">3</span> Lên đời máy mới (không bắt buộc)</h2>
+                    <select id="tcMoi" name="MayMoiId" class="form-select">
+                        <option value="">Không, tôi chỉ muốn bán máy cũ</option>
+                        @foreach (var m in Model.MayMoi)
+                        {
+                            <option value="@m.Id" @(f.MayMoiId == m.Id ? "selected" : "")>@m.Ten - từ @m.Gia.VND()</option>
+                        }
+                    </select>
+                </div>
+
+                <div class="tc-card">
+                    <h2><span class="tc-num">4</span> Thông tin liên hệ</h2>
+                    <div class="row g-3">
+                        <div class="col-sm-6">
+                            <label class="form-label">Họ và tên</label>
+                            <input type="text" name="HoTen" class="form-control" value="@f.HoTen" />
+                            @Html.ValidationMessage("HoTen", "", new { @class = "text-danger small" })
+                        </div>
+                        <div class="col-sm-6">
+                            <label class="form-label">Số điện thoại</label>
+                            <input type="tel" name="SoDienThoai" class="form-control" value="@f.SoDienThoai" />
+                            @Html.ValidationMessage("SoDienThoai", "", new { @class = "text-danger small" })
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Email (để nhận xác nhận, không bắt buộc)</label>
+                            <input type="email" name="Email" class="form-control" value="@f.Email" />
+                            @Html.ValidationMessage("Email", "", new { @class = "text-danger small" })
+                        </div>
+                        <div class="col-12">
+                            <label class="form-label">Ghi chú (không bắt buộc)</label>
+                            <textarea name="GhiChu" rows="2" class="form-control" maxlength="500" placeholder="Ví dụ: máy còn hộp, đã thay màn hình...">@f.GhiChu</textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="tc-card tc-note">
+                    <h2><i class="bi bi-clipboard-check"></i> Trước khi mang máy đến cửa hàng</h2>
+                    <ul>
+                        <li>Sao lưu dữ liệu, <b>đăng xuất iCloud / tài khoản Google</b> và tắt tính năng Tìm iPhone.</li>
+                        <li>Mang theo <b>căn cước công dân</b>, hộp và phụ kiện nếu còn.</li>
+                        <li>Giá trên đây chỉ là ước tính. <b>Giá chính thức do nhân viên chốt sau khi kiểm tra máy thực tế</b> (ngoại hình, màn hình, pin, chức năng và IMEI).</li>
+                    </ul>
+                </div>
+            </div>
+
+            <aside class="tc-sum">
+                <div class="tc-sum-title">Giá thu ước tính</div>
+                <div class="tc-sum-price" id="tcGia">--</div>
+                <div class="tc-sum-name" id="tcTen">Hãy chọn máy cần thu</div>
+
+                <div id="tcLenDoi" style="display:none">
+                    <div class="tc-sum-row"><span>Máy mới</span><b id="tcMoiGia"></b></div>
+                    <div class="tc-sum-row"><span>Trừ giá thu cũ</span><b id="tcTru"></b></div>
+                    <div class="tc-sum-row tc-sum-total"><span>Còn phải trả</span><b id="tcPhaiTra"></b></div>
+                </div>
+
+                <button type="submit" class="btn btn-brand w-100 mt-3">Gửi yêu cầu thu cũ</button>
+                <div class="tc-sum-hint">Gửi yêu cầu không mất phí và không bắt buộc phải bán.</div>
+            </aside>
+        </div>
+    }
+</div>
+
+@section scripts {
+    <script>
+        (function () {
+            var F = @Html.Raw(Json.Encode(factors));
+            var MAY = @Html.Raw(mayJson);
+            var MOI = @Html.Raw(moiJson);
+            var selMay = @Html.Raw(Json.Encode(f.MayId));
+
+            var hang = document.getElementById('tcHang'), may = document.getElementById('tcMay'), moi = document.getElementById('tcMoi');
+            function vnd(n) { return Number(n).toLocaleString('vi-VN') + '₫'; }
+            function byId(list, id) { for (var i = 0; i < list.length; i++) if (String(list[i].id) === String(id)) return list[i]; return null; }
+            function pick(name) { var r = document.querySelector('input[name=' + name + ']:checked'); return r ? r.value : null; }
+
+            function fillMay() {
+                var h = hang.value;
+                may.innerHTML = '<option value="">-- Chọn máy --</option>';
+                MAY.filter(function (m) { return m.hang === h; }).forEach(function (m) {
+                    var o = document.createElement('option'); o.value = m.id; o.textContent = m.ten;
+                    if (String(m.id) === String(selMay)) o.selected = true;
+                    may.appendChild(o);
+                });
+            }
+
+            function tinh() {
+                var m = byId(MAY, may.value);
+                if (!m) {
+                    document.getElementById('tcGia').textContent = '--';
+                    document.getElementById('tcTen').textContent = 'Hãy chọn máy cần thu';
+                    document.getElementById('tcLenDoi').style.display = 'none';
+                    return null;
+                }
+                var g = m.gia;
+                ['NgoaiHinh', 'ManHinh', 'Pin', 'ChucNang'].forEach(function (k) { g *= (F[k][pick(k)] || 0); });
+                g = Math.floor((g + 1e-6) / 10000) * 10000;
+                document.getElementById('tcGia').textContent = vnd(g);
+                document.getElementById('tcTen').textContent = m.ten;
+
+                var nm = byId(MOI, moi.value), box = document.getElementById('tcLenDoi');
+                if (nm) {
+                    box.style.display = 'block';
+                    document.getElementById('tcMoiGia').textContent = vnd(nm.gia);
+                    document.getElementById('tcTru').textContent = '-' + vnd(Math.min(g, nm.gia));
+                    document.getElementById('tcPhaiTra').textContent = vnd(Math.max(0, nm.gia - g));
+                } else box.style.display = 'none';
+                return g;
+            }
+
+            // nếu quay lại sau khi gửi lỗi: chọn lại đúng hãng của máy đã chọn
+            var cur = byId(MAY, selMay);
+            if (cur) hang.value = cur.hang;
+            fillMay();
+            hang.addEventListener('change', function () { selMay = null; fillMay(); tinh(); });
+            may.addEventListener('change', function () { selMay = may.value; tinh(); });
+            moi.addEventListener('change', tinh);
+            document.querySelectorAll('.tc-opt input').forEach(function (r) { r.addEventListener('change', tinh); });
+            tinh();
+        })();
+    </script>
+}

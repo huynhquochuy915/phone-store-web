@@ -34,6 +34,7 @@ namespace WebsiteQuanLiDienThoaiDiDong.Models.ViewModels
     }
     public class TrangChuVM
     {
+        public List<SanPhamCardVM> MayCu { get; set; } = new List<SanPhamCardVM>();
         public List<WebsiteQuanLiDienThoaiDiDong.Services.NewsItem> Tin { get; set; } = new List<WebsiteQuanLiDienThoaiDiDong.Services.NewsItem>();
         public List<WebsiteQuanLiDienThoaiDiDong.Services.VideoItem> Video { get; set; } = new List<WebsiteQuanLiDienThoaiDiDong.Services.VideoItem>();
         public List<SanPhamCardVM> NoiBat { get; set; }
