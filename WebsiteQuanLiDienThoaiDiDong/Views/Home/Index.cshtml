@@ -4,39 +4,87 @@
     var hangs = new[] { "Apple", "Samsung", "Xiaomi", "OPPO", "vivo" };
     var capSoSanh = Model.DienThoai.Take(2).ToList();
     var noImg2 = Url.Content("~/Content/images/no-image.png");
+    // ===== BANNER TRANG CHỦ =====
+    // muốn thêm/bớt tab: thêm/bớt một dòng; ảnh đặt tên banner-N.jpg trong Content\images\banners\
+    var banners = new[] {
+        new { Tab = "ĐIỆN THOẠI", Sub = "Trả góp 0%", Img = "banner-1", Cls = "g1",
+              Title = "Điện thoại chính hãng, trả góp 0%", Desc = "Chọn máy, chọn màu, nhận hàng nhanh. Thanh toán khi nhận hoặc quét mã QR.",
+              Btn = "Xem điện thoại", Link = Url.Action("Index", "SanPham", new { area = "", loaiId = 1 }) },
+        new { Tab = "PHỤ KIỆN", Sub = "Mua kèm máy mới", Img = "banner-2", Cls = "g2",
+              Title = "Phụ kiện mua kèm cho máy mới", Desc = "Sạc nhanh, cáp, pin dự phòng, ốp lưng và kính cường lực.",
+              Btn = "Chọn phụ kiện", Link = Url.Action("Index", "SanPham", new { area = "", loaiId = 3 }) },
+        new { Tab = "MÃ CHAOBAN10", Sub = "Giảm 10% đơn đầu", Img = "banner-3", Cls = "g3",
+              Title = "Nhập CHAOBAN10 để giảm 10% đơn đầu tiên", Desc = "Giảm tối đa 500.000₫, áp dụng cho đơn từ 1.000.000₫.",
+              Btn = "Mua sắm ngay", Link = Url.Action("Index", "SanPham", new { area = "" }) },
+        new { Tab = "BÁN CHẠY", Sub = "Được chọn nhiều nhất", Img = "banner-4", Cls = "g4",
+              Title = "Sản phẩm bán chạy nhất", Desc = "Những mẫu được khách hàng chọn mua nhiều nhất tại cửa hàng.",
+              Btn = "Xem ngay", Link = Url.Action("Index", "SanPham", new { area = "", sapXep = "banchay" }) }
+    };
+    var minis = new[] {
+        new { Img = "mini-1", Cls = "g1", Title = "So sánh điện thoại", Sub = "Chọn từ danh sách yêu thích", Link = Url.Action("SoSanh", "SanPham", new { area = "" }) },
+        new { Img = "mini-2", Cls = "g2", Title = "Phụ kiện giá tốt", Sub = "Sạc, cáp, ốp lưng, tai nghe", Link = Url.Action("Index", "SanPham", new { area = "", loaiId = 3 }) },
+        new { Img = "mini-3", Cls = "g3", Title = "Điện thoại bán chạy", Sub = "Được chọn nhiều nhất", Link = Url.Action("Index", "SanPham", new { area = "", loaiId = 1, sapXep = "banchay" }) }
+    };
+
+    // trả về đường dẫn ảnh nếu bạn đã bỏ file vào Content\images\banners\, chưa có thì trả null
+    Func<string, string> bannerImg = name =>
+    {
+        foreach (var ext in new[] { ".jpg", ".jpeg", ".png", ".webp", ".gif" })
+        {
+            var p = "~/Content/images/banners/" + name + ext;
+            if (System.IO.File.Exists(Server.MapPath(p))) return Url.Content(p);
+        }
+        return null;
+    };
 }
 
 <section class="hero">
     <aside class="cat-side">@Html.Action("Menu", "Home", new { area = "" })</aside>
 
-    <div id="heroCar" class="carousel slide hero-main" data-bs-ride="carousel" data-bs-interval="5000">
-        <div class="carousel-indicators">
-            <button type="button" data-bs-target="#heroCar" data-bs-slide-to="0" class="active" aria-label="Banner 1"></button>
-            <button type="button" data-bs-target="#heroCar" data-bs-slide-to="1" aria-label="Banner 2"></button>
-            <button type="button" data-bs-target="#heroCar" data-bs-slide-to="2" aria-label="Banner 3"></button>
+    <div class="hero-center">
+        <div class="hb" id="heroBanner">
+            <div class="hb-tabs">
+                @for (int i = 0; i < banners.Length; i++)
+                {
+                    <button type="button" class="hb-tab @(i == 0 ? "on" : "")"><b>@banners[i].Tab</b><small>@banners[i].Sub</small></button>
+                }
+            </div>
+            <div class="hb-stage">
+                @for (int i = 0; i < banners.Length; i++)
+                {
+                    var b = banners[i];
+                    var src = bannerImg(b.Img);
+                    <div class="hb-slide @(i == 0 ? "on" : "")">
+                        @if (src != null)
+                        {
+                            <a href="@b.Link"><img src="@src" alt="@b.Title" @(i == 0 ? "" : "loading=lazy") /></a>
+                        }
+                        else
+                        {
+                            <div class="hb-fallback @b.Cls">
+                                <h2>@b.Title</h2>
+                                <p>@b.Desc</p>
+                                <a class="btn btn-light" href="@b.Link">@b.Btn</a>
+                            </div>
+                        }
+                    </div>
+                }
+                <button type="button" class="hb-nav prev" aria-label="Trước"><i class="bi bi-chevron-left"></i></button>
+                <button type="button" class="hb-nav next" aria-label="Sau"><i class="bi bi-chevron-right"></i></button>
+            </div>
         </div>
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <div class="slide slide-1">
-                    <h2>Điện thoại chính hãng, trả góp 0%</h2>
-                    <p>Chọn máy, chọn màu, nhận hàng nhanh. Thanh toán khi nhận hoặc quét mã QR.</p>
-                    <a class="btn btn-light" href="@Url.Action("Index", "SanPham", new { area = "", loaiId = 1 })">Xem điện thoại</a>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <div class="slide slide-2">
-                    <h2>Phụ kiện mua kèm cho máy mới</h2>
-                    <p>Sạc nhanh, cáp, pin dự phòng, ốp lưng và kính cường lực.</p>
-                    <a class="btn btn-light" href="@Url.Action("Index", "SanPham", new { area = "", loaiId = 3 })">Chọn phụ kiện</a>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <div class="slide slide-3">
-                    <h2>Nhập CHAOBAN10 để giảm 10% đơn đầu tiên</h2>
-                    <p>Giảm tối đa 500.000₫, áp dụng cho đơn từ 1.000.000₫.</p>
-                    <a class="btn btn-dark" href="@Url.Action("Index", "SanPham", new { area = "" })">Mua sắm ngay</a>
-                </div>
-            </div>
+
+        <div class="hb-minis">
+            @foreach (var m in minis)
+            {
+                var msrc = bannerImg(m.Img);
+                <a class="hb-mini @(msrc == null ? m.Cls : "")" href="@m.Link">
+                    @if (msrc != null)
+                    {<img src="@msrc" alt="@m.Title" loading="lazy" /> }
+                    else
+                    { <div class="hb-mini-fb"><b>@m.Title</b><span>@m.Sub</span></div>}
+                </a>
+            }
         </div>
     </div>
 
@@ -53,7 +101,6 @@
         </a>
     </aside>
 </section>
-
 <section class="policy">
     <div><i class="bi bi-patch-check"></i><span><b>Hàng chính hãng</b>Có bảo hành theo hãng</span></div>
     <div><i class="bi bi-truck"></i><span><b>Giao nhanh</b>Phí ship theo tỉnh thành</span></div>
@@ -208,6 +255,40 @@
         }
     </section>
 }
+@{
+    var diaChi = CauHinh.Get("CuaHang_DiaChi", "");
+    var gioMo = CauHinh.Get("CuaHang_GioMoCua", "");
+    var hot = CauHinh.Get("Hotline", "");
+    var mapQ = Uri.EscapeDataString(diaChi);
+
+    // chỉ nhận link nhúng chính chủ của Google
+    var embed = CauHinh.Get("CuaHang_MapEmbed", "").Trim();
+    var embedOk = embed.StartsWith("https://www.google.com/maps/embed", StringComparison.OrdinalIgnoreCase);
+    var mapSrc = embedOk ? embed : "https://maps.google.com/maps?q=" + mapQ + "&hl=vi&z=16&output=embed";
+}
+@if (diaChi != "")
+{
+    <section class="sec home-store" id="cua-hang">
+        <div class="sec-head"><h2>Cửa hàng gần bạn</h2></div>
+        <div class="store-grid">
+            <div class="store-info">
+                <h2>@CauHinh.Get("TenCuaHang", "PhoneStore")</h2>
+                <div class="store-row"><i class="bi bi-geo-alt-fill"></i><span>@diaChi</span></div>
+                @if (gioMo != "")
+                {<div class="store-row"><i class="bi bi-clock-fill"></i><span>@gioMo</span></div>}
+                @if (hot != "")
+                {<div class="store-row"><i class="bi bi-telephone-fill"></i><a href="tel:@hot.Replace(" ", "")">@hot</a></div>}
+                <a class="btn btn-brand w-100 mt-3" target="_blank" rel="noopener"
+                   href="https://www.google.com/maps/dir/?api=1&destination=@mapQ"><i class="bi bi-sign-turn-right-fill"></i> Chỉ đường đến cửa hàng</a>
+                <a class="btn btn-outline-brand w-100 mt-2" target="_blank" rel="noopener"
+                   href="https://www.google.com/maps/search/?api=1&query=@mapQ"><i class="bi bi-box-arrow-up-right"></i> Mở trong Google Maps</a>
+            </div>
+            <div class="store-map">
+                <iframe title="Bản đồ cửa hàng" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" src="@mapSrc"></iframe>
+            </div>
+        </div>
+    </section>
+}
 @section scripts {
     <script>
         $('.hrow-nav').on('click', function () {
@@ -228,10 +309,69 @@
             tick(); setInterval(tick, 1000);
         })();
         $('#tin-tuc .video-card[data-id]').on('click', function () {
-    $('#videoTitle').text($(this).data('title'));
-    $('#videoFrame').attr('src', 'https://www.youtube-nocookie.com/embed/' + $(this).data('id') + '?autoplay=1&rel=0');
-    bootstrap.Modal.getOrCreateInstance(document.getElementById('videoModal')).show();
-});
-$('#videoModal').on('hidden.bs.modal', function () { $('#videoFrame').attr('src', ''); });
+            $('#videoTitle').text($(this).data('title'));
+            $('#videoFrame').attr('src', 'https://www.youtube-nocookie.com/embed/' + $(this).data('id') + '?autoplay=1&rel=0');
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('videoModal')).show();
+        });
+        $('#videoModal').on('hidden.bs.modal', function () { $('#videoFrame').attr('src', ''); });
+        // kéo bằng chuột cho các hàng sản phẩm cuộn ngang
+        (function () {
+            document.querySelectorAll('.hrow').forEach(function (row) {
+                var down = false, moved = false, startX = 0, startLeft = 0;
+
+                row.addEventListener('mousedown', function (e) {
+                    if (e.button !== 0) return;                 // chỉ chuột trái
+                    down = true; moved = false;
+                    startX = e.pageX; startLeft = row.scrollLeft;
+                });
+
+                document.addEventListener('mousemove', function (e) {
+                    if (!down) return;
+                    var dx = e.pageX - startX;
+                    if (!moved && Math.abs(dx) > 5) { moved = true; row.classList.add('is-dragging'); }
+                    if (moved) { row.scrollLeft = startLeft - dx; e.preventDefault(); }
+                });
+
+                document.addEventListener('mouseup', function () {
+                    if (!down) return;
+                    down = false;
+                    row.classList.remove('is-dragging');
+                });
+
+                // vừa kéo xong thì không bấm nhầm vào thẻ sản phẩm
+                row.addEventListener('click', function (e) {
+                    if (moved) { e.preventDefault(); e.stopPropagation(); moved = false; }
+                }, true);
+
+                // chặn trình duyệt kéo ảnh ra khỏi thẻ
+                row.addEventListener('dragstart', function (e) { e.preventDefault(); });
+            });
+        })();
+        // banner trang chủ: bấm tab để đổi, tự chuyển sau 5 giây, tạm dừng khi rê chuột vào
+        (function () {
+            var box = document.getElementById('heroBanner');
+            if (!box) return;
+            var bar = box.querySelector('.hb-tabs');
+            var tabs = box.querySelectorAll('.hb-tab'), slides = box.querySelectorAll('.hb-slide');
+            var cur = 0, paused = false;
+
+            function show(i) {
+                cur = (i + slides.length) % slides.length;
+                for (var k = 0; k < slides.length; k++) {
+                    slides[k].classList.toggle('on', k === cur);
+                    tabs[k].classList.toggle('on', k === cur);
+                }
+                var t = tabs[cur];   // thanh tab cuộn ngang được: đưa tab đang chọn vào giữa
+                if (bar.scrollWidth > bar.clientWidth) bar.scrollLeft = t.offsetLeft - (bar.clientWidth - t.offsetWidth) / 2;
+            }
+            for (var k = 0; k < tabs.length; k++) (function (n) { tabs[n].addEventListener('click', function () { show(n); }); })(k);
+            box.querySelector('.hb-nav.prev').addEventListener('click', function () { show(cur - 1); });
+            box.querySelector('.hb-nav.next').addEventListener('click', function () { show(cur + 1); });
+            box.addEventListener('mouseenter', function () { paused = true; });
+            box.addEventListener('mouseleave', function () { paused = false; });
+
+            if (slides.length > 1 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+                setInterval(function () { if (!paused) show(cur + 1); }, 5000);
+        })();
     </script>
 }
