@@ -1,4 +1,5 @@
-﻿using System.Linq;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 using WebsiteQuanLiDienThoaiDiDong.Models;
 using WebsiteQuanLiDienThoaiDiDong.Models.ViewModels;
@@ -36,18 +37,20 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
         [ChildActionOnly]
         public ActionResult Menu()
         {
-            var loais = db.LoaiSanPhams.Where(l => l.HienThi).OrderBy(l => l.Id).ToList();
-            var cap = db.SanPhams.Where(s => s.HienThi)
-                        .Select(s => new { s.LoaiId, s.ThuongHieuId, s.ThuongHieu.TenThuongHieu })
-                        .Distinct().ToList();
-            var vm = loais.Select(l => new MenuLoaiVM
+            var loais = db.LoaiSanPhams.Where(x => x.HienThi).OrderBy(x => x.Id).ToList();
+            var vm = new List<MenuLoaiVM>();
+            foreach (var l in loais)
             {
-                Id = l.Id,
-                Ten = l.TenLoai,
-                ThuongHieus = cap.Where(c => c.LoaiId == l.Id)
-                                 .Select(c => new MenuThuongHieuVM { Id = c.ThuongHieuId, Ten = c.TenThuongHieu })
-                                 .OrderBy(x => x.Ten).ToList()
-            }).ToList();
+                var hangs = db.SanPhams.Where(s => s.HienThi && s.LoaiId == l.Id)
+                    .Select(s => s.ThuongHieu).Distinct().OrderBy(t => t.TenThuongHieu).ToList();
+                vm.Add(new MenuLoaiVM
+                {
+                    Id = l.Id,
+                    LoaiId = l.Id,
+                    Ten = l.TenLoai,
+                    ThuongHieus = hangs.Select(t => new MenuThuongHieuVM { Id = t.Id, Ten = t.TenThuongHieu }).ToList()
+                });
+            }
             return PartialView(vm);
         }
 

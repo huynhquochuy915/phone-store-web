@@ -1,34 +1,110 @@
 ﻿@model List<WebsiteQuanLiDienThoaiDiDong.Models.ViewModels.MenuLoaiVM>
-@functions {
-    string Icon(string ten)
-    {
-        ten = (ten ?? "").ToLower();
-        if (ten.Contains("điện thoại")) return "bi-phone";
-        if (ten.Contains("tai nghe")) return "bi-headphones";
-        if (ten.Contains("sạc")) return "bi-lightning-charge";
-        if (ten.Contains("ốp")) return "bi-shield";
-        return "bi-box";
-    }
+@{
+    Func<int, string> icon = id => id == 1 ? "bi-phone" : (id == 2 ? "bi-tablet" : (id == 3 ? "bi-headphones" : "bi-grid"));
+
+    var giaDt = new[] {
+        new { T = "Dưới 10 triệu", Tu = (decimal?)null, Den = (decimal?)10000000m },
+        new { T = "10 - 20 triệu", Tu = (decimal?)10000000m, Den = (decimal?)20000000m },
+        new { T = "20 - 30 triệu", Tu = (decimal?)20000000m, Den = (decimal?)30000000m },
+        new { T = "Trên 30 triệu", Tu = (decimal?)30000000m, Den = (decimal?)null }
+    };
+    var giaPk = new[] {
+        new { T = "Dưới 200 nghìn", Tu = (decimal?)null, Den = (decimal?)200000m },
+        new { T = "200 - 500 nghìn", Tu = (decimal?)200000m, Den = (decimal?)500000m },
+        new { T = "500 nghìn - 1 triệu", Tu = (decimal?)500000m, Den = (decimal?)1000000m },
+        new { T = "Trên 1 triệu", Tu = (decimal?)1000000m, Den = (decimal?)null }
+    };
+    var goiY = new[] {
+        new { T = "Bán chạy nhất", Sx = "banchay" },
+        new { T = "Giá thấp đến cao", Sx = "gia_tang" },
+        new { T = "Giá cao đến thấp", Sx = "gia_giam" },
+        new { T = "Đánh giá cao", Sx = "danhgia" },
+        new { T = "Xem nhiều", Sx = "xemnhieu" }
+    };
+    var dungLuong = new[] { new { T = "128GB", V = 128 }, new { T = "256GB", V = 256 }, new { T = "512GB", V = 512 }, new { T = "1TB", V = 1024 } };
+    var ram = new[] { 4, 6, 8, 12 };
+    var home = Url.Action("Index", "Home", new { area = "" });
 }
+
 <ul class="cat-list">
-    @foreach (var loai in Model)
+    @foreach (var l in Model)
     {
+        bool laDt = l.Id == 1;
+        var gia = laDt ? giaDt : giaPk;
         <li>
-            <a href="@Url.Action("Index", "SanPham", new { area = "", loaiId = loai.Id })">
-                <i class="bi @Icon(loai.Ten)"></i> @loai.Ten <i class="bi bi-chevron-right chev"></i>
-            </a>
-            @if (loai.ThuongHieus.Any())
-            {
-                <div class="cat-fly">
-                    <h6>Chọn theo thương hiệu</h6>
-                    <ul>
-                        @foreach (var th in loai.ThuongHieus)
+            <a href="@Url.Action("Index", "SanPham", new { area = "", loaiId = l.Id })"><i class="bi @(icon(l.Id))"></i> @l.Ten <i class="bi bi-chevron-right chev"></i></a>
+            <div class="cat-fly">
+                <div class="mega">
+                    <div>
+                        <h6>Thương hiệu</h6>
+                        @if (l.ThuongHieus != null && l.ThuongHieus.Any())
                         {
-                            <li><a href="@Url.Action("Index", "SanPham", new { area = "", loaiId = loai.Id, thuongHieuId = th.Id })">@th.Ten</a></li>
+                            <div class="mega-tiles">
+                                @foreach (var t in l.ThuongHieus)
+                                {
+                                    var slug = new string(t.Ten.ToLower().Where(char.IsLetterOrDigit).ToArray());
+                                    var logoPath = "~/Content/images/brands/" + slug + ".png";
+                                    bool coLogo = System.IO.File.Exists(Server.MapPath(logoPath));
+                                    <a class="mega-tile" title="@t.Ten" href="@Url.Action("Index", "SanPham", new { area = "", loaiId = l.Id, thuongHieuId = t.Id })">
+                                        @if (coLogo)
+                                        {<img src="@Url.Content(logoPath)" alt="@t.Ten" /> }
+                                        else
+                                        { <span>@t.Ten</span>}
+                                    </a>
+                                }
+                            </div>
                         }
-                    </ul>
+                        else
+                        { <div class="text-muted small">Chưa có thương hiệu</div>}
+                    </div>
+
+                    <div>
+                        <h6>Phân khúc giá</h6>
+                        <div class="mega-chips">
+                            @foreach (var p in gia)
+                            {
+                                <a class="mega-chip" href="@Url.Action("Index", "SanPham", new { area = "", loaiId = l.Id, giaTu = p.Tu, giaDen = p.Den })">@p.T</a>
+                            }
+                        </div>
+                        @if (laDt)
+                        {
+                            <h6 class="mega-sub">Dung lượng</h6>
+                            <div class="mega-chips">
+                                @foreach (var d in dungLuong)
+                                {
+                                    <a class="mega-chip" href="@Url.Action("Index", "SanPham", new { area = "", loaiId = l.Id, dungLuongGB = d.V })">@d.T</a>
+                                }
+                            </div>
+                        }
+                    </div>
+
+                    <div>
+                        <h6>Gợi ý</h6>
+                        <div class="mega-chips">
+                            @foreach (var g in goiY)
+                            {
+                                <a class="mega-chip" href="@Url.Action("Index", "SanPham", new { area = "", loaiId = l.Id, sapXep = g.Sx })">@g.T</a>
+                            }
+                            <a class="mega-chip" href="@Url.Action("Index", "SanPham", new { area = "", loaiId = l.Id, conHang = true })">Còn hàng</a>
+                        </div>
+                        @if (laDt)
+                        {
+                            <h6 class="mega-sub">RAM</h6>
+                            <div class="mega-chips">
+                                @foreach (var r in ram)
+                                {
+                                    <a class="mega-chip" href="@Url.Action("Index", "SanPham", new { area = "", loaiId = l.Id, ramGB = r })">@(r)GB</a>
+                                }
+                            </div>
+                        }
+                    </div>
                 </div>
-            }
+            </div>
         </li>
     }
+    <li class="cat-sep"></li>
+    <li><a href="@Url.Action("SoSanh", "SanPham", new { area = "" })"><i class="bi bi-arrow-left-right"></i> So sánh sản phẩm</a></li>
+    <li><a href="@Url.Action("TraCuu", "BaoHanh", new { area = "" })"><i class="bi bi-shield-check"></i> Tra cứu bảo hành</a></li>
+    <li><a href="@(home)#tin-tuc"><i class="bi bi-newspaper"></i> Tin công nghệ</a></li>
+    <li><a href="@(home)#cua-hang"><i class="bi bi-geo-alt"></i> Cửa hàng gần bạn</a></li>
 </ul>
