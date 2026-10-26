@@ -1,0 +1,71 @@
+﻿@model WebsiteQuanLiDienThoaiDiDong.Controllers.TongQuanVM
+@using WebsiteQuanLiDienThoaiDiDong.Controllers
+@{
+    ViewBag.Title = "Hạng thành viên";
+    ViewBag.Active = "hang";
+}
+
+<div class="tv-wrap">
+    <div class="tv-body">
+        <aside>@Html.Partial("_Menu")</aside>
+        <div class="tv-main">
+            <section class="tv-card">
+                <div class="tv-card-h"><h2>Hạng thành viên của bạn</h2></div>
+                <div class="d-flex align-items-center gap-3 flex-wrap">
+                    <span class="tv-rank r@(Model.HangIdx) tv-rank-lg"><i class="bi bi-gem"></i> @ThanhVienController.Hangs[Model.HangIdx].Ten</span>
+                    <div>Tổng tiền tích lũy: <b class="text-danger">@Model.TichLuy.VND()</b></div>
+                </div>
+                @if (Model.ConThieu > 0)
+                {
+                    <div class="tv-bar tv-bar-lg"><span style="width:@(Model.PhanTram)%"></span></div>
+                    <div class="small">Cần mua thêm <b>@Model.ConThieu.VND()</b> để lên hạng <b>@ThanhVienController.Hangs[Model.HangIdx + 1].Ten</b>.</div>
+                }
+                else
+                { <div class="tv-ok mt-2">Bạn đang ở hạng cao nhất.</div>}
+            </section>
+
+            <section class="tv-card">
+                <div class="tv-card-h"><h2>Các hạng thành viên</h2></div>
+                <div class="tv-ranks">
+                    @for (int i = 0; i < ThanhVienController.Hangs.Length; i++)
+                    {
+                        var h = ThanhVienController.Hangs[i];
+                        <div class="tv-rank-card @(i == Model.HangIdx ? "now" : "")">
+                            <span class="tv-rank r@(i)"><i class="bi bi-gem"></i> @h.Ten</span>
+                            <div class="tv-rank-need">@(h.Nguong == 0 ? "Mặc định khi đăng ký" : "Từ " + h.Nguong.VND())</div>
+                            <ul>@foreach (var q in h.Quyen)
+                            {<li>@q</li>}</ul>
+                        </div>
+                    }
+                </div>
+                <div class="small text-muted mt-3">Tiền tích lũy được tính trên các đơn hàng đã giao thành công. Quyền lợi hiển thị mang tính minh họa.</div>
+            </section>
+
+            <section class="tv-card" id="uu-dai">
+                <div class="tv-card-h"><h2>Mã giảm giá đang áp dụng</h2></div>
+                <div class="tv-voucher">
+                    <i class="bi bi-gift"></i>
+                    <div><b>Giảm 10% đơn đầu tiên</b><small>Tối đa 500.000₫, đơn từ 1.000.000₫</small><code>CHAOBAN10</code></div>
+                    <button type="button" class="tv-copy" data-code="CHAOBAN10" title="Sao chép"><i class="bi bi-clipboard"></i></button>
+                </div>
+                <div class="tv-voucher">
+                    <i class="bi bi-ticket-perforated"></i>
+                    <div><b>Giảm 500.000₫</b><small>Cho đơn hàng từ 15 triệu</small><code>GIAM500K</code></div>
+                    <button type="button" class="tv-copy" data-code="GIAM500K" title="Sao chép"><i class="bi bi-clipboard"></i></button>
+                </div>
+                <div class="small text-muted mt-2">Nhập mã ở ô "Mã giảm giá" tại trang đặt hàng.</div>
+            </section>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        document.querySelectorAll('.tv-copy').forEach(function (b) {
+            b.addEventListener('click', function () {
+                var c = b.getAttribute('data-code');
+                if (navigator.clipboard) navigator.clipboard.writeText(c).then(function () { showToast('Đã sao chép mã ' + c, true); });
+            });
+        });
+    </script>
+}

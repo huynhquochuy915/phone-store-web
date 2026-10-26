@@ -1,0 +1,19 @@
+﻿@{
+    var a = ViewBag.Active as string ?? "";
+    Func<string, string> on = k => a == k ? "active" : "";
+}
+<nav class="tv-menu">
+    <a class="@on("tongquan")" href="@Url.Action("Index", "ThanhVien", new { area = "" })"><i class="bi bi-house-door"></i> Tổng quan</a>
+    <a class="@on("donhang")" href="@Url.Action("Index", "DonHang", new { area = "" })"><i class="bi bi-receipt"></i> Lịch sử mua hàng</a>
+    <a href="@Url.Action("TraCuu", "BaoHanh", new { area = "" })"><i class="bi bi-shield-check"></i> Tra cứu bảo hành</a>
+    <a href="@Url.Action("TraCuu", "ThuCu", new { area = "" })"><i class="bi bi-arrow-repeat"></i> Thông tin thu cũ</a>
+    <hr />
+    <a class="@on("hang")" href="@Url.Action("Hang", "ThanhVien", new { area = "" })"><i class="bi bi-gem"></i> Hạng thành viên và ưu đãi</a>
+    <a href="@Url.Action("YeuThich", "SanPham", new { area = "" })"><i class="bi bi-heart"></i> Sản phẩm yêu thích</a>
+    <hr />
+    <a class="@on("thongtin")" href="@Url.Action("ThongTin", "ThanhVien", new { area = "" })"><i class="bi bi-person-gear"></i> Thông tin tài khoản</a>
+    <a class="@on("diachi")" href="@Url.Action("DiaChi", "ThanhVien", new { area = "" })"><i class="bi bi-geo-alt"></i> Sổ địa chỉ</a>
+    <a href="@Url.Action("Index", "Home", new { area = "" })#cua-hang"><i class="bi bi-shop"></i> Tìm kiếm cửa hàng</a>
+    <hr />
+    <a href="@Url.Action("Logout", "Account", new { area = "" })"><i class="bi bi-box-arrow-right"></i> Đăng xuất</a>
+</nav>

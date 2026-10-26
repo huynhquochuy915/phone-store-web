@@ -1,0 +1,171 @@
+﻿@model WebsiteQuanLiDienThoaiDiDong.Controllers.TongQuanVM
+@using WebsiteQuanLiDienThoaiDiDong.Controllers
+@{
+    ViewBag.Title = "Tài khoản thành viên";
+    ViewBag.Active = "tongquan";
+    var hang = ThanhVienController.Hangs[Model.HangIdx];
+    var noImg = Url.Content("~/Content/images/no-image.png");
+}
+
+<div class="tv-wrap">
+    <section class="tv-top">
+        <div class="tv-user">
+            <div class="tv-avatar">@Model.ChuCai</div>
+            <div>
+                <h1>@Model.HoTen</h1>
+                <div class="tv-sub">@Model.SdtAn</div>
+                <span class="tv-rank r@(Model.HangIdx)"><i class="bi bi-gem"></i> @hang.Ten</span>
+                @if (Model.NgayTao.HasValue)
+                {<div class="tv-since">Thành viên từ @Model.NgayTao.Value.ToString("dd/MM/yyyy")</div>}
+            </div>
+        </div>
+        <div class="tv-stat">
+            <span class="tv-stat-ico"><i class="bi bi-bag-check"></i></span>
+            <div><b>@Model.TongDon</b><small>Tổng số đơn hàng đã đặt</small></div>
+        </div>
+        <div class="tv-stat tv-stat-wide">
+            <span class="tv-stat-ico"><i class="bi bi-coin"></i></span>
+            <div class="tv-stat-body">
+                <b>@Model.TichLuy.VND()</b>
+                <small>Tổng tiền tích lũy (tính trên đơn đã giao thành công)</small>
+                @if (Model.ConThieu > 0)
+                {
+                    <div class="tv-bar"><span style="width:@(Model.PhanTram)%"></span></div>
+                    <small>Cần mua thêm <b>@Model.ConThieu.VND()</b> để lên hạng <b>@ThanhVienController.Hangs[Model.HangIdx + 1].Ten</b></small>
+                }
+                else
+                { <small class="tv-ok">Bạn đang ở hạng cao nhất</small>}
+            </div>
+        </div>
+    </section>
+
+    <section class="tv-quick">
+        <a href="@Url.Action("Hang", "ThanhVien", new { area = "" })"><i class="bi bi-gem"></i> Hạng thành viên</a>
+        <a href="@Url.Action("Hang", "ThanhVien", new { area = "" })#uu-dai"><i class="bi bi-ticket-perforated"></i> Mã giảm giá</a>
+        <a href="@Url.Action("Index", "DonHang", new { area = "" })"><i class="bi bi-receipt"></i> Lịch sử mua hàng</a>
+        <a href="@Url.Action("DiaChi", "ThanhVien", new { area = "" })"><i class="bi bi-geo-alt"></i> Sổ địa chỉ</a>
+        <a href="@Url.Action("TraCuu", "ThuCu", new { area = "" })"><i class="bi bi-arrow-repeat"></i> Thu cũ @(Model.ThuCuDangXuLy > 0 ? Html.Raw("<em>" + Model.ThuCuDangXuLy + "</em>") : Html.Raw(""))</a>
+        <a href="@Url.Action("YeuThich", "SanPham", new { area = "" })"><i class="bi bi-heart"></i> Yêu thích <em>@Model.SoYeuThich</em></a>
+    </section>
+
+    <div class="tv-body">
+        <aside>@Html.Partial("_Menu")</aside>
+
+        <div class="tv-main">
+            @foreach (var c in Model.CanhBaos)
+            {
+                <div class="tv-alert" data-key="@c.Key">
+                    <i class="bi bi-info-circle"></i>
+                    <span>@c.Text</span>
+                    <a href="@c.Url">@c.LinkText</a>
+                    @if (c.DongDuoc)
+                    {<button type="button" class="tv-x" aria-label="Đóng">&times;</button>}
+                </div>
+            }
+
+            <div class="tv-cols">
+                <div>
+                    <section class="tv-card">
+                        <div class="tv-card-h"><h2>Đơn hàng gần đây</h2><a href="@Url.Action("Index", "DonHang", new { area = "" })">Xem tất cả</a></div>
+                        @if (!Model.Don.Any())
+                        {
+                            <div class="tv-empty"><i class="bi bi-bag"></i>Bạn chưa có đơn hàng nào.<br /><a href="@Url.Action("Index", "Home", new { area = "" })">Mua sắm ngay</a></div>
+                        }
+                        @foreach (var d in Model.Don)
+                        {
+                            <div class="tv-order">
+                                <div class="tv-order-h">
+                                    <span>Đơn hàng: <b>#@d.Ma</b> <i class="tv-dot"></i> Ngày đặt: <b>@d.Ngay.ToString("dd/MM/yyyy")</b></span>
+                                    <span class="adm-badge @ThanhVienController.MauTT(d.TrangThai)">@ThanhVienController.TenTT(d.TrangThai)</span>
+                                </div>
+                                <div class="tv-order-b">
+                                    <div class="tv-thumb">
+                                        @if (!string.IsNullOrEmpty(d.Anh))
+                                        {<img src="@Url.Content("~" + d.Anh)" alt="" onerror="this.onerror=null;this.src='@noImg'" /> }
+                                        else
+                                        { <i class="bi bi-phone"></i>}
+                                    </div>
+                                    <div class="tv-order-info">
+                                        <b>@d.TenSP</b>
+                                        @if (d.ConLai > 0)
+                                        {<div class="text-muted small">và @d.ConLai sản phẩm khác</div>}
+                                    </div>
+                                    <div class="tv-order-r">
+                                        <small>Tổng thanh toán:</small> <b class="text-danger">@d.Tong.VND()</b>
+                                        <a href="@(d.ChoThanhToanQR ? Url.Action("ThanhCong", "DatHang", new { area = "", id = d.Id }) : Url.Action("Index", "DonHang", new { area = "" }))">@(d.ChoThanhToanQR ? "Thanh toán" : "Xem chi tiết") <i class="bi bi-chevron-right"></i></a>
+                                    </div>
+                                </div>
+                            </div>
+                        }
+                    </section>
+
+                    <section class="tv-card">
+                        <div class="tv-card-h"><h2>Sản phẩm yêu thích</h2><a href="@Url.Action("YeuThich", "SanPham", new { area = "" })">Xem tất cả (@Model.SoYeuThich)</a></div>
+                        @if (!Model.YeuThich.Any())
+                        {
+                            <div class="tv-empty"><i class="bi bi-heart"></i>Bạn chưa lưu sản phẩm nào.</div>
+                        }
+                        else
+                        {
+                            <div class="tv-favs">
+                                @foreach (var p in Model.YeuThich)
+                                {
+                                    <a class="tv-fav" href="@Url.Action("ChiTiet", "SanPham", new { area = "", id = p.Id })">
+                                        <img src="@(string.IsNullOrEmpty(p.AnhDaiDien) ? noImg : Url.Content("~" + p.AnhDaiDien))" alt="" onerror="this.onerror=null;this.src='@noImg'" />
+                                        <div><b>@p.TenSanPham</b><span>@p.GiaThapNhat.VND()</span></div>
+                                    </a>
+                                }
+                            </div>
+                        }
+                    </section>
+                </div>
+
+                <div>
+                    <section class="tv-card">
+                        <div class="tv-card-h"><h2>Ưu đãi của bạn</h2></div>
+                        <div class="tv-voucher">
+                            <i class="bi bi-gift"></i>
+                            <div><b>Giảm 10% đơn đầu tiên</b><small>Tối đa 500.000₫, đơn từ 1.000.000₫</small><code>CHAOBAN10</code></div>
+                            <button type="button" class="tv-copy" data-code="CHAOBAN10" title="Sao chép"><i class="bi bi-clipboard"></i></button>
+                        </div>
+                        <div class="tv-voucher">
+                            <i class="bi bi-ticket-perforated"></i>
+                            <div><b>Giảm 500.000₫</b><small>Cho đơn hàng từ 15 triệu</small><code>GIAM500K</code></div>
+                            <button type="button" class="tv-copy" data-code="GIAM500K" title="Sao chép"><i class="bi bi-clipboard"></i></button>
+                        </div>
+                    </section>
+
+                    <section class="tv-card">
+                        <div class="tv-card-h"><h2>Thu cũ đổi mới</h2></div>
+                        <p class="small text-muted mb-2">Định giá máy cũ để lên đời điện thoại mới.</p>
+                        @if (Model.ThuCuDangXuLy > 0)
+                        {
+                            <p class="mb-2">Bạn có <b>@Model.ThuCuDangXuLy</b> yêu cầu đang xử lý.</p>
+                            <a class="btn btn-outline-brand w-100 mb-2" href="@Url.Action("TraCuu", "ThuCu", new { area = "" })">Theo dõi yêu cầu</a>
+                        }
+                        <a class="btn btn-brand w-100" href="@Url.Action("Index", "ThuCu", new { area = "" })">Định giá máy cũ</a>
+                    </section>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section scripts {
+    <script>
+        // đóng thông báo gợi ý, nhớ trong trình duyệt
+        document.querySelectorAll('.tv-alert').forEach(function (a) {
+            var k = 'tv_dis_' + a.getAttribute('data-key');
+            try { if (localStorage.getItem(k)) a.remove(); } catch (e) { }
+            var x = a.querySelector('.tv-x');
+            if (x) x.addEventListener('click', function () { try { localStorage.setItem(k, '1'); } catch (e) { } a.remove(); });
+        });
+        // sao chép mã giảm giá
+        document.querySelectorAll('.tv-copy').forEach(function (b) {
+            b.addEventListener('click', function () {
+                var c = b.getAttribute('data-code');
+                if (navigator.clipboard) navigator.clipboard.writeText(c).then(function () { showToast('Đã sao chép mã ' + c, true); });
+            });
+        });
+    </script>
+}

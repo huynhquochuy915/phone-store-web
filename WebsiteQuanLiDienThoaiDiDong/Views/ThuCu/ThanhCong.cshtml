@@ -21,7 +21,7 @@
             @if (!string.IsNullOrEmpty(Model.MayMuonMua))
             {
                 <tr><th>Muốn lên đời</th><td>@Model.MayMuonMua</td></tr>
-}
+            }
             <tr><th>Giá ước tính</th><td class="price">@Model.GiaUocTinh.VND()</td></tr>
             <tr><th>Trạng thái</th><td><span class="adm-badge @ThuCuRules.MauTrangThai(Model.TrangThai)">@ThuCuRules.TenTrangThai(Model.TrangThai)</span></td></tr>
         </table>
@@ -29,6 +29,7 @@
             Giá trên chỉ là <b>ước tính</b>. Giá chính thức được chốt sau khi nhân viên kiểm tra máy.
             Nhớ <b>đăng xuất iCloud / tài khoản Google</b> và mang theo căn cước công dân.
         </div>
+        <a class="btn btn-outline-brand mt-3 ms-2" href="@Url.Action("TraCuu", "ThuCu", new { area = "", ma = Model.MaYeuCau })">Theo dõi yêu cầu</a>
         <a class="btn btn-brand mt-3" href="@Url.Action("Index", "Home", new { area = "" })">Về trang chủ</a>
     </div>
 </div>
