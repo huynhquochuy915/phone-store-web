@@ -143,6 +143,7 @@
     <Compile Include="Controllers\KhuyenMaiController.cs" />
     <Compile Include="Controllers\SanPhamController.cs" />
     <Compile Include="Controllers\BaoHanhController.cs" />
+    <Compile Include="Controllers\ThanhVienController.cs" />
     <Compile Include="Controllers\ThongKeController.cs" />
     <Compile Include="Controllers\ThuCuController.cs" />
     <Compile Include="Global.asax.cs">
@@ -461,6 +462,12 @@
     <Content Include="Views\Shared\_SocialLogin.cshtml" />
     <Content Include="Views\ThuCu\Index.cshtml" />
     <Content Include="Views\ThuCu\ThanhCong.cshtml" />
+    <Content Include="Views\ThuCu\TraCuu.cshtml" />
+    <Content Include="Views\ThanhVien\_Menu.cshtml" />
+    <Content Include="Views\ThanhVien\Index.cshtml" />
+    <Content Include="Views\ThanhVien\Hang.cshtml" />
+    <Content Include="Views\ThanhVien\ThongTin.cshtml" />
+    <Content Include="Views\ThanhVien\DiaChi.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />

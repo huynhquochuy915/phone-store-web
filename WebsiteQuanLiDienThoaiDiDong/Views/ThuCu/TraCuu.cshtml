@@ -1,0 +1,88 @@
+﻿@using WebsiteQuanLiDienThoaiDiDong.Services
+@{
+    ViewBag.Title = "Tra cứu yêu cầu thu cũ";
+    var kq = ViewBag.KQ as YeuCauThuCu;
+    var cuaToi = ViewBag.CuaToi as List<YeuCauThuCu>;
+    var buoc = new[] { "MoiGui", "DaLienHe", "DaDinhGia", "HoanTat" };
+}
+
+<div class="tc-page" style="max-width:760px">
+    <h1 class="h3 fw-bold mb-3">Tra cứu yêu cầu thu cũ</h1>
+
+    <div class="tc-card">
+        <form method="get" action="@Url.Action("TraCuu")" class="row g-3 align-items-end">
+            <div class="col-sm-5">
+                <label class="form-label">Mã yêu cầu</label>
+                <input type="text" name="ma" class="form-control" value="@ViewBag.Ma" placeholder="Ví dụ: TC261025101530" required />
+            </div>
+            <div class="col-sm-4">
+                <label class="form-label">Số điện thoại</label>
+                <input type="tel" name="sdt" class="form-control" value="@ViewBag.Sdt" placeholder="Số đã đăng ký" required />
+            </div>
+            <div class="col-sm-3"><button type="submit" class="btn btn-brand w-100">Tra cứu</button></div>
+        </form>
+        @if (ViewBag.Loi != null)
+        {<div class="alert alert-danger mt-3 mb-0">@ViewBag.Loi</div>}
+    </div>
+
+    @if (kq != null)
+    {
+        <div class="tc-card">
+            <div class="d-flex justify-content-between flex-wrap gap-2 mb-3">
+                <div><b>@kq.TenMay</b><div class="text-muted small">Mã @kq.MaYeuCau · gửi lúc @kq.NgayTao.ToString("dd/MM/yyyy HH:mm")</div></div>
+                <span class="adm-badge @ThuCuRules.MauTrangThai(kq.TrangThai) align-self-start">@ThuCuRules.TenTrangThai(kq.TrangThai)</span>
+            </div>
+
+            @if (kq.TrangThai == "Huy")
+            {
+                <div class="alert alert-secondary">Yêu cầu này đã được đóng. Cần hỗ trợ, vui lòng gọi <b>@CauHinh.Get("Hotline")</b>.</div>
+            }
+            else
+            {
+                int cur = Array.IndexOf(buoc, kq.TrangThai);
+                <div class="tc-track">
+                    @for (int i = 0; i < buoc.Length; i++)
+                    {
+                        <div class="tc-track-item @(i < cur ? "done" : (i == cur ? "now" : ""))">
+                            <span>@(i < cur ? "✓" : (i + 1).ToString())</span>@ThuCuRules.TenTrangThai(buoc[i])
+                        </div>
+                    }
+                </div>
+            }
+
+            <table class="table mb-0 mt-3">
+                <tr><th style="width:180px">Giá ước tính</th><td>@kq.GiaUocTinh.VND()</td></tr>
+                <tr><th>Giá chốt</th><td>@(kq.GiaChot.HasValue ? kq.GiaChot.Value.VND() : "Chưa có, nhân viên sẽ chốt sau khi kiểm tra máy")</td></tr>
+                @if (!string.IsNullOrEmpty(kq.MayMuonMua))
+                {
+                    <tr><th>Muốn lên đời</th><td>@kq.MayMuonMua</td></tr>
+}
+            </table>
+            @if (kq.TrangThai == "DaDinhGia")
+            {
+                <div class="alert alert-warning mt-3 mb-0">Cửa hàng đã định giá xong. Bạn mang máy đến cửa hàng để hoàn tất, có thể từ chối nếu không đồng ý với giá.</div>
+            }
+        </div>
+    }
+
+    @if (cuaToi != null && cuaToi.Any())
+    {
+        <div class="tc-card">
+            <h2>Yêu cầu của tôi</h2>
+            <table class="table mb-0">
+                <thead><tr><th>Mã</th><th>Máy</th><th class="text-end">Giá</th><th>Trạng thái</th></tr></thead>
+                <tbody>
+                    @foreach (var r in cuaToi)
+                    {
+                        <tr>
+                            <td><a href="@Url.Action("TraCuu", new { ma = r.MaYeuCau, sdt = r.SoDienThoai })">@r.MaYeuCau</a></td>
+                            <td>@r.TenMay</td>
+                            <td class="text-end">@((r.GiaChot ?? r.GiaUocTinh).VND())</td>
+                            <td><span class="adm-badge @ThuCuRules.MauTrangThai(r.TrangThai)">@ThuCuRules.TenTrangThai(r.TrangThai)</span></td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

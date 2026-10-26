@@ -101,7 +101,29 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
             if (yc == null) return HttpNotFound();
             return View(yc);
         }
+        [HttpGet]
+        public ActionResult TraCuu(string ma, string sdt)
+        {
+            ViewBag.Ma = ma;
+            ViewBag.Sdt = sdt;
 
+            // khách đã đăng nhập thì thấy danh sách yêu cầu của mình
+            if (AuthHelper.IsLoggedIn)
+                ViewBag.CuaToi = db.Database.SqlQuery<YeuCauThuCu>(
+                    "SELECT TOP 20 * FROM YeuCauThuCu WHERE NguoiDungId = @u ORDER BY Id DESC",
+                    new SqlParameter("@u", AuthHelper.UserId.Value)).ToList();
+
+            if (!string.IsNullOrWhiteSpace(ma) && !string.IsNullOrWhiteSpace(sdt))
+            {
+                var yc = db.Database.SqlQuery<YeuCauThuCu>(
+                    "SELECT TOP 1 * FROM YeuCauThuCu WHERE MaYeuCau = @ma AND SoDienThoai = @sdt",
+                    new SqlParameter("@ma", ma.Trim().ToUpper()),
+                    new SqlParameter("@sdt", sdt.Replace(" ", ""))).FirstOrDefault();
+                if (yc == null) ViewBag.Loi = "Không tìm thấy yêu cầu. Vui lòng kiểm tra lại mã và số điện thoại.";
+                else ViewBag.KQ = yc;
+            }
+            return View();
+        }
         protected override void Dispose(bool disposing) { if (disposing) db.Dispose(); base.Dispose(disposing); }
     }
 }

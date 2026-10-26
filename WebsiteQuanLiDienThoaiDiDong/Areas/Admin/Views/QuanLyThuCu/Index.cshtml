@@ -52,6 +52,20 @@
                             </td>
                             <td class="num"><b>@r.GiaUocTinh.VND()</b></td>
                             <td>
+                                @if (r.TrangThai == "HoanTat" || r.TrangThai == "Huy")
+                                {
+                                    <span class="adm-badge @ThuCuRules.MauTrangThai(r.TrangThai)">@ThuCuRules.TenTrangThai(r.TrangThai)</span>
+                                    if (r.GiaChot.HasValue)
+                                    {
+                                        var chenh = r.GiaChot.Value - r.GiaUocTinh;
+                                        <div class="mt-1"><b>Giá chốt: @r.GiaChot.Value.VND()</b></div>
+                                        <div class="adm-prod-sub">@(chenh >= 0 ? "Cao hơn" : "Thấp hơn") ước tính @Math.Abs(chenh).VND()</div>
+                                    }
+                                    if (r.NgayCapNhat.HasValue)
+                                    { <div class="adm-prod-sub">Đóng lúc @r.NgayCapNhat.Value.ToString("dd/MM/yyyy HH:mm")</div> }
+                            }
+                            else
+                            {
                                 <form method="post" action="@Url.Action("CapNhat")" class="adm-inline-form">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="id" value="@r.Id" />
@@ -64,8 +78,9 @@
                                     </select>
                                     <input type="number" name="giaChot" min="0" step="10000" class="form-control form-control-sm" placeholder="Giá chốt"
                                            value="@(r.GiaChot.HasValue ? ((long)r.GiaChot.Value).ToString() : "")" />
-                                    <button type="submit" class="btn btn-brand btn-sm">Lưu</button>
+                                    <button type="submit" class="btn btn-brand btn-sm" onclick="return confirmThuCu(this)">Lưu</button>
                                 </form>
+                            }
                             </td>
                         </tr>
                     }
@@ -74,3 +89,24 @@
         </div>
     }
 </div>
+@section scripts {
+    <script>
+        // chuyển sang "Đã định giá"/"Hoàn tất" thì bắt buộc nhập giá chốt
+        document.querySelectorAll('.adm-inline-form').forEach(function (f) {
+            var s = f.querySelector('select'), g = f.querySelector('input[name=giaChot]');
+            function sync() {
+                var can = s.value === 'DaDinhGia' || s.value === 'HoanTat';
+                g.required = can;
+                g.placeholder = can ? 'Giá chốt (bắt buộc)' : 'Giá chốt';
+            }
+            s.addEventListener('change', sync); sync();
+        });
+        // Hoàn tất và Hủy là bước cuối, hỏi lại cho chắc
+        function confirmThuCu(btn) {
+            var v = btn.form.querySelector('select').value;
+            if (v === 'HoanTat') return confirm('Hoàn tất yêu cầu này? Sau khi lưu sẽ không sửa được nữa và khách nhận email thông báo.');
+            if (v === 'Huy') return confirm('Hủy yêu cầu này? Sau khi lưu sẽ không sửa được nữa.');
+            return true;
+        }
+    </script>
+}
