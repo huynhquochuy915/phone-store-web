@@ -143,7 +143,9 @@ namespace WebsiteQuanLiDienThoaiDiDong.Models.ViewModels
         public List<string> DanhSachTinh { get; set; }
         public decimal PhiShip { get; set; }
         public decimal TienGiam { get; set; }
-        public decimal TongThanhToan { get { return (Cart == null ? 0 : Cart.TongTien) + PhiShip - TienGiam; } }
+        public decimal GiamHang { get; set; }      // ưu đãi theo hạng thành viên
+        public string TenHang { get; set; }
+        public decimal TongThanhToan { get { return (Cart == null ? 0 : Cart.TongTien) + PhiShip - TienGiam - GiamHang; } }
     }
 
     public class KetQuaDatHang

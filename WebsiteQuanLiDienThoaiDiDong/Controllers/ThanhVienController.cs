@@ -10,15 +10,11 @@ using System.Web.Mvc;
 using WebsiteQuanLiDienThoaiDiDong.Helpers;
 using WebsiteQuanLiDienThoaiDiDong.Models;
 using WebsiteQuanLiDienThoaiDiDong.Models.ViewModels;
+using WebsiteQuanLiDienThoaiDiDong.Services;
 
 namespace WebsiteQuanLiDienThoaiDiDong.Controllers
 {
-    public class HangTV
-    {
-        public string Ten { get; set; }
-        public decimal Nguong { get; set; }
-        public string[] Quyen { get; set; }
-    }
+    
 
     public class DonRow
     {
@@ -90,13 +86,7 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
         private int Uid { get { return AuthHelper.UserId.Value; } }
 
         // ===== hạng thành viên: số liệu minh họa, chỉnh tùy ý. Quyền lợi chỉ để hiển thị. =====
-        public static readonly HangTV[] Hangs = new[]
-        {
-            new HangTV { Ten = "Thành viên", Nguong = 0,        Quyen = new[] { "Tích lũy theo các đơn đã giao thành công", "Nhận thông báo đơn hàng và thu cũ" } },
-            new HangTV { Ten = "Bạc",        Nguong = 10000000, Quyen = new[] { "Tất cả quyền lợi hạng Thành viên", "Nhận thông tin ưu đãi sớm" } },
-            new HangTV { Ten = "Vàng",       Nguong = 30000000, Quyen = new[] { "Tất cả quyền lợi hạng Bạc", "Ưu tiên hỗ trợ bảo hành" } },
-            new HangTV { Ten = "Kim cương",  Nguong = 60000000, Quyen = new[] { "Tất cả quyền lợi hạng Vàng", "Ưu tiên giao hàng và hỗ trợ riêng" } }
-        };
+        public static HangTV[] Hangs { get { return UuDaiHang.Hangs; } }
 
         public static string TenTT(string t)
         {
