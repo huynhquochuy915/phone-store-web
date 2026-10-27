@@ -107,6 +107,9 @@
                 <div class="co-row"><span>Tiền hàng</span><b>@Model.Cart.TongTien.VND()</b></div>
                 <div class="co-row"><span>Phí vận chuyển</span><b id="phiShip">@Model.PhiShip.VND()</b></div>
                 <div class="co-row"><span>Giảm giá</span><b id="tienGiam">-@Model.TienGiam.VND()</b></div>
+                <div class="co-row" id="rowHang" @(Model.GiamHang > 0 ? "" : "style=display:none")>
+                    <span>Ưu đãi hạng @Model.TenHang</span><b class="text-success" id="giamHang">-@Model.GiamHang.VND()</b>
+                </div>
                 <div class="co-row co-total">
                     <span>Tổng thanh toán</span>
                     <b class="text-danger" id="tong" data-value="@((long)Model.TongThanhToan)">@Model.TongThanhToan.VND()</b>
@@ -145,6 +148,8 @@
             }, function (r) {
                 $('#phiShip').text(vnd(r.phiShip));
                 $('#tienGiam').text('-' + vnd(r.tienGiam));
+                $('#giamHang').text('-' + vnd(r.giamHang));
+                $('#rowHang').toggle(r.giamHang > 0);
                 $('#tong').text(vnd(r.tong)).attr('data-value', Math.round(r.tong));
                 $('#maMsg').text(r.message).attr('class', 'small mb-2 ' + (r.tienGiam > 0 ? 'text-success' : 'text-danger'));
                 capNhatQR();

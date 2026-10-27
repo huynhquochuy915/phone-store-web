@@ -122,6 +122,16 @@
 
                 <div>
                     <section class="tv-card">
+                        <div class="tv-card-h"><h2>Ưu đãi hạng @hang.Ten</h2></div>
+                        <ul class="tv-perks">
+                            @foreach (var q in hang.Quyen)
+                            {
+                                <li><i class="bi bi-check-circle-fill"></i> @q</li>
+}
+                        </ul>
+                        <div class="small text-muted">Tự động áp dụng khi đặt hàng.</div>
+                    </section>
+                    <section class="tv-card">
                         <div class="tv-card-h"><h2>Ưu đãi của bạn</h2></div>
                         <div class="tv-voucher">
                             <i class="bi bi-gift"></i>

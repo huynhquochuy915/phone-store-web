@@ -5420,3 +5420,20 @@ html {
         grid-template-columns: 1fr;
     }
 }
+.tv-perks {
+    list-style: none;
+    margin: 0 0 8px;
+    padding: 0;
+}
+
+    .tv-perks li {
+        display: flex;
+        gap: 8px;
+        align-items: flex-start;
+        padding: 5px 0;
+    }
+
+        .tv-perks li i {
+            color: #16a34a;
+            margin-top: 3px;
+        }

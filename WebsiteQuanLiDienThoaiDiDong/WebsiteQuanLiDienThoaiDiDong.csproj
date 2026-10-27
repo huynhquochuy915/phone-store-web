@@ -304,6 +304,7 @@
     <Compile Include="Services\CartService.cs" />
     <Compile Include="Services\NewsService.cs" />
     <Compile Include="Services\ThuCuService.cs" />
+    <Compile Include="Services\UuDaiHang.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-grid.css" />
