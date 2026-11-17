@@ -45,6 +45,17 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
                 ConHang = conHang, SapXep = sapXep, Trang = trang,
                 SoTrang = Math.Max(1, (int)Math.Ceiling(tong / (double)SoDongMoiTrang))
             };
+            var ids = vm.SanPhams.Select(x => x.Id).ToList();
+            if (ids.Any())
+            {
+                var bt = db.BienTheSanPhams.Where(b => ids.Contains(b.SanPhamId) && b.HienThi)
+                    .Select(b => new { b.SanPhamId, b.GiaBan, b.GiaGoc }).ToList();
+                foreach (var s in vm.SanPhams)
+                {
+                    var r = bt.Where(b => b.SanPhamId == s.Id).OrderBy(b => b.GiaBan).FirstOrDefault();
+                    if (r != null) s.GiaGoc = r.GiaGoc;   // giá gốc của phiên bản rẻ nhất, cùng cách trang chủ tính
+                }
+            }
             return View(vm);
         }
 
