@@ -12,6 +12,8 @@
         <a class="pcard-link" href="@Url.Action("ChiTiet", "SanPham", new { area = "", id = Model.Id })">
             @if (giam > 0)
             {<span class="pcard-off">Giảm @giam%</span>}
+            @if (CauHinh.Get("LoaiId_HangCu", "0") == Model.LoaiId.ToString())
+            {<span class="pcard-used">Máy cũ</span>}
             <div class="pcard-img">
                 <img src="@(Model.AnhDaiDien != null ? Url.Content("~" + Model.AnhDaiDien) : noImg)" alt="@Model.TenSanPham"
                      loading="lazy" onerror="this.onerror=null;this.src='@noImg'" />
