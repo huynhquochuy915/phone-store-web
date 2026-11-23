@@ -1,0 +1,74 @@
+﻿@model WebsiteQuanLiDienThoaiDiDong.Controllers.DiaChiVM
+@{
+    ViewBag.Title = "Sổ địa chỉ";
+    ViewBag.Active = "diachi";
+}
+
+<div class="tv-wrap">
+    <div class="tv-body">
+        <aside>@Html.Partial("_Menu")</aside>
+        <div class="tv-main">
+            <section class="tv-card">
+                <div class="tv-card-h"><h2>Sổ địa chỉ</h2></div>
+                @if (!Model.Ds.Any())
+                {
+                    <div class="tv-empty"><i class="bi bi-geo-alt"></i>Bạn chưa lưu địa chỉ nào.</div>
+                }
+                @foreach (var d in Model.Ds)
+                {
+                    <div class="tv-addr @(d.MacDinh ? "def" : "")">
+                        <div class="tv-addr-info">
+                            <b>@d.TenNguoiNhan</b> <span class="text-muted">· @d.SoDienThoai</span>
+                            @if (d.MacDinh)
+                            {<span class="adm-badge adm-badge-green ms-1">Mặc định</span>}
+                            <div>@d.DiaChiChiTiet, @d.PhuongXa, @d.QuanHuyen, @d.TinhThanh</div>
+                        </div>
+                        <div class="tv-addr-act">
+                            @if (!d.MacDinh)
+                            {
+                                using (Html.BeginForm("DatMacDinh", "ThanhVien", new { area = "" }, FormMethod.Post, new { @class = "d-inline" }))
+                                {
+                                    @Html.AntiForgeryToken()
+                                    <input type="hidden" name="id" value="@d.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-brand">Đặt mặc định</button>
+                                }
+                            }
+                            @using (Html.BeginForm("XoaDiaChi", "ThanhVien", new { area = "" }, FormMethod.Post, new { @class = "d-inline", onsubmit = "return confirm('Xóa địa chỉ này?');" }))
+                            {
+                                @Html.AntiForgeryToken()
+                                <input type="hidden" name="id" value="@d.Id" />
+                                <button type="submit" class="btn btn-sm btn-outline-secondary">Xóa</button>
+                            }
+                        </div>
+                    </div>
+                }
+            </section>
+
+            <section class="tv-card">
+                <div class="tv-card-h"><h2>Thêm địa chỉ mới</h2></div>
+                <form method="post" action="@Url.Action("ThemDiaChi", "ThanhVien", new { area = "" })" class="row g-3">
+                    @Html.AntiForgeryToken()
+                    <div class="col-md-6"><label class="form-label">Họ tên người nhận</label><input type="text" name="tenNguoiNhan" class="form-control" required /></div>
+                    <div class="col-md-6"><label class="form-label">Số điện thoại</label><input type="tel" name="soDienThoai" class="form-control" required /></div>
+                    <div class="col-md-4">
+                        <label class="form-label">Tỉnh/thành</label>
+                        <select name="tinhThanh" class="form-select" required>
+                            <option value="">-- Chọn --</option>
+                            @foreach (var t in Model.Tinh)
+                            {
+                                <option value="@t">@t</option>
+}
+                        </select>
+                    </div>
+                    <div class="col-md-4"><label class="form-label">Quận/huyện</label><input type="text" name="quanHuyen" class="form-control" required /></div>
+                    <div class="col-md-4"><label class="form-label">Phường/xã</label><input type="text" name="phuongXa" class="form-control" required /></div>
+                    <div class="col-12"><label class="form-label">Địa chỉ chi tiết</label><input type="text" name="diaChiChiTiet" class="form-control" placeholder="Số nhà, tên đường..." required /></div>
+                    <div class="col-12">
+                        <div class="form-check"><input class="form-check-input" type="checkbox" name="macDinh" value="true" id="macDinh" /><label class="form-check-label" for="macDinh">Đặt làm địa chỉ mặc định</label></div>
+                    </div>
+                    <div class="col-12"><button type="submit" class="btn btn-brand">Lưu địa chỉ</button></div>
+                </form>
+            </section>
+        </div>
+    </div>
+</div>

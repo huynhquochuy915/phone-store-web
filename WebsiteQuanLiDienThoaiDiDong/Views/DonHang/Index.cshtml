@@ -1,0 +1,240 @@
+﻿
+@using System
+@using System.Data
+
+@{
+    ViewBag.Title = "Lịch sử mua hàng";
+
+    DataTable danhSach = ViewBag.DanhSachDonHang as DataTable;
+
+    string trangThai = Convert.ToString(ViewBag.TrangThai);
+    string tuNgay = Convert.ToString(ViewBag.TuNgay);
+    string denNgay = Convert.ToString(ViewBag.DenNgay);
+
+    bool coLocNgay = !string.IsNullOrEmpty(tuNgay)
+                  || !string.IsNullOrEmpty(denNgay);
+}
+
+<div class="history-page">
+    <div class="history-heading">
+        <h1>Lịch sử mua hàng</h1>
+
+        <button type="button"
+                class="history-date-button"
+                data-bs-toggle="modal"
+                data-bs-target="#locNgayModal">
+            <i class="bi bi-calendar3"></i>
+            @if (coLocNgay)
+            {
+                <span>
+                    @tuNgay - @denNgay
+                </span>
+            }
+
+            else
+            {
+                <span>Chọn thời gian</span>
+            }
+            <i class="bi bi-chevron-down"></i>
+        </button>
+    </div>
+
+    <div class="history-tabs">
+        <a class="history-tab @(string.IsNullOrEmpty(trangThai) ? "active" : "")"
+           href="@Url.Action("Index", "DonHang", new { tuNgay = tuNgay, denNgay = denNgay })">
+            Tất cả
+        </a>
+
+        <a class="history-tab @(trangThai == "DangTiepNhan" ? "active" : "")"
+           href="@Url.Action("Index", "DonHang", new { trangThai = "DangTiepNhan", tuNgay = tuNgay, denNgay = denNgay })">
+            Đang tiếp nhận
+        </a>
+
+        <a class="history-tab @(trangThai == "DangGiao" ? "active" : "")"
+           href="@Url.Action("Index", "DonHang", new { trangThai = "DangGiao", tuNgay = tuNgay, denNgay = denNgay })">
+            Đang giao
+        </a>
+
+        <a class="history-tab @(trangThai == "HoanTat" ? "active" : "")"
+           href="@Url.Action("Index", "DonHang", new { trangThai = "HoanTat", tuNgay = tuNgay, denNgay = denNgay })">
+            Đã giao
+        </a>
+
+        <a class="history-tab @(trangThai == "DaHuy" ? "active" : "")"
+           href="@Url.Action("Index", "DonHang", new { trangThai = "DaHuy", tuNgay = tuNgay, denNgay = denNgay })">
+            Đã hủy
+        </a>
+    </div>
+
+    @if (danhSach != null && danhSach.Rows.Count > 0)
+    {
+        foreach (DataRow don in danhSach.Rows)
+        {
+            string tinhTrang = Convert.ToString(don["TrangThai"]);
+            string tenTrangThai = tinhTrang;
+            string classTrangThai = "status-progress";
+
+            switch (tinhTrang)
+            {
+                case "ChoXacNhan":
+                    tenTrangThai = "Chờ xác nhận";
+                    break;
+                case "DaXacNhan":
+                    tenTrangThai = "Đã xác nhận";
+                    break;
+                case "DangGiao":
+                    tenTrangThai = "Đang giao";
+                    break;
+                case "HoanTat":
+                    tenTrangThai = "Giao hàng thành công";
+                    classTrangThai = "status-done";
+                    break;
+                case "DaHuy":
+                    tenTrangThai = "Đã hủy";
+                    classTrangThai = "status-cancel";
+                    break;
+            }
+
+            <div class="history-order">
+                <div class="history-order-header">
+                    <div>
+
+                        <div class="history-muted">
+                            <b>Đơn hàng:</b>
+                        </div>
+                        <strong class="text-primary">
+                            @don["MaDonHang"]
+                        </strong>
+
+                        <div class="history-muted mt-1">
+                            Ngày đặt:
+                            @Convert.ToDateTime(don["NgayDat"]).ToString("dd/MM/yyyy")
+                        </div>
+                    </div>
+
+                    <div class="history-status @classTrangThai">
+                        @tenTrangThai
+                    </div>
+                </div>
+
+                <div class="history-order-body">
+
+                    <div class="history-product-icon">
+                        @if (don["AnhDaiDien"] != DBNull.Value &&
+                            !string.IsNullOrEmpty(don["AnhDaiDien"].ToString()))
+                        {
+                            <img src="@don["AnhDaiDien"]"
+                                 alt="Ảnh sản phẩm"
+                                 class="anh-san-pham" />
+                        }
+                        else
+                        {
+                            <img src="~/Content/HinhAnh/no-image.png"
+                                 alt="Chưa có ảnh"
+                                 class="anh-san-pham" />
+                        }
+
+                    </div>
+
+                    <div class="history-product-info">
+                        <div class="history-product-name">
+                            @(don["TenSanPham"] == DBNull.Value
+                                ? "Đơn hàng"
+                                : Convert.ToString(don["TenSanPham"]))
+                        </div>
+
+                        <div class="history-muted">
+                            Số lượng:
+                            @(don["TongSoLuong"] == DBNull.Value
+                                ? "0"
+                                : Convert.ToString(don["TongSoLuong"]))
+                        </div>
+
+                        <div class="history-total">
+                            Tổng thanh toán:
+                            <strong class="text-danger">
+                                @Convert.ToDecimal(don["TongThanhToan"]).ToString("N0")đ
+                            </strong>
+                        </div>
+                    </div>
+                </div>
+
+                @*<div class="history-order-footer">
+                    <a class="history-detail-link"
+                       href="@Url.Action("ChiTiet", "DonHang", new { id = don["Id"] })">
+                        Xem chi tiết <i class="bi bi-chevron-right"></i>
+                    </a>
+                </div>*@
+            </div>
+        }
+    }
+
+    else
+    {
+        <div class="history-empty">
+            <i class="bi bi-bag"></i>
+            <h2>Bạn chưa có đơn hàng nào</h2>
+            <div>Vẫn còn rất nhiều sản phẩm đang chờ bạn</div>
+            <a href="@Url.Action("Index", "Home")">
+                Về trang chủ
+            </a>
+        </div>
+    }
+
+</div>
+
+<div class="modal fade history-date-modal" id="locNgayModal"
+     tabindex="-1" aria-labelledby="locNgayLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <form method="get" action="@Url.Action("Index", "DonHang")">
+                <input type="hidden" name="trangThai" value="@trangThai" />
+
+                <div class="modal-header">
+                    <h2 class="modal-title" id="locNgayLabel">
+                        Xem theo khoảng thời gian
+                    </h2>
+                    <button type="button" class="btn-close"
+                            data-bs-dismiss="modal" aria-label="Đóng"></button>
+                </div>
+
+                <div class="modal-body">
+                    <div class="row g-3">
+                        <div class="col-6">
+                            <label for="tuNgay" class="form-label">Từ</label>
+                            <input type="date" id="tuNgay" name="tuNgay"
+                                   class="form-control" value="@tuNgay" />
+                        </div>
+
+                        <div class="col-6">
+                            <label for="denNgay" class="form-label">Đến</label>
+                            <input type="date" id="denNgay" name="denNgay"
+                                   class="form-control" value="@denNgay" />
+                        </div>
+                    </div>
+                    <div class="form-text mt-3">
+                        Lọc đơn hàng theo ngày đặt.
+                    </div>
+                </div>
+
+                <div class="modal-footer">
+                    <a href="@Url.Action("Index", "DonHang", new { trangThai = trangThai })"
+                       class="btn btn-outline-secondary me-auto">
+                        Xóa lọc ngày
+                    </a>
+
+                    <button type="button" class="btn btn-outline-secondary"
+                            data-bs-dismiss="modal">
+                        Đóng
+                    </button>
+
+                    <button type="submit" class="btn btn-apply">
+                        Áp dụng
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+

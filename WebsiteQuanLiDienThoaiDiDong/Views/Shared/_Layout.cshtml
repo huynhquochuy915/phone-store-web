@@ -9,24 +9,30 @@
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
-    <link href="~/Content/site.css" rel="stylesheet" />
+    <link href="~/Content/site.css?v=15" rel="stylesheet" />
 </head>
 <body>
     <div class="promo-strip">
         <div class="container">
+            <span><i class="bi bi-patch-check"></i>Sản phẩm chính hãng</span>
             <span><i class="bi bi-truck"></i>Giao nhanh toàn quốc</span>
             <span><i class="bi bi-credit-card"></i>Trả góp 0%</span>
             <span><i class="bi bi-qr-code"></i>Thanh toán bằng mã QR</span>
-            <span><i class="bi bi-telephone"></i>Hotline @CauHinh.Get("Hotline")</span>
+            <span class="ms-auto">
+                <a href="@Url.Action("Index", "Home", new { area = "" })#cua-hang" class="text-white text-decoration-none me-3"><i class="bi bi-geo-alt"></i>Cửa hàng gần bạn</a>
+                <i class="bi bi-telephone"></i>Hotline @CauHinh.Get("Hotline")
+            </span>
         </div>
     </div>
+
+    <div id="catBackdrop" class="cat-backdrop"></div>
 
     <header class="site-header">
         <div class="container hd">
             <a class="logo" href="@Url.Action("Index", "Home", new { area = "" })"><i class="bi bi-phone"></i> @CauHinh.Get("TenCuaHang", "PhoneStore")</a>
 
             <div class="cat-drop">
-                <button type="button" class="cat-btn" id="catBtn"><i class="bi bi-list"></i> Danh mục</button>
+                <button type="button" class="cat-btn" id="catBtn" aria-haspopup="true" aria-expanded="false"><i class="bi bi-list"></i> Danh mục <i class="bi bi-chevron-down small"></i></button>
                 <div class="cat-panel">@Html.Action("Menu", "Home", new { area = "" })</div>
             </div>
 
@@ -39,27 +45,54 @@
                 <a class="hd-link" href="@Url.Action("TraCuu", "BaoHanh", new { area = "" })">
                     <i class="bi bi-shield-check"></i><span>Tra cứu<br />bảo hành</span>
                 </a>
-
                 @if (AuthHelper.IsLoggedIn)
                 {
-                    <div class="dropdown">
-                        <a class="hd-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-                            <i class="bi bi-person-circle"></i><span>@AuthHelper.HoTen</span>
-                        </a>
-                        <ul class="dropdown-menu dropdown-menu-end">
-                            <li><a class="dropdown-item account-favorite-link" href="@Url.Action("YeuThich", "SanPham", new { area = "" })"><i class="bi bi-heart-fill"></i><span>Yêu thích</span></a></li>
-                            @if (AuthHelper.IsStaff)
-                            {
-                                <li><a class="dropdown-item" href="@Url.Action("Index", "ThongKe", new { area = "Admin" })">Trang quản trị</a></li>
-                            }
-                            <li><a class="dropdown-item" href="@Url.Action("Index", "DonHang", new { area = "" })">Đơn hàng của tôi</a></li>
-                            <li><a class="dropdown-item" href="@Url.Action("DangXuat", "TaiKhoan", new { area = "" })">Đăng xuất</a></li>
-                        </ul>
+                    var hoTen = AuthHelper.HoTen ?? "";
+                    var chuCai = hoTen.Trim().Length > 0 ? hoTen.Trim().Substring(0, 1).ToUpper() : "?";
+                    <div class="acct">
+                        <button type="button" class="hd-link acct-btn" id="acctBtn" aria-haspopup="true" aria-expanded="false">
+                            <i class="bi bi-person-circle"></i><span>@hoTen</span><i class="bi bi-chevron-down acct-caret"></i>
+                            <b class="acct-badge" id="acctBadge" style="display:none"></b>
+                        </button>
+
+                        <div class="acct-panel" id="acctPanel" data-url="@Url.Action("ThongBao", "Home", new { area = "" })" data-uid="@AuthHelper.UserId">
+                            <a class="acct-me" href="@Url.Action("Index", "ThanhVien", new { area = "" })">
+                                <span class="acct-avatar">@chuCai</span>
+                                <span class="acct-me-info"><b>@hoTen</b><small>Tài khoản thành viên</small></span>
+                                <i class="bi bi-chevron-right"></i>
+                            </a>
+
+                            <div class="acct-quick">
+                                <a href="@Url.Action("YeuThich", "SanPham", new { area = "" })"><i class="bi bi-heart"></i>Yêu thích</a>
+                                <a href="@Url.Action("TraCuu", "ThuCu", new { area = "" })"><i class="bi bi-arrow-repeat"></i>Thu cũ</a>
+                                @if (AuthHelper.IsStaff)
+                                {
+                                    <a href="@Url.Action("Index", "DonHang", new { area = "" })"><i class="bi bi-receipt"></i>Đơn hàng</a>
+                                }
+                                else
+                                {
+                                    <a href="@Url.Action("SoSanh", "SanPham", new { area = "" })"><i class="bi bi-arrow-left-right"></i>So sánh</a>
+                                }
+                                <a href="@Url.Action("Logout", "Account", new { area = "" })"><i class="bi bi-box-arrow-right"></i>Đăng xuất</a>
+                            </div>
+
+                            <div class="acct-head">
+                                <h3>Thông báo</h3>
+                                <button type="button" id="acctReadAll">Đánh dấu đã đọc tất cả</button>
+                            </div>
+                            <div class="acct-tabs">
+                                <button type="button" class="on" data-f="all">Tất cả</button>
+                                <button type="button" data-f="order">Đơn hàng</button>
+                                <button type="button" data-f="trade">Thu cũ</button>
+                            </div>
+                            <div class="acct-list" id="acctList"><div class="acct-empty">Đang tải...</div></div>
+                            <div class="acct-foot"><button type="button" id="acctClose">Đóng</button></div>
+                        </div>
                     </div>
                 }
                 else
                 {
-                    <a class="hd-link" href="@Url.Action("DangNhap", "TaiKhoan", new { area = "" })">
+                    <a class="hd-link" href="@Url.Action("Login", "Account", new { area = "" })">
                         <i class="bi bi-person-circle"></i><span>Đăng nhập<br />Đăng ký</span>
                     </a>
                 }
@@ -70,6 +103,23 @@
             </div>
         </div>
     </header>
+
+    <nav class="subnav">
+        <div class="container">
+            <a href="@Url.Action("Index", "SanPham", new { area = "", loaiId = 1 })"><i class="bi bi-phone"></i> Điện thoại</a>
+            @{ var hangCuNav = CauHinh.Get("LoaiId_HangCu", "0"); }
+            @if (hangCuNav != "0")
+            {
+                <a href="@Url.Action("Index", "SanPham", new { area = "", loaiId = hangCuNav })"><i class="bi bi-recycle"></i> Máy cũ</a>
+            }
+            <a href="@Url.Action("Index", "ThuCu", new { area = "" })"><i class="bi bi-arrow-repeat"></i> Thu cũ đổi mới</a>
+            <a href="@Url.Action("Index", "SanPham", new { area = "", loaiId = 3 })"><i class="bi bi-headphones"></i> Phụ kiện</a>
+            <a href="@Url.Action("SoSanh", "SanPham", new { area = "" })"><i class="bi bi-arrow-left-right"></i> So sánh</a>
+            <a href="@Url.Action("TraCuu", "BaoHanh", new { area = "" })"><i class="bi bi-upc-scan"></i> Tra cứu bảo hành</a>
+            <a href="@Url.Action("Index", "Home", new { area = "" })#tin-tuc"><i class="bi bi-newspaper"></i> Tin công nghệ</a>
+            <a href="@Url.Action("Index", "Home", new { area = "" })#cua-hang"><i class="bi bi-geo-alt"></i> Cửa hàng</a>
+        </div>
+    </nav>
 
     <main class="container pt-3">
         @if (TempData["Msg"] != null)
@@ -85,38 +135,239 @@
                 <div class="col-md-4">
                     <h6>@CauHinh.Get("TenCuaHang", "PhoneStore")</h6>
                     <div>Điện thoại và phụ kiện chính hãng.</div>
-                    <div>Hotline: <strong class="text-dark">@CauHinh.Get("Hotline")</strong></div>
+                    <div class="foot-hotline"><i class="bi bi-telephone-fill"></i> @CauHinh.Get("Hotline")</div>
+                    @if (CauHinh.Get("CuaHang_DiaChi", "") != "")
+                    {
+                        <div class="small mt-2"><i class="bi bi-geo-alt-fill text-danger"></i> <a href="@Url.Action("Index", "Home", new { area = "" })#cua-hang" class="d-inline p-0">@CauHinh.Get("CuaHang_DiaChi", "")</a></div>
+                    }
                 </div>
                 <div class="col-6 col-md-2">
                     <h6>Hỗ trợ</h6>
                     <a href="@Url.Action("TraCuu", "BaoHanh", new { area = "" })">Tra cứu bảo hành</a>
                     <a href="@Url.Action("Index", "DonHang", new { area = "" })">Đơn hàng của tôi</a>
                     <a href="@Url.Action("Index", "GioHang", new { area = "" })">Giỏ hàng</a>
+                    <a href="@Url.Action("SoSanh", "SanPham", new { area = "" })">So sánh sản phẩm</a>
                 </div>
                 <div class="col-6 col-md-3">
-                    <h6>Thanh toán</h6>
-                    <div>Khi nhận hàng (COD)</div>
-                    <div>Chuyển khoản QR (VietQR)</div>
-                    <div>Trả góp 0%</div>
+                    <h6>Phương thức thanh toán</h6>
+                    <div class="pay-chips">
+                        <span><i class="bi bi-cash-coin"></i> COD</span>
+                        <span><i class="bi bi-qr-code"></i> VietQR</span>
+                        <span><i class="bi bi-credit-card-2-front"></i> Trả góp 0%</span>
+                    </div>
                 </div>
                 <div class="col-md-3">
                     <h6>Tài khoản</h6>
-                    <a href="@Url.Action("DangNhap", "TaiKhoan", new { area = "" })">Đăng nhập</a>
-                    <a href="@Url.Action("DangKy", "TaiKhoan", new { area = "" })">Đăng ký</a>
+                    <a href="@Url.Action("Login", "Account", new { area = "" })">Đăng nhập</a>
+                    <a href="@Url.Action("Register", "Account", new { area = "" })">Đăng ký</a>
+                    <a href="@Url.Action("YeuThich", "SanPham", new { area = "" })">Sản phẩm yêu thích</a>
+                    @if (AuthHelper.IsLoggedIn)
+                    {<a href="@Url.Action("Index", "ThanhVien", new { area = "" })">Tài khoản của tôi</a>}
                 </div>
             </div>
             <div class="foot-bottom">&copy; @DateTime.Now.Year @CauHinh.Get("TenCuaHang", "PhoneStore") - Đồ án môn Lập trình Web ASP.NET</div>
         </div>
     </footer>
 
+    <button type="button" id="toTop" class="to-top" aria-label="Lên đầu trang"><i class="bi bi-chevron-up"></i></button>
     <div class="toast-container position-fixed top-0 end-0 p-3" id="toastBox" style="z-index:2000"></div>
 
     @Scripts.Render("~/bundles/jquery")
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // bấm nút "Danh mục" để mở/đóng (dùng cho điện thoại; trên máy tính menu mở khi rê chuột)
-        $('#catBtn').on('click', function (e) { e.stopPropagation(); $('.cat-drop').toggleClass('open'); });
-        $(document).on('click', function () { $('.cat-drop').removeClass('open'); });
+        // ===== MENU DANH MỤC =====
+        (function () {
+            // điểm p có nằm trong tam giác a-b-c không
+            function inTriangle(p, a, b, c) {
+                function s(p1, p2, p3) { return (p1.x - p3.x) * (p2.y - p3.y) - (p2.x - p3.x) * (p1.y - p3.y); }
+                var d1 = s(p, a, b), d2 = s(p, b, c), d3 = s(p, c, a);
+                return !((d1 < 0 || d2 < 0 || d3 < 0) && (d1 > 0 || d2 > 0 || d3 > 0));
+            }
+
+            // một danh sách loại sản phẩm có khung mega menu mở sang phải
+            function initMegaList(list) {
+                var items = Array.prototype.filter.call(list.children, function (li) { return li.querySelector('.cat-fly'); });
+                var current = null, timer = null, leaveTimer = null;
+                var pos = { x: 0, y: 0 }, anchor = null;
+
+                function activate(li) {
+                    items.forEach(function (x) { x.classList.toggle('active', x === li); });
+                    current = li;
+                    anchor = { x: pos.x, y: pos.y };
+                }
+
+                // con trỏ đang đi chéo về phía khung đang mở?
+                function heading() {
+                    if (!current || !anchor) return false;
+                    var r = current.querySelector('.cat-fly').getBoundingClientRect();
+                    return inTriangle(pos, anchor, { x: r.left, y: r.top }, { x: r.left, y: r.bottom });
+                }
+
+                list.addEventListener('mousemove', function (e) {
+                    pos = { x: e.clientX, y: e.clientY };
+                    if (current && current.contains(e.target)) anchor = { x: pos.x, y: pos.y };   // còn ở trong mục/khung hiện tại thì cập nhật mốc
+                });
+
+                items.forEach(function (li) {
+                    li.addEventListener('mouseenter', function () {
+                        clearTimeout(timer); clearTimeout(leaveTimer);
+                        if (li === current) return;
+                        if (!current) { activate(li); return; }                        // chưa mở mục nào thì mở ngay
+                        timer = setTimeout(function () { activate(li); }, heading() ? 250 : 60);
+                    });
+                    li.addEventListener('mouseleave', function () { clearTimeout(timer); });   // chỉ lướt qua thì hủy, không đổi mục
+                });
+
+                // rời hẳn cả danh sách và khung thì đóng khung sau 250ms
+                list.addEventListener('mouseenter', function () { clearTimeout(leaveTimer); });
+                list.addEventListener('mouseleave', function () {
+                    clearTimeout(timer);
+                    leaveTimer = setTimeout(function () { activate(null); }, 250);
+                });
+
+                return {
+                    first: function () { if (items.length) activate(items[0]); },
+                    clear: function () { clearTimeout(timer); clearTimeout(leaveTimer); activate(null); }
+                };
+            }
+
+            var headerMenu = null;
+            Array.prototype.forEach.call(document.querySelectorAll('.cat-list'), function (l) {
+                var api = initMegaList(l);
+                if (l.closest('.cat-panel')) headerMenu = api;     // danh sách nằm trong nút "Danh mục" trên header
+            });
+
+            // nút "Danh mục": bấm để mở, nền tối lại, mục đầu tiên mở sẵn khung
+            var drop = document.querySelector('.cat-drop');
+            var back = document.getElementById('catBackdrop');
+            var btn = document.getElementById('catBtn');
+            var panel = document.querySelector('.cat-panel');
+            function setCat(open) {
+                drop.classList.toggle('open', open);
+                back.classList.toggle('show', open);
+                btn.setAttribute('aria-expanded', open ? 'true' : 'false');
+                if (headerMenu) { if (open) headerMenu.first(); else headerMenu.clear(); }
+            }
+            btn.addEventListener('click', function (e) { e.stopPropagation(); setCat(!drop.classList.contains('open')); });
+            back.addEventListener('click', function () { setCat(false); });
+            panel.addEventListener('click', function (e) { e.stopPropagation(); });
+            document.addEventListener('click', function () { setCat(false); });
+            document.addEventListener('keydown', function (e) { if (e.key === 'Escape') setCat(false); });
+        })();
+        // ===== TÀI KHOẢN + THÔNG BÁO =====
+        (function () {
+            var btn = document.getElementById('acctBtn');
+            if (!btn) return;
+            var panel = document.getElementById('acctPanel'), back = document.getElementById('catBackdrop');
+            var list = document.getElementById('acctList'), badge = document.getElementById('acctBadge');
+            var url = panel.getAttribute('data-url'), key = 'acct_seen_' + panel.getAttribute('data-uid');
+            var items = [], seen = [], filter = 'all', loadedAt = 0;
+
+            function esc(s) {
+                return String(s == null ? '' : s).replace(/[&<>"']/g, function (c) {
+                    return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c];
+                });
+            }
+            function readSeen() { try { var v = JSON.parse(localStorage.getItem(key)); return Array.isArray(v) ? v : null; } catch (e) { return null; } }
+            function saveSeen() { try { localStorage.setItem(key, JSON.stringify(seen.slice(-300))); } catch (e) { } }
+            function isUnread(it) { return seen.indexOf(it.Sig) < 0; }
+
+            function ago(ts) {
+                var d = new Date(ts), s = Math.max(0, (Date.now() - d.getTime()) / 1000);
+                if (s < 60) return 'Vừa xong';
+                if (s < 3600) return Math.floor(s / 60) + ' phút trước';
+                if (s < 86400) return Math.floor(s / 3600) + ' giờ trước';
+                if (s < 7 * 86400) return Math.floor(s / 86400) + ' ngày trước';
+                return ('0' + d.getDate()).slice(-2) + '/' + ('0' + (d.getMonth() + 1)).slice(-2) + '/' + d.getFullYear();
+            }
+
+            function updateBadge() {
+                var n = items.filter(isUnread).length;
+                badge.style.display = n ? 'flex' : 'none';
+                badge.textContent = n > 9 ? '9+' : n;
+            }
+            function markRead(sigs) {
+                sigs.forEach(function (s) { if (seen.indexOf(s) < 0) seen.push(s); });
+                saveSeen();
+            }
+
+            function render() {
+                var shown = items.filter(function (it) { return filter === 'all' || it.Loai === filter; });
+                if (!shown.length) { list.innerHTML = '<div class="acct-empty"><i class="bi bi-bell-slash"></i>Chưa có thông báo nào</div>'; return; }
+                list.innerHTML = shown.map(function (it) {
+                    var txt = esc(it.Text);
+                    if (it.Ma) txt = txt.split(esc(it.Ma)).join('<b>' + esc(it.Ma) + '</b>');
+                    return '<div class="acct-item' + (isUnread(it) ? ' unread' : '') + '">' +
+                        '<span class="acct-ico t-' + esc(it.Loai) + '"><i class="bi ' + esc(it.Icon) + '"></i></span>' +
+                        '<div class="acct-body"><div class="acct-text">' + txt + '</div>' +
+                        '<div class="acct-meta"><small>' + ago(it.Ts) + '</small>' +
+                        '<a href="' + esc(it.Url) + '" data-sig="' + esc(it.Sig) + '">Xem chi tiết</a></div></div></div>';
+                }).join('');
+            }
+
+            function load() {
+                fetch(url, { credentials: 'same-origin', cache: 'no-store' })
+                    .then(function (r) { return r.json(); })
+                    .then(function (d) {
+                        if (!d.ok) return;
+                        items = d.items || [];
+                        var s = readSeen();
+                        if (s === null) {      // lần đầu trên trình duyệt này: thông báo cũ hơn 3 ngày coi như đã đọc
+                            var cut = Date.now() - 3 * 86400000;
+                            s = items.filter(function (it) { return new Date(it.Ts).getTime() < cut; }).map(function (it) { return it.Sig; });
+                            seen = s; saveSeen();
+                        } else seen = s;
+                        loadedAt = Date.now();
+                        render(); updateBadge();
+                    }).catch(function () { list.innerHTML = '<div class="acct-empty">Không tải được thông báo</div>'; });
+            }
+
+            function open() {
+                document.dispatchEvent(new MouseEvent('click'));          // đóng menu danh mục nếu đang mở
+                panel.classList.add('open');
+                back.classList.add('show');
+                btn.setAttribute('aria-expanded', 'true');
+                var b = btn.getBoundingClientRect(), p = panel.getBoundingClientRect();
+                panel.style.setProperty('--ax', (b.left + b.width / 2 - p.left) + 'px');   // mũi tên chỉ đúng nút
+                if (Date.now() - loadedAt > 60000) load();
+            }
+            function close() {
+                panel.classList.remove('open');
+                if (!document.querySelector('.cat-drop.open')) back.classList.remove('show');
+                btn.setAttribute('aria-expanded', 'false');
+            }
+
+            btn.addEventListener('click', function (e) { e.stopPropagation(); panel.classList.contains('open') ? close() : open(); });
+            panel.addEventListener('click', function (e) { e.stopPropagation(); });
+            document.addEventListener('click', close);
+            back.addEventListener('click', close);
+            document.addEventListener('keydown', function (e) { if (e.key === 'Escape') close(); });
+            document.getElementById('acctClose').addEventListener('click', close);
+            var catBtn = document.getElementById('catBtn');
+            if (catBtn) catBtn.addEventListener('click', close);
+
+            panel.querySelectorAll('.acct-tabs button').forEach(function (t) {
+                t.addEventListener('click', function () {
+                    filter = t.getAttribute('data-f');
+                    panel.querySelectorAll('.acct-tabs button').forEach(function (x) { x.classList.toggle('on', x === t); });
+                    render();
+                });
+            });
+            document.getElementById('acctReadAll').addEventListener('click', function () {
+                markRead(items.map(function (it) { return it.Sig; }));
+                render(); updateBadge();
+            });
+            list.addEventListener('click', function (e) {
+                var a = e.target.closest('a[data-sig]');
+                if (a) { markRead([a.getAttribute('data-sig')]); updateBadge(); }
+            });
+
+            load();     // tải một lần khi mở trang để hiện số chưa đọc trên biểu tượng
+        })();
+
+        // nút lên đầu trang
+        $(window).on('scroll', function () { $('#toTop').toggleClass('show', window.scrollY > 400); });
+        $('#toTop').on('click', function () { window.scrollTo({ top: 0, behavior: 'smooth' }); });
 
         function showToast(msg, ok) {
             var el = $('<div class="toast align-items-center border-0 text-bg-' + (ok ? 'success' : 'danger') + '"><div class="d-flex"><div class="toast-body"></div><button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button></div></div>');

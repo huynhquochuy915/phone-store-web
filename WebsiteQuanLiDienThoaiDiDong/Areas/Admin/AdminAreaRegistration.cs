@@ -12,7 +12,8 @@ namespace WebsiteQuanLiDienThoaiDiDong.Areas.Admin
                 "Admin_default",
                 "Admin/{controller}/{action}/{id}",
                 new { controller = "ThongKe", action = "Index", id = UrlParameter.Optional },
-                new[] { "WebsiteQuanLiDienThoaiDiDong.Areas.Admin.Controllers" });
+                new[] { "WebsiteQuanLiDienThoaiDiDong.Areas.Admin.Controllers" }
+            );
         }
     }
 }

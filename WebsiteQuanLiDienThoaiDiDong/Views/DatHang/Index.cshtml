@@ -1,0 +1,246 @@
+﻿@model WebsiteQuanLiDienThoaiDiDong.Models.ViewModels.CheckoutVM
+@{
+    ViewBag.Title = "Đặt hàng";
+    var noImg = Url.Content("~/Content/images/no-image.png");
+    var nganHang = CauHinh.Get("NganHang_Ma", "");
+    var soTk = CauHinh.Get("NganHang_SoTaiKhoan", "");
+    var tenTk = CauHinh.Get("NganHang_TenChuTK", "");
+    var hetHanPhut = CauHinh.Get("QR_HetHan_Phut", "30");
+    var tietKiem = Model.Cart.TongGiamGia + Model.TienGiam + Model.GiamHang;
+}
+
+<nav class="cart-crumb">
+    <a href="@Url.Action("Index", "GioHang")"><i class="bi bi-chevron-left"></i> Quay lại giỏ hàng</a>
+    <span>/</span>
+    <strong>Thông tin thanh toán</strong>
+</nav>
+
+<ol class="co-steps">
+    <li class="done"><span><i class="bi bi-check-lg"></i></span>Giỏ hàng</li>
+    <li class="now"><span>2</span>Đặt hàng</li>
+    <li><span>3</span>Hoàn tất</li>
+</ol>
+
+@using (Html.BeginForm("Index", "DatHang", FormMethod.Post, new { id = "coForm" }))
+{
+    @Html.AntiForgeryToken()
+    @Html.ValidationSummary(true, "", new { @class = "alert alert-danger" })
+
+    <div class="row g-3">
+        <div class="col-lg-7">
+
+            <div class="co-card">
+                <h2><i class="bi bi-bag-check"></i> Sản phẩm (@Model.Cart.TongSoLuong)</h2>
+                <div class="co-items">
+                    @foreach (var it in Model.Cart.Items)
+                    {
+                        <div class="co-item">
+                            <img src="@(string.IsNullOrEmpty(it.Anh) ? noImg : Url.Content("~" + it.Anh))" alt="@it.Ten"
+                                 onerror="this.onerror=null;this.src='@noImg'" />
+                            <div class="flex-grow-1">
+                                <div class="fw-semibold">@it.Ten</div>
+                                <div class="text-muted small">@it.MauSac @it.DungLuong</div>
+                                <div class="text-muted small">Số lượng: @it.SoLuong</div>
+                            </div>
+                            <div class="co-item-price">
+                                <strong>@it.ThanhTien.VND()</strong>
+                                @if (it.GiaGoc > it.DonGia)
+                                {<del>@((it.GiaGoc * it.SoLuong).VND())</del>}
+                            </div>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <div class="co-card">
+                <h2><i class="bi bi-person-lines-fill"></i> Thông tin khách hàng</h2>
+                <div class="row g-3">
+                    <div class="col-md-6">
+                        <label class="form-label">Họ tên người nhận</label>
+                        @Html.TextBoxFor(m => m.TenNguoiNhan, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.TenNguoiNhan, "", new { @class = "text-danger small" })
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Số điện thoại</label>
+                        @Html.TextBoxFor(m => m.SoDienThoai, new { @class = "form-control" })
+                        @Html.ValidationMessageFor(m => m.SoDienThoai, "", new { @class = "text-danger small" })
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Email</label>
+                        @Html.TextBoxFor(m => m.Email, new { @class = "form-control" })
+                        <div class="form-text">Thông tin xác nhận đơn hàng sẽ được gửi qua email này.</div>
+                        @Html.ValidationMessageFor(m => m.Email, "", new { @class = "text-danger small" })
+                    </div>
+                </div>
+            </div>
+
+            <div class="co-card">
+                <h2><i class="bi bi-geo-alt"></i> Địa chỉ nhận hàng</h2>
+                <div class="row g-3">
+                    <div class="col-md-5">
+                        <label class="form-label">Tỉnh/thành</label>
+                        @Html.DropDownListFor(m => m.TinhThanh, new SelectList(Model.DanhSachTinh, Model.TinhThanh), "-- Chọn tỉnh/thành --", new { @class = "form-select" })
+                        @Html.ValidationMessageFor(m => m.TinhThanh, "", new { @class = "text-danger small" })
+                    </div>
+                    <div class="col-md-7">
+                        <label class="form-label">Địa chỉ giao hàng</label>
+                        @Html.TextBoxFor(m => m.DiaChiGiao, new { @class = "form-control", placeholder = "Số nhà, đường, phường/xã, quận/huyện" })
+                        @Html.ValidationMessageFor(m => m.DiaChiGiao, "", new { @class = "text-danger small" })
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Ghi chú <span class="text-muted fw-normal">(nếu có)</span></label>
+                        @Html.TextAreaFor(m => m.GhiChu, 2, 20, new { @class = "form-control", placeholder = "Ví dụ: giao giờ hành chính, gọi trước khi giao" })
+                    </div>
+                </div>
+                <div class="co-ship">
+                    <i class="bi bi-truck"></i>
+                    <span id="ngayGiao">@(Model.SoNgayGiao > 0 ? "Dự kiến giao hàng trong " + Model.SoNgayGiao + " ngày" : "Chọn tỉnh/thành để xem thời gian giao hàng dự kiến")</span>
+                </div>
+            </div>
+
+            <div class="co-card">
+                <h2><i class="bi bi-wallet2"></i> Phương thức thanh toán</h2>
+
+                <label class="pay-card">
+                    @Html.RadioButtonFor(m => m.PhuongThucThanhToan, "COD", new { id = "payCOD" })
+                    <span class="pay-ico"><i class="bi bi-cash-coin"></i></span>
+                    <span class="pay-txt">
+                        <b>Thanh toán khi nhận hàng (COD)</b>
+                        <small>Kiểm tra hàng rồi mới thanh toán cho nhân viên giao hàng.</small>
+                    </span>
+                    <span class="pay-tick"></span>
+                </label>
+
+                <label class="pay-card">
+                    @Html.RadioButtonFor(m => m.PhuongThucThanhToan, "QR", new { id = "payQR" })
+                    <span class="pay-ico"><i class="bi bi-qr-code-scan"></i></span>
+                    <span class="pay-txt">
+                        <b>Chuyển khoản qua mã QR (VietQR)</b>
+                        <small>Quét bằng app ngân hàng. Đơn chưa thanh toán tự hủy sau @hetHanPhut phút.</small>
+                    </span>
+                    <span class="pay-tick"></span>
+                </label>
+                @Html.ValidationMessageFor(m => m.PhuongThucThanhToan, "", new { @class = "text-danger small" })
+
+                <div id="qrPreview" class="qr-box co-qr" style="display:none">
+                    <h3>Quét mã để chuyển khoản</h3>
+                    <img id="qrImg" alt="Mã QR chuyển khoản" />
+                    <div class="qr-info">
+                        <div><span>Ngân hàng</span><b>@nganHang</b></div>
+                        <div><span>Số tài khoản</span><b>@soTk</b></div>
+                        <div><span>Chủ tài khoản</span><b>@tenTk</b></div>
+                        <div><span>Số tiền</span><b class="text-danger" id="qrAmount"></b></div>
+                        <div><span>Nội dung</span><b>Mã đơn hàng (có sau khi đặt hàng)</b></div>
+                    </div>
+                    <p class="text-muted small mb-0">
+                        Đây là mã xem trước. Bấm "Đặt hàng" để nhận mã QR chính thức kèm mã đơn.
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="co-sum">
+                <h2>Thông tin đơn hàng</h2>
+
+                <div class="co-code">
+                    <i class="bi bi-ticket-perforated"></i>
+                    @Html.TextBoxFor(m => m.MaKhuyenMai, new { placeholder = "Nhập mã giảm giá" })
+                    <button type="button" id="btnMa">Áp dụng</button>
+                </div>
+                <div id="maMsg" class="small mb-2"></div>
+
+                <div class="co-row"><span>Số lượng sản phẩm</span><b>@Model.Cart.TongSoLuong</b></div>
+                <div class="co-row"><span>Tổng tiền hàng</span><b>@Model.Cart.TongGiaGoc.VND()</b></div>
+                <div class="co-row" id="rowTrucTiep" @(Model.Cart.TongGiamGia > 0 ? "" : "style=display:none")>
+                    <span>Giảm giá trực tiếp</span><b class="text-success">-@Model.Cart.TongGiamGia.VND()</b>
+                </div>
+                <div class="co-row">
+                    <span>Phí vận chuyển</span>
+                    <b id="phiShip" class="@(Model.PhiShip == 0 ? "text-success" : "")">@(Model.PhiShip == 0 ? "Miễn phí" : Model.PhiShip.VND())</b>
+                </div>
+                <div class="co-row" id="rowGiam" @(Model.TienGiam > 0 ? "" : "style=display:none")>
+                    <span>Mã giảm giá</span><b class="text-success" id="tienGiam">-@Model.TienGiam.VND()</b>
+                </div>
+                <div class="co-row" id="rowHang" @(Model.GiamHang > 0 ? "" : "style=display:none")>
+                    <span>Ưu đãi hạng @Model.TenHang</span><b class="text-success" id="giamHang">-@Model.GiamHang.VND()</b>
+                </div>
+
+                <div class="co-row co-total">
+                    <span>Tổng thanh toán</span>
+                    <b class="text-danger" id="tong" data-value="@((long)Model.TongThanhToan)">@Model.TongThanhToan.VND()</b>
+                </div>
+                <div class="co-vat">Đã bao gồm VAT</div>
+
+                <div class="co-save" id="rowTietKiem" @(tietKiem > 0 ? "" : "style=display:none")>
+                    <span>Bạn đã tiết kiệm được</span>
+                    <b id="tietKiem" data-base="@((long)Model.Cart.TongGiamGia)">@tietKiem.VND()</b>
+                </div>
+
+                <button type="submit" class="co-submit">
+                    <b>ĐẶT HÀNG</b>
+                    <small>Kiểm tra lại thông tin trước khi xác nhận</small>
+                </button>
+                <a class="co-back" href="@Url.Action("Index", "GioHang")">Quay lại giỏ hàng</a>
+                <div class="co-note"><i class="bi bi-shield-check"></i> Sản phẩm chính hãng, hỗ trợ đổi trả theo chính sách của cửa hàng.</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="co-bar-space"></div>
+    <div class="co-bar">
+        <div><small>Tổng thanh toán</small><strong id="tongBar">@Model.TongThanhToan.VND()</strong></div>
+        <button type="submit" class="btn btn-brand">Đặt hàng</button>
+    </div>
+}
+
+@section scripts {
+    <script>
+        var QR = {
+            bank: @Html.Raw(Json.Encode(nganHang)),
+            acc: @Html.Raw(Json.Encode(soTk)),
+            name: @Html.Raw(Json.Encode(tenTk))
+        };
+        function vnd(n) { return Number(n).toLocaleString('vi-VN') + 'đ'; }
+
+        function capNhatQR() {
+            var laQR = $('input[name=PhuongThucThanhToan]:checked').val() === 'QR';
+            $('#qrPreview').toggle(laQR);
+            if (!laQR || !QR.bank || !QR.acc) return;
+            var tien = parseInt($('#tong').attr('data-value') || '0', 10);
+            $('#qrAmount').text(vnd(tien));
+            $('#qrImg').attr('src', 'https://img.vietqr.io/image/' + QR.bank + '-' + QR.acc + '-compact2.png'
+                + '?amount=' + tien + '&accountName=' + encodeURIComponent(QR.name));
+        }
+
+        function tinhLaiTien() {
+            $.post('@Url.Action("TinhTien", "DatHang")', {
+                tinhThanh: $('#TinhThanh').val(),
+                maKhuyenMai: $('#MaKhuyenMai').val()
+            }, function (r) {
+                var free = Number(r.phiShip) === 0;
+                $('#phiShip').text(free ? 'Miễn phí' : vnd(r.phiShip)).toggleClass('text-success', free);
+                $('#tienGiam').text('-' + vnd(r.tienGiam));
+                $('#rowGiam').toggle(r.tienGiam > 0);
+                $('#giamHang').text('-' + vnd(r.giamHang));
+                $('#rowHang').toggle(r.giamHang > 0);
+                $('#tong').text(vnd(r.tong)).attr('data-value', Math.round(r.tong));
+                $('#tongBar').text(vnd(r.tong));
+
+                var tk = parseInt($('#tietKiem').attr('data-base') || '0', 10) + Number(r.tienGiam) + Number(r.giamHang);
+                $('#tietKiem').text(vnd(tk));
+                $('#rowTietKiem').toggle(tk > 0);
+
+                $('#ngayGiao').text(r.ngayGiao > 0 ? 'Dự kiến giao hàng trong ' + r.ngayGiao + ' ngày'
+                                                   : 'Chọn tỉnh/thành để xem thời gian giao hàng dự kiến');
+                $('#maMsg').text(r.message).attr('class', 'small mb-2 ' + (r.tienGiam > 0 ? 'text-success' : 'text-danger'));
+                capNhatQR();
+            });
+        }
+
+        $(document).on('change', 'input[name=PhuongThucThanhToan]', capNhatQR);
+        $('#TinhThanh').on('change', tinhLaiTien);
+        $('#btnMa').on('click', tinhLaiTien);
+        $(capNhatQR);
+    </script>
+}

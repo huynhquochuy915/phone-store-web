@@ -1,29 +1,107 @@
 ﻿@model WebsiteQuanLiDienThoaiDiDong.Models.ViewModels.SoSanhVM
-@{ ViewBag.Title = "So sánh sản phẩm"; }
-
-<div class="d-flex justify-content-between align-items-center mb-3"><h1 class="h3">So sánh sản phẩm</h1><a class="btn btn-outline-secondary" href="@Url.Action("Index")">Tiếp tục chọn sản phẩm</a></div>
-@if (!Model.SanPhams.Any())
-{
-    <div class="alert alert-light border">Chưa có sản phẩm để so sánh. Mở danh sách sản phẩm rồi chọn “Thêm so sánh”.</div>
+@{
+    ViewBag.Title = "So sánh sản phẩm";
+    var noImg = Url.Content("~/Content/images/no-image.png");
+    Func<object, string> v = o => { var s = Convert.ToString(o); return string.IsNullOrWhiteSpace(s) ? "—" : s; };
 }
-else
-{
-    <div class="table-responsive"><table class="table table-bordered align-middle bg-white">
-        <thead><tr><th style="min-width:150px">Thông tin</th>@foreach (var sp in Model.SanPhams) { <th style="min-width:220px"><a href="@Url.Action("ChiTiet", new { id = sp.Id })">@sp.TenSanPham</a><form method="post" action="@Url.Action("XoaSoSanh")" class="mt-2">@Html.AntiForgeryToken()<input type="hidden" name="id" value="@sp.Id" /><button class="btn btn-sm btn-outline-danger" type="submit">Bỏ khỏi bảng</button></form></th> }</tr></thead>
-        <tbody>
-            <tr><th>Ảnh</th>@foreach (var sp in Model.SanPhams) { var anh = sp.HinhAnhSanPhams.OrderByDescending(x => x.LaAnhChinh).ThenBy(x => x.ThuTu).FirstOrDefault(); <td><img src="@(anh == null ? Url.Content("~/Content/images/no-image.png") : Url.Content("~" + anh.DuongDan))" alt="@sp.TenSanPham" style="width:150px;height:150px;object-fit:contain" /></td> }</tr>
-            <tr><th>Thương hiệu</th>@foreach (var sp in Model.SanPhams) { <td>@sp.ThuongHieu.TenThuongHieu</td> }</tr>
-            <tr><th>Danh mục</th>@foreach (var sp in Model.SanPhams) { <td>@sp.LoaiSanPham.TenLoai</td> }</tr>
-            <tr><th>Giá</th>@foreach (var sp in Model.SanPhams) { var v = sp.BienTheSanPhams.Where(x => x.HienThi).OrderBy(x => x.GiaBan).FirstOrDefault(); <td class="text-danger fw-bold">@(v == null ? "Tạm ngừng bán" : v.GiaBan.VND())</td> }</tr>
-            <tr><th>Tồn kho</th>@foreach (var sp in Model.SanPhams) { <td>@sp.BienTheSanPhams.Where(x => x.HienThi).Sum(x => x.SoLuongTon)</td> }</tr>
-            <tr><th>Màn hình</th>@foreach (var sp in Model.SanPhams) { <td>@sp.ManHinh</td> }</tr>
-            <tr><th>Chip xử lý</th>@foreach (var sp in Model.SanPhams) { <td>@sp.ChipXuLy</td> }</tr>
-            <tr><th>RAM</th>@foreach (var sp in Model.SanPhams) { <td>@sp.RAM</td> }</tr>
-            <tr><th>Camera sau</th>@foreach (var sp in Model.SanPhams) { <td>@sp.CameraSau</td> }</tr>
-            <tr><th>Camera trước</th>@foreach (var sp in Model.SanPhams) { <td>@sp.CameraTruoc</td> }</tr>
-            <tr><th>Pin</th>@foreach (var sp in Model.SanPhams) { <td>@sp.Pin</td> }</tr>
-            <tr><th>Hệ điều hành</th>@foreach (var sp in Model.SanPhams) { <td>@sp.HeDieuHanh</td> }</tr>
-            <tr><th>Bảo hành</th>@foreach (var sp in Model.SanPhams) { <td>@sp.BaoHanhThang tháng</td> }</tr>
-        </tbody>
-    </table></div>
+
+<div class="cmp-page">
+    <h1 class="h3 fw-bold mb-1">So sánh sản phẩm</h1>
+    <p class="text-muted">Chọn 2 đến 3 điện thoại từ danh sách yêu thích của bạn.</p>
+
+    @if (Model.YeuThichs.Count < 2)
+    {
+        <div class="history-empty">
+            <i class="bi bi-heart"></i>
+            <h2>Bạn cần ít nhất 2 điện thoại yêu thích</h2>
+            <div>Bấm biểu tượng trái tim ở sản phẩm để thêm vào danh sách yêu thích.</div>
+            <a href="@Url.Action("Index", "SanPham", new { loaiId = 1 })">Xem điện thoại</a>
+        </div>
+    }
+    else
+    {
+        <form method="get" action="@Url.Action("SoSanh")" id="pickForm">
+            <div class="pick-grid">
+                @foreach (var sp in Model.YeuThichs)
+                {
+                    var anh = sp.HinhAnhSanPhams.OrderByDescending(x => x.LaAnhChinh).ThenBy(x => x.ThuTu).FirstOrDefault();
+                    var daChon = Model.DaChon.Contains(sp.Id);
+                    <label class="pick-item @(daChon ? "on" : "")">
+                        <input type="checkbox" name="ids" value="@sp.Id" @(daChon ? "checked" : "") />
+                        <img src="@(anh == null ? noImg : Url.Content("~" + anh.DuongDan))" alt="@sp.TenSanPham"
+                             onerror="this.onerror=null;this.src='@noImg'" />
+                        <span class="pick-name">@sp.TenSanPham</span>
+                    </label>
+                }
+            </div>
+            <div class="d-flex align-items-center gap-3 mt-3">
+                <button type="submit" id="pickBtn" class="btn-dashboard" disabled>So sánh</button>
+                <span class="text-muted small" id="pickHint"></span>
+            </div>
+        </form>
+
+        if (Model.SanPhams.Count >= 2)
+        {
+            <div class="table-responsive mt-4">
+                <table class="table cmp-table align-middle">
+                    <thead>
+                        <tr>
+                            <th></th>
+                            @foreach (var sp in Model.SanPhams)
+                            {
+                                var anh = sp.HinhAnhSanPhams.OrderByDescending(x => x.LaAnhChinh).ThenBy(x => x.ThuTu).FirstOrDefault();
+                                <th>
+                                    <a href="@Url.Action("ChiTiet", new { id = sp.Id })" class="cmp-col-head">
+                                        <img src="@(anh == null ? noImg : Url.Content("~" + anh.DuongDan))" alt="@sp.TenSanPham"
+                                             onerror="this.onerror=null;this.src='@noImg'" />
+                                        <div class="cmp-col-brand">@sp.ThuongHieu.TenThuongHieu</div>
+                                        <div class="cmp-col-name">@sp.TenSanPham</div>
+                                    </a>
+                                </th>
+                            }
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <th>Giá</th>
+                            @foreach (var sp in Model.SanPhams)
+                            {
+                                var bt = sp.BienTheSanPhams.Where(x => x.HienThi).OrderBy(x => x.GiaBan).FirstOrDefault();
+                                <td class="text-danger fw-bold">@(bt == null ? "Tạm ngừng bán" : bt.GiaBan.VND())</td>
+                            }
+                        </tr>
+                        <tr><th>Màn hình</th>@foreach (var sp in Model.SanPhams)
+                        {<td>@v(sp.ManHinh)</td>}</tr>
+                        <tr><th>Chip xử lý</th>@foreach (var sp in Model.SanPhams)
+                        {<td>@v(sp.ChipXuLy)</td>}</tr>
+                        <tr><th>RAM</th>@foreach (var sp in Model.SanPhams)
+                        {<td>@v(sp.RAM)</td>}</tr>
+                        <tr><th>Camera sau</th>@foreach (var sp in Model.SanPhams)
+                        {<td>@v(sp.CameraSau)</td>}</tr>
+                        <tr><th>Pin</th>@foreach (var sp in Model.SanPhams)
+                        {<td>@v(sp.Pin)</td>}</tr>
+                        <tr><th>Bảo hành</th>@foreach (var sp in Model.SanPhams)
+                        {<td>@sp.BaoHanhThang tháng</td>}</tr>
+                    </tbody>
+                </table>
+            </div>
+        }
+    }
+</div>
+
+@section scripts {
+    <script>
+        (function () {
+            var boxes = $('#pickForm input[type=checkbox]'), btn = $('#pickBtn'), hint = $('#pickHint');
+            function refresh() {
+                var n = boxes.filter(':checked').length;
+                boxes.each(function () { $(this).closest('.pick-item').toggleClass('on', this.checked); });
+                boxes.not(':checked').prop('disabled', n >= 3);
+                btn.prop('disabled', n < 2);
+                hint.text('Đã chọn ' + n + '/3');
+            }
+            boxes.on('change', refresh);
+            refresh();
+        })();
+    </script>
 }

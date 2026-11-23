@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Data.Entity;
 using System.Linq;
 
 namespace WebsiteQuanLiDienThoaiDiDong.Models.ViewModels
@@ -34,8 +35,13 @@ namespace WebsiteQuanLiDienThoaiDiDong.Models.ViewModels
     }
     public class TrangChuVM
     {
+        public List<SanPhamCardVM> MayCu { get; set; } = new List<SanPhamCardVM>();
+        public List<WebsiteQuanLiDienThoaiDiDong.Services.NewsItem> Tin { get; set; } = new List<WebsiteQuanLiDienThoaiDiDong.Services.NewsItem>();
+        public List<WebsiteQuanLiDienThoaiDiDong.Services.VideoItem> Video { get; set; } = new List<WebsiteQuanLiDienThoaiDiDong.Services.VideoItem>();
         public List<SanPhamCardVM> NoiBat { get; set; }
         public List<SanPhamCardVM> BanChay { get; set; }
+        public List<SanPhamCardVM> DienThoai { get; set; } = new List<SanPhamCardVM>();
+        public List<SanPhamCardVM> PhuKien { get; set; } = new List<SanPhamCardVM>();
     }
 
     public class DanhSachSanPhamVM
@@ -79,11 +85,14 @@ namespace WebsiteQuanLiDienThoaiDiDong.Models.ViewModels
 
     public class SoSanhVM
     {
-        public List<SanPham> SanPhams { get; set; } = new List<SanPham>();
+        public List<SanPham> YeuThichs { get; set; } = new List<SanPham>();  // điện thoại trong yêu thích
+        public List<int> DaChon { get; set; } = new List<int>();
+        public List<SanPham> SanPhams { get; set; } = new List<SanPham>();   // các máy được chọn để so
     }
 
     public class CartItemVM
     {
+        public bool DuocChon { get; set; } = true;
         public int LineId { get; set; }
         public int BienTheId { get; set; }
         public int SanPhamId { get; set; }
@@ -92,6 +101,9 @@ namespace WebsiteQuanLiDienThoaiDiDong.Models.ViewModels
         public string DungLuong { get; set; }
         public string Anh { get; set; }
         public decimal DonGia { get; set; }
+        
+        public decimal GiaGoc { get; set; }                                   // THÊM
+        public decimal TietKiem { get { return GiaGoc > DonGia ? (GiaGoc - DonGia) * SoLuong : 0; } }   // THÊM
         public int SoLuong { get; set; }
         public int Ton { get; set; }
         public decimal ThanhTien { get { return DonGia * SoLuong; } }
@@ -99,9 +111,33 @@ namespace WebsiteQuanLiDienThoaiDiDong.Models.ViewModels
     public class CartVM
     {
         public List<CartItemVM> Items { get; set; } = new List<CartItemVM>();
-        public decimal TongTien { get { return Items.Sum(i => i.ThanhTien); } }
-        public int TongSoLuong { get { return Items.Sum(i => i.SoLuong); } }
-        public bool CoLoi { get { return Items.Any(i => i.SoLuong > i.Ton); } }
+        public List<SanPhamCardVM> GoiY { get; set; } = new List<SanPhamCardVM>();
+
+        public List<CartItemVM> ItemsChon { get { return Items.Where(i => i.DuocChon).ToList(); } }
+        public int SoDongChon { get { return Items.Count(i => i.DuocChon); } }
+        public bool ChonHet { get { return Items.Count > 0 && Items.All(i => i.DuocChon); } }
+
+        // các số tổng chỉ tính những món đã tick
+        public decimal TongTien { get { return ItemsChon.Sum(i => i.ThanhTien); } }
+        public int TongSoLuong { get { return ItemsChon.Sum(i => i.SoLuong); } }
+        public decimal TongGiaGoc { get { return ItemsChon.Sum(i => i.GiaGoc > i.DonGia ? i.GiaGoc * i.SoLuong : i.ThanhTien); } }
+        public decimal TongGiamGia { get { return ItemsChon.Sum(i => i.TietKiem); } }
+        public bool CoLoi { get { return ItemsChon.Any(i => i.SoLuong > i.Ton); } }
+    }
+
+    public static class CartVMExtensions
+    {
+        // Đọc cột DuocChon của từng dòng giỏ. chiGiuDuocChon = true: bỏ hẳn các món không tick (dùng ở trang đặt hàng)
+        public static CartVM GanTrangThaiChon(this CartVM vm, DbContext db, bool chiGiuDuocChon = false)
+        {
+            if (vm.Items.Count == 0) return vm;
+            var ids = string.Join(",", vm.Items.Select(i => i.LineId));   // LineId là int nên nối chuỗi an toàn
+            var chon = db.Database.SqlQuery<int>(
+                "SELECT Id FROM GioHangChiTiet WHERE DuocChon = 1 AND Id IN (" + ids + ")").ToList();
+            foreach (var it in vm.Items) it.DuocChon = chon.Contains(it.LineId);
+            if (chiGiuDuocChon) vm.Items = vm.Items.Where(i => i.DuocChon).ToList();
+            return vm;
+        }
     }
 
     public class CheckoutVM
@@ -131,7 +167,10 @@ namespace WebsiteQuanLiDienThoaiDiDong.Models.ViewModels
         public List<string> DanhSachTinh { get; set; }
         public decimal PhiShip { get; set; }
         public decimal TienGiam { get; set; }
-        public decimal TongThanhToan { get { return (Cart == null ? 0 : Cart.TongTien) + PhiShip - TienGiam; } }
+        public decimal GiamHang { get; set; }      // ưu đãi theo hạng thành viên
+        public string TenHang { get; set; }
+        public decimal TongThanhToan { get { return (Cart == null ? 0 : Cart.TongTien) + PhiShip - TienGiam - GiamHang; } }
+        public int SoNgayGiao { get; set; }
     }
 
     public class KetQuaDatHang

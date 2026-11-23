@@ -121,6 +121,7 @@ namespace WebsiteQuanLiDienThoaiDiDong.Services
                             DungLuong = c.BienTheSanPham.DungLuong,
                             Anh = c.BienTheSanPham.SanPham.AnhDaiDien,
                             DonGia = c.BienTheSanPham.GiaBan,
+                            GiaGoc = c.BienTheSanPham.GiaGoc,
                             SoLuong = c.SoLuong,
                             Ton = c.BienTheSanPham.SoLuongTon
                         }).ToList();

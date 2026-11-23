@@ -1,0 +1,53 @@
+﻿@model WebsiteQuanLiDienThoaiDiDong.Controllers.ThongTinVM
+@{
+    ViewBag.Title = "Thông tin tài khoản";
+    ViewBag.Active = "thongtin";
+}
+
+<div class="tv-wrap">
+    <div class="tv-body">
+        <aside>@Html.Partial("_Menu")</aside>
+        <div class="tv-main">
+            <section class="tv-card">
+                <div class="tv-card-h"><h2>Thông tin tài khoản</h2></div>
+                <form method="post" action="@Url.Action("CapNhatThongTin", "ThanhVien", new { area = "" })" class="row g-3">
+                    @Html.AntiForgeryToken()
+                    <div class="col-md-6">
+                        <label class="form-label">Họ và tên</label>
+                        <input type="text" name="hoTen" class="form-control" value="@Model.HoTen" maxlength="100" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Số điện thoại</label>
+                        <input type="tel" name="soDienThoai" class="form-control" value="@Model.Sdt" placeholder="Ví dụ: 0901234567" />
+                    </div>
+                    <div class="col-12">
+                        <label class="form-label">Email</label>
+                        <input type="email" class="form-control" value="@Model.Email" disabled />
+                        <div class="form-text">Email dùng để đăng nhập nên không đổi được.</div>
+                    </div>
+                    <div class="col-12"><button type="submit" class="btn btn-brand">Lưu thay đổi</button></div>
+                </form>
+            </section>
+
+            <section class="tv-card">
+                <div class="tv-card-h"><h2>Đổi mật khẩu</h2></div>
+                <form method="post" action="@Url.Action("DoiMatKhau", "ThanhVien", new { area = "" })" class="row g-3">
+                    @Html.AntiForgeryToken()
+                    <div class="col-12">
+                        <label class="form-label">Mật khẩu hiện tại</label>
+                        <input type="password" name="matKhauCu" class="form-control" autocomplete="current-password" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Mật khẩu mới</label>
+                        <input type="password" name="matKhauMoi" class="form-control" autocomplete="new-password" minlength="6" required />
+                    </div>
+                    <div class="col-md-6">
+                        <label class="form-label">Nhập lại mật khẩu mới</label>
+                        <input type="password" name="xacNhan" class="form-control" autocomplete="new-password" minlength="6" required />
+                    </div>
+                    <div class="col-12"><button type="submit" class="btn btn-outline-brand">Đổi mật khẩu</button></div>
+                </form>
+            </section>
+        </div>
+    </div>
+</div>
