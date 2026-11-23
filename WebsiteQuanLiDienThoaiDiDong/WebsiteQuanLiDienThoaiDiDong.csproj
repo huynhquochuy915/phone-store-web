@@ -126,12 +126,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="..\..\QuanLiDiDong2.Designer.cs">
-      <Link>Models\QuanLiDiDong2.Designer.cs</Link>
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>QuanLiDiDong.edmx</DependentUpon>
-    </Compile>
     <Compile Include="App_Start\BundleConfig.cs" />
     <Compile Include="App_Start\BundleConfig2.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
@@ -343,14 +337,12 @@
       <DependentUpon>sql.edmx</DependentUpon>
     </Content>
     <Content Include="Areas\Admin\Views\_ViewStart.cshtml" />
-    <EntityDeploy Include="..\..\QuanLiDiDong.edmx">
+    <EntityDeploy Include="Models\QuanLiDiDong.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
-      <Link>Models\QuanLiDiDong.edmx</Link>
       <LastGenOutput>QuanLiDiDong2.Designer.cs</LastGenOutput>
     </EntityDeploy>
-    <Content Include="..\..\QuanLiDiDong.edmx.diagram">
+    <Content Include="Models\QuanLiDiDong.edmx.diagram">
       <DependentUpon>QuanLiDiDong.edmx</DependentUpon>
-      <Link>Models\QuanLiDiDong.edmx.diagram</Link>
     </Content>
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
