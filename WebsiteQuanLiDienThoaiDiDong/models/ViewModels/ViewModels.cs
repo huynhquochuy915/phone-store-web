@@ -8,8 +8,8 @@ namespace WebsiteQuanLiDienThoaiDiDong.Models.ViewModels
     public class MenuThuongHieuVM { public int Id { get; set; } public string Ten { get; set; } }
     public class MenuLoaiVM
     {
-        public int LoaiId { get; set; }          
-        public decimal? GiaGoc { get; set; }    
+        public int LoaiId { get; set; }
+        public decimal? GiaGoc { get; set; }
         public int Id { get; set; }
         public string Ten { get; set; }
         public List<MenuThuongHieuVM> ThuongHieus { get; set; }
@@ -19,13 +19,13 @@ namespace WebsiteQuanLiDienThoaiDiDong.Models.ViewModels
     public class SanPhamCardVM
     {
         public int Id { get; set; }
-        public int LoaiId { get; set; }              
+        public int LoaiId { get; set; }
         public string TenSanPham { get; set; }
         public string TenThuongHieu { get; set; }
         public string AnhDaiDien { get; set; }
         public decimal? GiaThapNhat { get; set; }
         public decimal? GiaCaoNhat { get; set; }
-        public decimal? GiaGoc { get; set; }        
+        public decimal? GiaGoc { get; set; }
         public int? TongTon { get; set; }
         public decimal SaoTrungBinh { get; set; }
         public int SoDanhGia { get; set; }
@@ -54,6 +54,7 @@ namespace WebsiteQuanLiDienThoaiDiDong.Models.ViewModels
         public string SapXep { get; set; }
         public int Trang { get; set; }
         public int SoTrang { get; set; }
+        public byte? SaoToiThieu { get; set; }
     }
 
     public class SanPhamChiTietVM
@@ -65,6 +66,7 @@ namespace WebsiteQuanLiDienThoaiDiDong.Models.ViewModels
         public bool DaDanhGia { get; set; }
         public List<byte> KyHanTraGop { get; set; } = new List<byte>();
         public List<SanPhamCardVM> SanPhamLienQuan { get; set; } = new List<SanPhamCardVM>();
+        public List<ThongSoDong> ThongSos { get; set; } = new List<ThongSoDong>();
     }
 
     public class DanhGiaVM
@@ -140,4 +142,11 @@ namespace WebsiteQuanLiDienThoaiDiDong.Models.ViewModels
         public string MaDonHang { get; set; }
         public decimal TongThanhToan { get; set; }
     }
+}
+
+public class ThongSoDong
+{
+    public string Nhom { get; set; }
+    public string TenThongSo { get; set; }
+    public string GiaTri { get; set; }
 }

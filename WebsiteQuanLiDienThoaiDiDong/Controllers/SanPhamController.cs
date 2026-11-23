@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Entity;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Web.Mvc;
 using WebsiteQuanLiDienThoaiDiDong.Models;
@@ -17,7 +19,7 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
         [HttpGet]
         public ActionResult Index(string tuKhoa, int? loaiId, int? thuongHieuId,
             decimal? giaTu, decimal? giaDen, byte? ramGB, int? dungLuongGB,
-            bool conHang = false, string sapXep = null, int trang = 1)
+            bool conHang = false, string sapXep = null, int trang = 1, byte? saoToiThieu = null)
         {
             if (trang < 1) trang = 1;
             var sapXepHopLe = new[] { "gia_tang", "gia_giam", "banchay", "danhgia", "xemnhieu" };
@@ -25,28 +27,65 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
             if (giaTu < 0) giaTu = null;
             if (giaDen < 0) giaDen = null;
 
-            var ketQua = db.sp_LocSanPham(tuKhoa, loaiId, thuongHieuId, giaTu, giaDen,
-                ramGB, dungLuongGB, conHang, sapXep, trang, SoDongMoiTrang).ToList();
+            var ketQua = LocSanPham(tuKhoa, loaiId, thuongHieuId, giaTu, giaDen,
+                ramGB, dungLuongGB, conHang, sapXep, trang, SoDongMoiTrang, saoToiThieu);
             var tong = ketQua.FirstOrDefault() == null ? 0 : ketQua[0].TongSoDong.GetValueOrDefault();
             var vm = new DanhSachSanPhamVM
             {
                 SanPhams = ketQua.Select(x => new SanPhamCardVM
                 {
-                    Id = x.Id, LoaiId = x.LoaiId, TenSanPham = x.TenSanPham,
-                    TenThuongHieu = x.TenThuongHieu, AnhDaiDien = x.AnhDaiDien,
-                    GiaThapNhat = x.GiaThapNhat, GiaCaoNhat = x.GiaCaoNhat,
-                    TongTon = x.TongTon, SaoTrungBinh = x.SaoTrungBinh,
-                    SoDanhGia = x.SoDanhGia, DaBan = x.DaBan
+                    Id = x.Id,
+                    LoaiId = x.LoaiId,
+                    TenSanPham = x.TenSanPham,
+                    TenThuongHieu = x.TenThuongHieu,
+                    AnhDaiDien = x.AnhDaiDien,
+                    GiaThapNhat = x.GiaThapNhat,
+                    GiaCaoNhat = x.GiaCaoNhat,
+                    TongTon = x.TongTon,
+                    SaoTrungBinh = x.SaoTrungBinh,
+                    SoDanhGia = x.SoDanhGia,
+                    DaBan = x.DaBan
                 }).ToList(),
                 Loais = db.LoaiSanPhams.Where(x => x.HienThi).OrderBy(x => x.TenLoai).ToList(),
                 ThuongHieus = db.SanPhams.Where(x => x.HienThi && (!loaiId.HasValue || x.LoaiId == loaiId.Value))
                     .Select(x => x.ThuongHieu).Distinct().OrderBy(x => x.TenThuongHieu).ToList(),
-                TuKhoa = tuKhoa, LoaiId = loaiId, ThuongHieuId = thuongHieuId,
-                GiaTu = giaTu, GiaDen = giaDen, RamGB = ramGB, DungLuongGB = dungLuongGB,
-                ConHang = conHang, SapXep = sapXep, Trang = trang,
+                TuKhoa = tuKhoa,
+                LoaiId = loaiId,
+                ThuongHieuId = thuongHieuId,
+                GiaTu = giaTu,
+                GiaDen = giaDen,
+                RamGB = ramGB,
+                DungLuongGB = dungLuongGB,
+                ConHang = conHang,
+                SapXep = sapXep,
+                Trang = trang,
+                SaoToiThieu = saoToiThieu,
                 SoTrang = Math.Max(1, (int)Math.Ceiling(tong / (double)SoDongMoiTrang))
             };
             return View(vm);
+        }
+
+        private List<sp_LocSanPham_Result> LocSanPham(string tuKhoa, int? loaiId, int? thuongHieuId,
+            decimal? giaTu, decimal? giaDen, byte? ramGB, int? dungLuongGB, bool conHang,
+            string sapXep, int trang, int soDong, byte? saoToiThieu)
+        {
+            var ps = new[]
+            {
+                new SqlParameter("@TuKhoa", SqlDbType.NVarChar, 100) { Value = (object)tuKhoa ?? DBNull.Value },
+                new SqlParameter("@LoaiId", SqlDbType.Int) { Value = (object)loaiId ?? DBNull.Value },
+                new SqlParameter("@ThuongHieuId", SqlDbType.Int) { Value = (object)thuongHieuId ?? DBNull.Value },
+                new SqlParameter("@GiaTu", SqlDbType.Decimal) { Value = (object)giaTu ?? DBNull.Value },
+                new SqlParameter("@GiaDen", SqlDbType.Decimal) { Value = (object)giaDen ?? DBNull.Value },
+                new SqlParameter("@RamGB", SqlDbType.TinyInt) { Value = (object)ramGB ?? DBNull.Value },
+                new SqlParameter("@DungLuongGB", SqlDbType.Int) { Value = (object)dungLuongGB ?? DBNull.Value },
+                new SqlParameter("@ConHang", SqlDbType.Bit) { Value = conHang },
+                new SqlParameter("@SapXep", SqlDbType.VarChar, 20) { Value = (object)sapXep ?? DBNull.Value },
+                new SqlParameter("@Trang", SqlDbType.Int) { Value = trang },
+                new SqlParameter("@SoDong", SqlDbType.Int) { Value = soDong },
+                new SqlParameter("@SaoToiThieu", SqlDbType.TinyInt) { Value = (object)saoToiThieu ?? DBNull.Value }
+            };
+            return db.Database.SqlQuery<sp_LocSanPham_Result>(
+                "EXEC sp_LocSanPham @TuKhoa, @LoaiId, @ThuongHieuId, @GiaTu, @GiaDen, @RamGB, @DungLuongGB, @ConHang, @SapXep, @Trang, @SoDong, @SaoToiThieu", ps).ToList();
         }
 
         [HttpGet]
@@ -97,13 +136,21 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
                 KyHanTraGop = db.GoiTraGops.Where(x => x.HienThi).OrderBy(x => x.SoThang).Select(x => x.SoThang).ToList(),
                 SanPhamLienQuan = db.vw_SanPhamHienThi.Where(x => lienQuanIds.Contains(x.Id)).ToList().Select(x => new SanPhamCardVM
                 {
-                    Id = x.Id, LoaiId = x.LoaiId, TenSanPham = x.TenSanPham,
-                    TenThuongHieu = x.TenThuongHieu, AnhDaiDien = x.AnhDaiDien,
-                    GiaThapNhat = x.GiaThapNhat, GiaCaoNhat = x.GiaCaoNhat,
-                    TongTon = x.TongTon, SaoTrungBinh = x.SaoTrungBinh,
-                    SoDanhGia = x.SoDanhGia, DaBan = x.DaBan
+                    Id = x.Id,
+                    LoaiId = x.LoaiId,
+                    TenSanPham = x.TenSanPham,
+                    TenThuongHieu = x.TenThuongHieu,
+                    AnhDaiDien = x.AnhDaiDien,
+                    GiaThapNhat = x.GiaThapNhat,
+                    GiaCaoNhat = x.GiaCaoNhat,
+                    TongTon = x.TongTon,
+                    SaoTrungBinh = x.SaoTrungBinh,
+                    SoDanhGia = x.SoDanhGia,
+                    DaBan = x.DaBan
                 }).ToList()
             };
+            vm.ThongSos = db.Database.SqlQuery<ThongSoDong>(
+                "SELECT Nhom, TenThongSo, GiaTri FROM ThongSoKyThuat WHERE SanPhamId = @p0 ORDER BY ThuTu", id).ToList();
             return View(vm);
         }
 
@@ -114,8 +161,17 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
             {
                 var result = db.sp_TinhTraGop(bienTheId, soThang, traTruocPT).FirstOrDefault();
                 if (result == null) return Json(new { ok = false, message = "Không tính được khoản trả góp." }, JsonRequestBehavior.AllowGet);
-                return Json(new { ok = true, result.GiaBan, result.SoThang, result.TraTruoc, result.SoTienTraGop,
-                    result.PhiChuyenDoi, result.TraMoiThang, result.TongPhaiTra }, JsonRequestBehavior.AllowGet);
+                return Json(new
+                {
+                    ok = true,
+                    result.GiaBan,
+                    result.SoThang,
+                    result.TraTruoc,
+                    result.SoTienTraGop,
+                    result.PhiChuyenDoi,
+                    result.TraMoiThang,
+                    result.TongPhaiTra
+                }, JsonRequestBehavior.AllowGet);
             }
             catch
             {
@@ -192,11 +248,18 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
                         select product).ToList();
             var vm = rows.Select(x => new SanPhamCardVM
             {
-                Id = x.Id, LoaiId = x.LoaiId, TenSanPham = x.TenSanPham,
-                TenThuongHieu = x.TenThuongHieu, AnhDaiDien = x.AnhDaiDien,
-                GiaThapNhat = x.GiaThapNhat, GiaCaoNhat = x.GiaCaoNhat,
-                TongTon = x.TongTon, SaoTrungBinh = x.SaoTrungBinh,
-                SoDanhGia = x.SoDanhGia, DaBan = x.DaBan, DaYeuThich = true
+                Id = x.Id,
+                LoaiId = x.LoaiId,
+                TenSanPham = x.TenSanPham,
+                TenThuongHieu = x.TenThuongHieu,
+                AnhDaiDien = x.AnhDaiDien,
+                GiaThapNhat = x.GiaThapNhat,
+                GiaCaoNhat = x.GiaCaoNhat,
+                TongTon = x.TongTon,
+                SaoTrungBinh = x.SaoTrungBinh,
+                SoDanhGia = x.SoDanhGia,
+                DaBan = x.DaBan,
+                DaYeuThich = true
             }).ToList();
             return View(vm);
         }
