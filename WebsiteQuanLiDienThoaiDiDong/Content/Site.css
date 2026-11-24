@@ -6179,3 +6179,453 @@ html {
 .page-link { color: var(--red); }
 .page-item.active .page-link { background: var(--red); border-color: var(--red); color: #fff; }
 ::selection { background: var(--brand-tint-3); }
+
+
+
+/* ==================== FOOTER TONE HEADER ==================== */
+.ftnew-footer {
+    background: #117C73;
+    color: #FFFFFF;
+    padding: 45px 0 0;
+    margin-top: 50px;
+}
+
+/* Thong tin cua hang */
+
+.ftnew-brand h4 {
+    color: #FFFFFF;
+    font-size: 23px;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.ftnew-desc {
+    color: #E0F2F1;
+    font-size: 14px;
+    margin-bottom: 18px;
+}
+
+.ftnew-hotline {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    color: #FFFFFF;
+    font-size: 23px;
+    font-weight: 700;
+    margin-bottom: 15px;
+}
+
+.ftnew-address {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    color: #E0F2F1;
+    font-size: 13px;
+    line-height: 1.7;
+    text-decoration: none;
+}
+
+    .ftnew-address i {
+        color: #FFB4A2;
+        margin-top: 3px;
+    }
+
+    .ftnew-address:hover {
+        color: #FFFFFF;
+        text-decoration: underline;
+    }
+
+/* Cac cot footer */
+
+.ftnew-column h6 {
+    color: #FFFFFF;
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 18px;
+}
+
+.ftnew-column > a {
+    display: block;
+    color: #E0F2F1;
+    font-size: 14px;
+    text-decoration: none;
+    margin-bottom: 12px;
+    transition: color 0.2s ease;
+}
+
+    .ftnew-column > a:hover {
+        color: #D5FFF3;
+        text-decoration: underline;
+    }
+
+/* Phuong thuc thanh toan */
+
+.ftnew-payments {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+    .ftnew-payments span {
+        display: inline-flex;
+        align-items: center;
+        gap: 7px;
+        background: rgba(255, 255, 255, 0.12);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        border-radius: 8px;
+        padding: 9px 12px;
+        color: #FFFFFF;
+        font-size: 13px;
+        transition: all 0.2s ease;
+    }
+
+    .ftnew-payments i {
+        color: #D5FFF3;
+    }
+
+    .ftnew-payments span:hover {
+        background: rgba(255, 255, 255, 0.22);
+        border-color: #FFFFFF;
+    }
+
+/* Chan footer */
+
+.ftnew-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 10px;
+    border-top: 1px solid rgba(255, 255, 255, 0.25);
+    padding: 20px 0;
+    color: #E0F2F1;
+    font-size: 13px;
+}
+
+/* ==================== FOOTER LAYOUT ==================== */
+
+.ftnew-footer .ftnew-main {
+    display: grid;
+    grid-template-columns: 1.4fr 0.8fr 1fr 1fr;
+    gap: 35px;
+    align-items: start;
+    width: 100%;
+}
+
+.ftnew-footer .ftnew-brand,
+.ftnew-footer .ftnew-column {
+    min-width: 0;
+}
+
+/* Responsive */
+
+@media (max-width: 991px) {
+    .ftnew-footer .ftnew-main {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 30px;
+    }
+}
+
+@media (max-width: 575px) {
+    .ftnew-footer .ftnew-main {
+        grid-template-columns: 1fr;
+        gap: 25px;
+    }
+
+    .ftnew-footer {
+        padding-top: 30px;
+    }
+
+    .ftnew-brand h4 {
+        font-size: 21px;
+    }
+
+    .ftnew-hotline {
+        font-size: 21px;
+    }
+
+    .ftnew-bottom {
+        flex-direction: column;
+        align-items: flex-start;
+        line-height: 1.6;
+    }
+}
+
+/* Ten cua hang trong footer */
+.ftnew-brand-link {
+    display: inline-block;
+    text-decoration: none !important;
+}
+
+    .ftnew-brand-link h4 {
+        color: #FFFFFF;
+        margin-bottom: 12px;
+        text-decoration: none !important;
+    }
+
+    .ftnew-brand-link:hover,
+    .ftnew-brand-link:hover h4 {
+        text-decoration: none !important;
+    }
+
+/* ==================== TRA CUU BAO HANH ==================== */
+
+.warranty-page {
+    max-width: 1100px;
+    margin: 30px auto 45px;
+    padding: 0 15px;
+    color: #263238;
+}
+
+/* Tieu de */
+
+.warranty-title {
+    margin-bottom: 20px;
+}
+
+    .warranty-title h1 {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #263238;
+        font-size: 25px;
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+
+        .warranty-title h1 i {
+            color: #117C73;
+        }
+
+    .warranty-title p {
+        color: #718096;
+        font-size: 14px;
+        margin: 0;
+    }
+
+/* Khung noi dung */
+
+.warranty-box {
+    background: #FFFFFF;
+    border: 1px solid #E1E8ED;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 18px;
+    box-shadow: 0 3px 12px rgba(17, 124, 115, 0.04);
+}
+
+    /* Form tra cuu */
+
+    .warranty-box .form-label {
+        color: #374151;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
+.warranty-search {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+    .warranty-search .form-control {
+        height: 44px;
+        border: 1px solid #DCE4E9;
+        border-radius: 8px;
+        padding: 0 13px;
+        font-size: 14px;
+        color: #263238;
+        box-shadow: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+        .warranty-search .form-control:focus {
+            border-color: #117C73;
+            box-shadow: 0 0 0 3px rgba(17, 124, 115, 0.12);
+        }
+
+    .warranty-search button {
+        height: 44px;
+        min-width: 110px;
+        padding: 0 18px;
+        border: none;
+        border-radius: 8px;
+        background: #117C73;
+        color: #FFFFFF;
+        font-size: 14px;
+        font-weight: 600;
+        white-space: nowrap;
+        transition: background 0.2s, transform 0.2s;
+    }
+
+        .warranty-search button:hover {
+            background: #0D625B;
+        }
+
+        .warranty-search button:active {
+            transform: scale(0.98);
+        }
+
+/* Thong tin bao hanh */
+
+.warranty-box .h5 {
+    color: #263238;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+    .warranty-box .h5 i {
+        color: #117C73;
+    }
+
+.warranty-result {
+    display: flex;
+    align-items: flex-start;
+    gap: 22px;
+}
+
+/* Anh san pham */
+
+.warranty-image {
+    flex: 0 0 190px;
+    width: 190px;
+    height: 190px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background: #F7F9FA;
+    border: 1px solid #E1E8ED;
+    border-radius: 10px;
+    padding: 12px;
+}
+
+    .warranty-image img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        border-radius: 6px;
+    }
+
+/* Thong tin san pham */
+
+.warranty-info {
+    flex: 1;
+    min-width: 0;
+}
+
+    .warranty-info h2 {
+        color: #263238;
+        font-size: 20px;
+        font-weight: 700;
+        margin: 3px 0 15px;
+    }
+
+    .warranty-info p {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        color: #4B5563;
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 9px;
+    }
+
+        .warranty-info p strong {
+            flex: 0 0 145px;
+            color: #718096;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+/* Trang thai bao hanh */
+
+.warranty-status {
+    display: inline-block;
+    background: #E0F5E9;
+    color: #16834A;
+    border-radius: 20px;
+    padding: 4px 11px;
+    font-size: 12px;
+    font-weight: 700;
+}
+
+    .warranty-status.expired {
+        background: #FDE8E8;
+        color: #C62828;
+    }
+
+/* Thong bao */
+
+.warranty-box .alert {
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+    .warranty-page {
+        margin-top: 22px;
+    }
+
+    .warranty-title h1 {
+        font-size: 22px;
+    }
+
+    .warranty-box {
+        padding: 16px;
+    }
+
+    .warranty-result {
+        gap: 16px;
+    }
+
+    .warranty-image {
+        flex-basis: 150px;
+        width: 150px;
+        height: 165px;
+    }
+
+    .warranty-info h2 {
+        font-size: 17px;
+    }
+
+    .warranty-info p strong {
+        flex-basis: 125px;
+    }
+}
+
+@media (max-width: 575px) {
+    .warranty-search {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+        .warranty-search button {
+            width: 100%;
+        }
+
+    .warranty-result {
+        flex-direction: column;
+    }
+
+    .warranty-image {
+        width: 100%;
+        height: 210px;
+        flex-basis: auto;
+    }
+
+        .warranty-image img {
+            max-width: 180px;
+        }
+
+    .warranty-info {
+        width: 100%;
+    }
+
+        .warranty-info p strong {
+            flex-basis: 125px;
+        }
+}
