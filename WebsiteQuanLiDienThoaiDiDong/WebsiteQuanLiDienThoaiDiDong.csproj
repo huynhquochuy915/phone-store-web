@@ -262,11 +262,6 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>sql.Context.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\sql.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>QuanLiDiDong.tt</DependentUpon>
-    </Compile>
     <Compile Include="Models\sql.Designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
