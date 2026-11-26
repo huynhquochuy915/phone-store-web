@@ -20,7 +20,7 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
         // Bước xác nhận: nhập thông tin + chọn thanh toán + mã khuyến mãi
         public ActionResult Index()
         {
-            var gio = cart.GetCartVM();
+            var gio = cart.GetCartVM().GanTrangThaiChon(db, true);
             if (gio.Items.Count == 0) return RedirectToAction("Index", "GioHang");
             if (gio.CoLoi) { TempData["Err"] = "Có sản phẩm vượt quá số lượng tồn kho, vui lòng chỉnh lại giỏ hàng"; return RedirectToAction("Index", "GioHang"); }
 
@@ -36,7 +36,7 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
                 DiaChiGiao = dc == null ? null : string.Join(", ",
                     new[] { dc.DiaChiChiTiet, dc.PhuongXa, dc.QuanHuyen }.Where(s => !string.IsNullOrWhiteSpace(s)))
             };
-            Nap(vm, gio);
+             Nap(vm, gio);
             return View(vm);
         }
 
@@ -44,7 +44,7 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
         [HttpPost, ValidateAntiForgeryToken]
         public ActionResult Index(CheckoutVM vm)
         {
-            var gio = cart.GetCartVM();
+            var gio = cart.GetCartVM().GanTrangThaiChon(db, true);
             if (gio.Items.Count == 0) return RedirectToAction("Index", "GioHang");
             if (vm.PhuongThucThanhToan != "COD" && vm.PhuongThucThanhToan != "QR")
                 ModelState.AddModelError("PhuongThucThanhToan", "Vui lòng chọn phương thức thanh toán");
@@ -65,7 +65,7 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
                     new SqlParameter("@MaKhuyenMai", (object)ma ?? DBNull.Value),
                     new SqlParameter("@GhiChu", (object)vm.GhiChu ?? DBNull.Value)
                 ).Single();
-
+                ApDungUuDaiHang(kq.DonHangId);
                 // TODO (TV5): gửi email xác nhận đơn tại đây
                 return RedirectToAction("ThanhCong", new { id = kq.DonHangId });
             }
@@ -74,7 +74,7 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
                 // lỗi nghiệp vụ trong sp_DatHang dùng THROW 5000x nên hiển thị được thẳng cho khách
                 var sql = ex as SqlException ?? ex.InnerException as SqlException;
                 ModelState.AddModelError("", sql != null && sql.Number >= 50000 ? sql.Message : "Đặt hàng thất bại, vui lòng thử lại");
-                Nap(vm, cart.GetCartVM());
+                Nap(vm, cart.GetCartVM().GanTrangThaiChon(db, true));
                 return View(vm);
             }
         }
@@ -100,35 +100,73 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
         [HttpPost]
         public JsonResult TinhTien(string tinhThanh, string maKhuyenMai)
         {
-            var gio = cart.GetCartVM();
+            var gio = cart.GetCartVM().GanTrangThaiChon(db, true);
             decimal phi = TinhPhiShip(tinhThanh);
             bool coMa = !string.IsNullOrWhiteSpace(maKhuyenMai);
             decimal giam = coMa ? TinhGiam(maKhuyenMai, gio.TongTien) : 0;
+
+            int idx = UuDaiHang.ChiSo(UuDaiHang.TichLuy(db, AuthHelper.UserId.Value));
+            var ud = UuDaiHang.Tinh(idx, gio.TongTien, phi, giam);
+
             return Json(new
             {
                 phiShip = phi,
                 tienGiam = giam,
-                tong = gio.TongTien + phi - giam,
+                giamHang = ud.Tong,
+                tong = gio.TongTien + phi - giam - ud.Tong,
+                ngayGiao = TinhSoNgay(tinhThanh),
                 message = !coMa ? "" : (giam == 0 ? "Mã không hợp lệ hoặc chưa đủ điều kiện" : "Đã áp dụng mã giảm giá")
             });
-        }
 
+        }
         private void Nap(CheckoutVM vm, CartVM gio)
         {
+            vm.SoNgayGiao = TinhSoNgay(vm.TinhThanh);
             vm.Cart = gio;
             vm.DanhSachTinh = db.PhiVanChuyens.Where(p => p.TinhThanh != "Khác")
                                 .OrderBy(p => p.TinhThanh).Select(p => p.TinhThanh).ToList();
             vm.PhiShip = TinhPhiShip(vm.TinhThanh);
             vm.TienGiam = string.IsNullOrWhiteSpace(vm.MaKhuyenMai) ? 0 : TinhGiam(vm.MaKhuyenMai, gio.TongTien);
+            int idx = UuDaiHang.ChiSo(UuDaiHang.TichLuy(db, AuthHelper.UserId.Value));
+            vm.TenHang = UuDaiHang.Hangs[idx].Ten;
+            vm.GiamHang = UuDaiHang.Tinh(idx, gio.TongTien, vm.PhiShip, vm.TienGiam).Tong;
         }
+        // cộng ưu đãi hạng thành viên vào đơn vừa tạo (cột TienGiam). Lỗi ở đây không làm hỏng đơn hàng.
+        private void ApDungUuDaiHang(int donHangId)
+        {
+            try
+            {
+                int uid = AuthHelper.UserId.Value;
+                var d = db.Database.SqlQuery<TienDon>(
+                    "SELECT TongTienHang, PhiShip, TienGiam FROM DonHang WHERE Id = @id AND NguoiDungId = @u",
+                    new SqlParameter("@id", donHangId), new SqlParameter("@u", uid)).FirstOrDefault();
+                if (d == null) return;
 
+                int idx = UuDaiHang.ChiSo(UuDaiHang.TichLuy(db, uid));
+                var ud = UuDaiHang.Tinh(idx, d.TongTienHang, d.PhiShip, d.TienGiam);
+                if (ud.Tong <= 0) return;
+
+                db.Database.ExecuteSqlCommand(
+                    @"UPDATE DonHang SET TienGiam = TienGiam + @g WHERE Id = @id AND NguoiDungId = @u;
+              IF COLUMNPROPERTY(OBJECT_ID('DonHang'), 'TongThanhToan', 'IsComputed') = 0
+                  UPDATE DonHang SET TongThanhToan = TongTienHang + PhiShip - TienGiam WHERE Id = @id;",
+                    new SqlParameter("@g", ud.Tong), new SqlParameter("@id", donHangId), new SqlParameter("@u", uid));
+            }
+            catch { }
+        }
         private decimal TinhPhiShip(string tinh)
         {
             var phi = db.PhiVanChuyens.Where(p => p.TinhThanh == tinh).Select(p => (decimal?)p.PhiShip).FirstOrDefault();
             if (phi == null) phi = db.PhiVanChuyens.Where(p => p.TinhThanh == "Khác").Select(p => (decimal?)p.PhiShip).FirstOrDefault();
             return phi ?? 0;
         }
-
+        private int TinhSoNgay(string tinh)
+        {
+            if (string.IsNullOrEmpty(tinh)) return 0;
+            var n = db.PhiVanChuyens.Where(p => p.TinhThanh == tinh).Select(p => (int?)p.SoNgayGiao).FirstOrDefault();
+            if (n == null) n = db.PhiVanChuyens.Where(p => p.TinhThanh == "Khác").Select(p => (int?)p.SoNgayGiao).FirstOrDefault();
+            return n ?? 0;
+        }
         private decimal TinhGiam(string ma, decimal tong)
         {
             return db.Database.SqlQuery<decimal>("SELECT dbo.fn_TinhTienGiam(@p0, @p1)", ma.Trim(), tong).FirstOrDefault();

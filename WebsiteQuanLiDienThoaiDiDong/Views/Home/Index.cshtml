@@ -1,37 +1,90 @@
 ﻿@model WebsiteQuanLiDienThoaiDiDong.Models.ViewModels.TrangChuVM
-@{ ViewBag.Title = "Trang chủ"; }
+@{
+    ViewBag.Title = "Trang chủ";
+    var hangs = new[] { "Apple", "Samsung", "Xiaomi", "OPPO", "vivo" };
+    var capSoSanh = Model.DienThoai.Take(2).ToList();
+    var noImg2 = Url.Content("~/Content/images/no-image.png");
+    // ===== BANNER TRANG CHỦ =====
+    // muốn thêm/bớt tab: thêm/bớt một dòng; ảnh đặt tên banner-N.jpg trong Content\images\banners\
+    var banners = new[] {
+        new { Tab = "ĐIỆN THOẠI", Sub = "Trả góp 0%", Img = "banner-1", Cls = "g1",
+              Title = "Điện thoại chính hãng, trả góp 0%", Desc = "Chọn máy, chọn màu, nhận hàng nhanh. Thanh toán khi nhận hoặc quét mã QR.",
+              Btn = "Xem điện thoại", Link = Url.Action("Index", "SanPham", new { area = "", loaiId = 1 }) },
+        new { Tab = "PHỤ KIỆN", Sub = "Mua kèm máy mới", Img = "banner-2", Cls = "g2",
+              Title = "Phụ kiện mua kèm cho máy mới", Desc = "Sạc nhanh, cáp, pin dự phòng, ốp lưng và kính cường lực.",
+              Btn = "Chọn phụ kiện", Link = Url.Action("Index", "SanPham", new { area = "", loaiId = 3 }) },
+        new { Tab = "MÃ CHAOBAN10", Sub = "Giảm 10% đơn đầu", Img = "banner-3", Cls = "g3",
+              Title = "Nhập CHAOBAN10 để giảm 10% đơn đầu tiên", Desc = "Giảm tối đa 500.000₫, áp dụng cho đơn từ 1.000.000₫.",
+              Btn = "Mua sắm ngay", Link = Url.Action("Index", "SanPham", new { area = "" }) },
+        new { Tab = "BÁN CHẠY", Sub = "Được chọn nhiều nhất", Img = "banner-4", Cls = "g4",
+              Title = "Sản phẩm bán chạy nhất", Desc = "Những mẫu được khách hàng chọn mua nhiều nhất tại cửa hàng.",
+              Btn = "Xem ngay", Link = Url.Action("Index", "SanPham", new { area = "", sapXep = "banchay" }) }
+    };
+    var minis = new[] {
+        new { Img = "mini-1", Cls = "g1", Title = "So sánh điện thoại", Sub = "Chọn từ danh sách yêu thích", Link = Url.Action("SoSanh", "SanPham", new { area = "" }) },
+        new { Img = "mini-2", Cls = "g2", Title = "Phụ kiện giá tốt", Sub = "Sạc, cáp, ốp lưng, tai nghe", Link = Url.Action("Index", "SanPham", new { area = "", loaiId = 3 }) },
+        new { Img = "mini-3", Cls = "g3", Title = "Điện thoại bán chạy", Sub = "Được chọn nhiều nhất", Link = Url.Action("Index", "SanPham", new { area = "", loaiId = 1, sapXep = "banchay" }) }
+    };
+
+    // trả về đường dẫn ảnh nếu bạn đã bỏ file vào Content\images\banners\, chưa có thì trả null
+    Func<string, string> bannerImg = name =>
+    {
+        foreach (var ext in new[] { ".jpg", ".jpeg", ".png", ".webp", ".gif" })
+        {
+            var p = "~/Content/images/banners/" + name + ext;
+            if (System.IO.File.Exists(Server.MapPath(p))) return Url.Content(p);
+        }
+        return null;
+    };
+}
 
 <section class="hero">
     <aside class="cat-side">@Html.Action("Menu", "Home", new { area = "" })</aside>
 
-    <div id="heroCar" class="carousel slide hero-main" data-bs-ride="carousel" data-bs-interval="5000">
-        <div class="carousel-indicators">
-            <button type="button" data-bs-target="#heroCar" data-bs-slide-to="0" class="active" aria-label="Banner 1"></button>
-            <button type="button" data-bs-target="#heroCar" data-bs-slide-to="1" aria-label="Banner 2"></button>
-            <button type="button" data-bs-target="#heroCar" data-bs-slide-to="2" aria-label="Banner 3"></button>
+    <div class="hero-center">
+        <div class="hb" id="heroBanner">
+            <div class="hb-tabs">
+                @for (int i = 0; i < banners.Length; i++)
+                {
+                    <button type="button" class="hb-tab @(i == 0 ? "on" : "")"><b>@banners[i].Tab</b><small>@banners[i].Sub</small></button>
+                }
+            </div>
+            <div class="hb-stage">
+                @for (int i = 0; i < banners.Length; i++)
+                {
+                    var b = banners[i];
+                    var src = bannerImg(b.Img);
+                    <div class="hb-slide @(i == 0 ? "on" : "")">
+                        @if (src != null)
+                        {
+                            <a href="@b.Link"><img src="@src" alt="@b.Title" @(i == 0 ? "" : "loading=lazy") /></a>
+                        }
+                        else
+                        {
+                            <div class="hb-fallback @b.Cls">
+                                <h2>@b.Title</h2>
+                                <p>@b.Desc</p>
+                                <a class="btn btn-light" href="@b.Link">@b.Btn</a>
+                            </div>
+                        }
+                    </div>
+                }
+                <button type="button" class="hb-nav prev" aria-label="Trước"><i class="bi bi-chevron-left"></i></button>
+                <button type="button" class="hb-nav next" aria-label="Sau"><i class="bi bi-chevron-right"></i></button>
+            </div>
         </div>
-        <div class="carousel-inner">
-            <div class="carousel-item active">
-                <div class="slide slide-1">
-                    <h2>Điện thoại chính hãng, trả góp 0%</h2>
-                    <p>Chọn máy, chọn màu, nhận hàng nhanh. Thanh toán khi nhận hoặc quét mã QR.</p>
-                    <a class="btn btn-light" href="@Url.Action("Index", "SanPham", new { area = "", loaiId = 1 })">Xem điện thoại</a>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <div class="slide slide-2">
-                    <h2>Phụ kiện mua kèm cho máy mới</h2>
-                    <p>Sạc nhanh, cáp, pin dự phòng, ốp lưng và kính cường lực.</p>
-                    <a class="btn btn-light" href="@Url.Action("Index", "SanPham", new { area = "", loaiId = 3 })">Chọn phụ kiện</a>
-                </div>
-            </div>
-            <div class="carousel-item">
-                <div class="slide slide-3">
-                    <h2>Nhập CHAOBAN10 để giảm 10% đơn đầu tiên</h2>
-                    <p>Giảm tối đa 500.000₫, áp dụng cho đơn từ 1.000.000₫.</p>
-                    <a class="btn btn-dark" href="@Url.Action("Index", "SanPham", new { area = "" })">Mua sắm ngay</a>
-                </div>
-            </div>
+
+        <div class="hb-minis">
+            @foreach (var m in minis)
+            {
+                var msrc = bannerImg(m.Img);
+                <a class="hb-mini @(msrc == null ? m.Cls : "")" href="@m.Link">
+                    @if (msrc != null)
+                    {<img src="@msrc" alt="@m.Title" loading="lazy" /> }
+                    else
+                    { <div class="hb-mini-fb"><b>@m.Title</b><span>@m.Sub</span></div>}
+                </a>
+            }
         </div>
     </div>
 
@@ -46,9 +99,13 @@
             <strong>Giảm 500.000₫</strong>
             <span>Đơn từ 15 triệu, nhập mã GIAM500K</span>
         </a>
+        <a class="tile" href="@Url.Action("Index", "ThuCu", new { area = "" })">
+            <i class="bi bi-arrow-repeat"></i>
+            <strong>Thu cũ đổi mới</strong>
+            <span>Định giá máy cũ trong 1 phút</span>
+        </a>
     </aside>
 </section>
-
 <section class="policy">
     <div><i class="bi bi-patch-check"></i><span><b>Hàng chính hãng</b>Có bảo hành theo hãng</span></div>
     <div><i class="bi bi-truck"></i><span><b>Giao nhanh</b>Phí ship theo tỉnh thành</span></div>
@@ -59,13 +116,18 @@
 @if (Model.NoiBat.Any())
 {
     <section class="sec deal">
-        <div class="sec-head">
-            <h2><i class="bi bi-lightning-charge-fill"></i> Nổi bật hôm nay</h2>
-            <a href="@Url.Action("Index", "SanPham", new { area = "" })">Xem tất cả</a>
+        <div class="deal-head">
+            <h2><i class="bi bi-lightning-charge-fill"></i> NỔI BẬT HÔM NAY</h2>
+            <div class="countdown"><span>Kết thúc sau</span><b id="cdDeal">--:--:--</b></div>
+            <a href="@Url.Action("Index", "SanPham", new { area = "" })">Xem tất cả <i class="bi bi-chevron-right"></i></a>
         </div>
-        <div class="hrow">
-            @foreach (var sp in Model.NoiBat)
-            {@Html.Partial("_SanPhamCard", sp)}
+        <div class="hrow-wrap">
+            <button type="button" class="hrow-nav prev" aria-label="Trước"><i class="bi bi-chevron-left"></i></button>
+            <div class="hrow">
+                @foreach (var sp in Model.NoiBat)
+                {@Html.Partial("_SanPhamCard", sp)}
+            </div>
+            <button type="button" class="hrow-nav next" aria-label="Sau"><i class="bi bi-chevron-right"></i></button>
         </div>
     </section>
 }
@@ -73,10 +135,265 @@
 <section class="sec">
     <div class="sec-head">
         <h2>Bán chạy nhất</h2>
-        <a href="@Url.Action("Index", "SanPham", new { area = "" })">Xem tất cả</a>
+        <a href="@Url.Action("Index", "SanPham", new { area = "", sapXep = "banchay" })">Xem tất cả</a>
     </div>
     <div class="pgrid">
         @foreach (var sp in Model.BanChay)
         {@Html.Partial("_SanPhamCard", sp)}
     </div>
 </section>
+
+@if (Model.DienThoai.Any())
+{
+    <section class="sec">
+        <div class="sec-head">
+            <h2>Điện thoại</h2>
+            <div class="sec-tabs">
+                @foreach (var h in hangs)
+                {<a href="@Url.Action("Index", "SanPham", new { area = "", loaiId = 1, tuKhoa = h })">@h</a>}
+                <a class="all" href="@Url.Action("Index", "SanPham", new { area = "", loaiId = 1 })">Xem tất cả</a>
+            </div>
+        </div>
+        <div class="pgrid">
+            @foreach (var sp in Model.DienThoai)
+            {@Html.Partial("_SanPhamCard", sp)}
+        </div>
+    </section>
+}
+@{ var hangCuId = CauHinh.Get("LoaiId_HangCu", "0"); }
+@if (Model.MayCu.Any())
+{
+    <section class="sec" id="may-cu">
+        <div class="sec-head">
+            <h2>Máy cũ giá tốt</h2>
+            <div class="sec-tabs">
+                <a href="@Url.Action("Index", "ThuCu", new { area = "" })">Thu cũ đổi mới</a>
+                <a class="all" href="@Url.Action("Index", "SanPham", new { area = "", loaiId = hangCuId })">Xem tất cả</a>
+            </div>
+        </div>
+        <div class="pgrid">
+            @foreach (var sp in Model.MayCu)
+            {@Html.Partial("_SanPhamCard", sp)}
+        </div>
+    </section>
+}
+
+@if (capSoSanh.Count == 2)
+{
+    <section class="cmp">
+        <div class="cmp-left">
+            <span class="cmp-eyebrow">SO SÁNH THÔNG MINH</span>
+            <h2>Đặt cạnh nhau.<br />Chọn đúng hơn.</h2>
+            <p>So sánh chi tiết màn hình, chip, camera, pin và mức giá để tìm ra chiếc điện thoại thực sự dành cho bạn.</p>
+            <ul>
+                <li><i class="bi bi-check2"></i> Chọn từ danh sách yêu thích của bạn</li>
+                <li><i class="bi bi-check2"></i> So sánh tối đa 3 điện thoại cùng lúc</li>
+            </ul>
+            <a class="cmp-btn" href="@(AuthHelper.IsLoggedIn
+                    ? Url.Action("SoSanh", "SanPham", new { area = "" })
+                    : Url.Action("Login", "Account", new { area = "", returnUrl = Url.Action("SoSanh", "SanPham", new { area = "" }) }))">
+                Bắt đầu so sánh <i class="bi bi-arrow-right"></i>
+            </a>
+        </div>
+        <div class="cmp-right">
+            @for (int i = 0; i < capSoSanh.Count; i++)
+            {
+                var sp = capSoSanh[i];
+                <div class="cmp-item">
+                    <img src="@(sp.AnhDaiDien != null ? Url.Content("~" + sp.AnhDaiDien) : noImg2)" alt="@sp.TenSanPham"
+                         onerror="this.onerror=null;this.src='@noImg2'" />
+                    <div>
+                        <div class="cmp-name">@sp.TenSanPham</div>
+                        <div class="cmp-price">@sp.GiaThapNhat.VND()</div>
+                    </div>
+                </div>
+                if (i == 0)
+                { <div class="cmp-vs">VS</div>}
+            }
+            <div class="cmp-item cmp-add"><i class="bi bi-plus-circle"></i> Thêm sản phẩm</div>
+        </div>
+    </section>
+}
+
+@if (Model.PhuKien.Any())
+{
+    <section class="sec">
+        <div class="sec-head">
+            <h2>Sắm thêm phụ kiện chất lượng</h2>
+            <div class="sec-tabs">
+                <a class="all" href="@Url.Action("Index", "SanPham", new { area = "", loaiId = 3 })">Xem tất cả</a>
+            </div>
+        </div>
+        <div class="pgrid">
+            @foreach (var sp in Model.PhuKien)
+            {@Html.Partial("_SanPhamCard", sp)}
+        </div>
+    </section>
+}
+@if (Model.Tin.Any() || Model.Video.Any())
+{
+    <section class="sec" id="tin-tuc">
+        <div class="sec-head"><h2>Tin công nghệ</h2></div>
+        @if (Model.Tin.Any())
+        {
+            <div class="news-grid">
+                @foreach (var n in Model.Tin)
+                {
+                    <a class="news-card" href="@n.Link" target="_blank" rel="noopener">
+                        <div class="news-img"><img src="@n.Image" alt="" referrerpolicy="no-referrer" loading="lazy" onerror="this.onerror=null;this.src='@noImg2'" /></div>
+                        <h3>@n.Title</h3>
+                        <div class="news-meta">@n.Source &middot; @n.Date.ToString("dd/MM/yyyy")</div>
+                    </a>
+                }
+            </div>
+        }
+        @if (Model.Video.Any())
+        {
+            <div class="sec-head mt-3"><h2>Video</h2></div>
+            <div class="video-grid">
+                @foreach (var v in Model.Video)
+                {
+                    <button type="button" class="video-card" data-id="@v.Id" data-title="@v.Title">
+                        <div class="video-thumb"><img src="@v.Thumb" alt="" loading="lazy" /></div>
+                        <h3>@v.Title</h3>
+                        <div class="news-meta">@v.Channel</div>
+                    </button>
+                }
+            </div>
+
+            <div class="modal fade" id="videoModal" tabindex="-1" aria-hidden="true">
+                <div class="modal-dialog modal-lg modal-dialog-centered">
+                    <div class="modal-content bg-dark">
+                        <div class="modal-header border-0">
+                            <h2 class="modal-title h6 text-white" id="videoTitle"></h2>
+                            <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Đóng"></button>
+                        </div>
+                        <div class="modal-body p-0">
+                            <iframe id="videoFrame" class="video-frame" allow="autoplay; encrypted-media; picture-in-picture" allowfullscreen></iframe>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </section>
+}
+@{
+    var diaChi = CauHinh.Get("CuaHang_DiaChi", "");
+    var gioMo = CauHinh.Get("CuaHang_GioMoCua", "");
+    var hot = CauHinh.Get("Hotline", "");
+    var mapQ = Uri.EscapeDataString(diaChi);
+
+    // chỉ nhận link nhúng chính chủ của Google
+    var embed = CauHinh.Get("CuaHang_MapEmbed", "").Trim();
+    var embedOk = embed.StartsWith("https://www.google.com/maps/embed", StringComparison.OrdinalIgnoreCase);
+    var mapSrc = embedOk ? embed : "https://maps.google.com/maps?q=" + mapQ + "&hl=vi&z=16&output=embed";
+}
+@if (diaChi != "")
+{
+    <section class="sec home-store" id="cua-hang">
+        <div class="sec-head"><h2>Cửa hàng gần bạn</h2></div>
+        <div class="store-grid">
+            <div class="store-info">
+                <h2>@CauHinh.Get("TenCuaHang", "PhoneStore")</h2>
+                <div class="store-row"><i class="bi bi-geo-alt-fill"></i><span>@diaChi</span></div>
+                @if (gioMo != "")
+                {<div class="store-row"><i class="bi bi-clock-fill"></i><span>@gioMo</span></div>}
+                @if (hot != "")
+                {<div class="store-row"><i class="bi bi-telephone-fill"></i><a href="tel:@hot.Replace(" ", "")">@hot</a></div>}
+                <a class="btn btn-brand w-100 mt-3" target="_blank" rel="noopener"
+                   href="https://www.google.com/maps/dir/?api=1&destination=@mapQ"><i class="bi bi-sign-turn-right-fill"></i> Chỉ đường đến cửa hàng</a>
+                <a class="btn btn-outline-brand w-100 mt-2" target="_blank" rel="noopener"
+                   href="https://www.google.com/maps/search/?api=1&query=@mapQ"><i class="bi bi-box-arrow-up-right"></i> Mở trong Google Maps</a>
+            </div>
+            <div class="store-map">
+                <iframe title="Bản đồ cửa hàng" loading="lazy" allowfullscreen referrerpolicy="no-referrer-when-downgrade" src="@mapSrc"></iframe>
+            </div>
+        </div>
+    </section>
+}
+@section scripts {
+    <script>
+        $('.hrow-nav').on('click', function () {
+            var row = $(this).siblings('.hrow')[0];
+            row.scrollBy({ left: ($(this).hasClass('next') ? 1 : -1) * row.clientWidth * 0.8, behavior: 'smooth' });
+        });
+
+        (function () {
+            var el = document.getElementById('cdDeal');
+            if (!el) return;
+            function p(n) { return n < 10 ? '0' + n : n; }
+            function tick() {
+                var now = new Date(), end = new Date(now);
+                end.setHours(23, 59, 59, 999);
+                var s = Math.max(0, Math.floor((end - now) / 1000));
+                el.textContent = p(Math.floor(s / 3600)) + ':' + p(Math.floor((s % 3600) / 60)) + ':' + p(s % 60);
+            }
+            tick(); setInterval(tick, 1000);
+        })();
+        $('#tin-tuc .video-card[data-id]').on('click', function () {
+            $('#videoTitle').text($(this).data('title'));
+            $('#videoFrame').attr('src', 'https://www.youtube-nocookie.com/embed/' + $(this).data('id') + '?autoplay=1&rel=0');
+            bootstrap.Modal.getOrCreateInstance(document.getElementById('videoModal')).show();
+        });
+        $('#videoModal').on('hidden.bs.modal', function () { $('#videoFrame').attr('src', ''); });
+        // kéo bằng chuột cho các hàng sản phẩm cuộn ngang
+        (function () {
+            document.querySelectorAll('.hrow').forEach(function (row) {
+                var down = false, moved = false, startX = 0, startLeft = 0;
+
+                row.addEventListener('mousedown', function (e) {
+                    if (e.button !== 0) return;                 // chỉ chuột trái
+                    down = true; moved = false;
+                    startX = e.pageX; startLeft = row.scrollLeft;
+                });
+
+                document.addEventListener('mousemove', function (e) {
+                    if (!down) return;
+                    var dx = e.pageX - startX;
+                    if (!moved && Math.abs(dx) > 5) { moved = true; row.classList.add('is-dragging'); }
+                    if (moved) { row.scrollLeft = startLeft - dx; e.preventDefault(); }
+                });
+
+                document.addEventListener('mouseup', function () {
+                    if (!down) return;
+                    down = false;
+                    row.classList.remove('is-dragging');
+                });
+
+                // vừa kéo xong thì không bấm nhầm vào thẻ sản phẩm
+                row.addEventListener('click', function (e) {
+                    if (moved) { e.preventDefault(); e.stopPropagation(); moved = false; }
+                }, true);
+
+                // chặn trình duyệt kéo ảnh ra khỏi thẻ
+                row.addEventListener('dragstart', function (e) { e.preventDefault(); });
+            });
+        })();
+        // banner trang chủ: bấm tab để đổi, tự chuyển sau 5 giây, tạm dừng khi rê chuột vào
+        (function () {
+            var box = document.getElementById('heroBanner');
+            if (!box) return;
+            var bar = box.querySelector('.hb-tabs');
+            var tabs = box.querySelectorAll('.hb-tab'), slides = box.querySelectorAll('.hb-slide');
+            var cur = 0, paused = false;
+
+            function show(i) {
+                cur = (i + slides.length) % slides.length;
+                for (var k = 0; k < slides.length; k++) {
+                    slides[k].classList.toggle('on', k === cur);
+                    tabs[k].classList.toggle('on', k === cur);
+                }
+                var t = tabs[cur];   // thanh tab cuộn ngang được: đưa tab đang chọn vào giữa
+                if (bar.scrollWidth > bar.clientWidth) bar.scrollLeft = t.offsetLeft - (bar.clientWidth - t.offsetWidth) / 2;
+            }
+            for (var k = 0; k < tabs.length; k++) (function (n) { tabs[n].addEventListener('click', function () { show(n); }); })(k);
+            box.querySelector('.hb-nav.prev').addEventListener('click', function () { show(cur - 1); });
+            box.querySelector('.hb-nav.next').addEventListener('click', function () { show(cur + 1); });
+            box.addEventListener('mouseenter', function () { paused = true; });
+            box.addEventListener('mouseleave', function () { paused = false; });
+
+            if (slides.length > 1 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches)
+                setInterval(function () { if (!paused) show(cur + 1); }, 5000);
+        })();
+    </script>
+}

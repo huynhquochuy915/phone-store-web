@@ -1,76 +1,236 @@
 ﻿@model WebsiteQuanLiDienThoaiDiDong.Models.ViewModels.CartVM
-@{ ViewBag.Title = "Giỏ hàng"; var noImg = Url.Content("~/Content/images/no-image.png"); }
+@{
+    ViewBag.Title = "Giỏ hàng";
+    var noImg = Url.Content("~/Content/images/no-image.png");
+}
 
-<div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
-    <h3 class="mb-0"><i class="bi bi-cart3"></i> Giỏ hàng của bạn</h3>
-    <a class="btn btn-outline-danger" href="@Url.Action("YeuThich", "SanPham")">
-        <i class="bi bi-heart me-1"></i> Danh sách yêu thích
-    </a>
+<nav class="cart-crumb">
+    <a href="@Url.Action("Index", "SanPham")"><i class="bi bi-chevron-left"></i> Tiếp tục mua sắm</a>
+    <span>/</span>
+    <strong>Giỏ hàng của bạn</strong>
+    <a class="ms-auto" href="@Url.Action("YeuThich", "SanPham")"><i class="bi bi-heart"></i> Yêu thích</a>
+</nav>
+
+<div id="cart-root">
+    @if (!Model.Items.Any())
+    {
+        <div class="cart-empty">
+            <i class="bi bi-cart-x"></i>
+            <p class="cart-empty-title">Giỏ hàng của bạn đang trống</p>
+            <p class="text-muted">Hãy chọn thêm sản phẩm để mua sắm nhé</p>
+            <a class="btn btn-brand" href="@Url.Action("Index", "SanPham")">Xem thêm sản phẩm</a>
+        </div>
+    }
+    else
+    {
+        <div class="row g-3">
+            <div class="col-lg-8">
+                <div class="cart-list">
+                    <div class="cart-list-head">
+                        <label class="cart-check">
+                            <input type="checkbox" id="cart-all" @(Model.ChonHet ? "checked" : "") />
+                            <span>Chọn tất cả (@Model.Items.Count)</span>
+                        </label>
+                    </div>
+
+                    @foreach (var it in Model.Items)
+                    {
+                        var bienThe = string.Join(" · ", new[] { it.DungLuong, it.MauSac }.Where(s => !string.IsNullOrWhiteSpace(s)));
+                        var giam = it.GiaGoc > it.DonGia ? (int)Math.Round((1 - it.DonGia / it.GiaGoc) * 100) : 0;
+                        var chiTiet = Url.Action("ChiTiet", "SanPham", new { id = it.SanPhamId });
+                        <div class="cart-item @(it.DuocChon ? "" : "is-off")">
+                            <label class="cart-check cart-pick">
+                                <input type="checkbox" class="cart-pick-input" data-line="@it.LineId" @(it.DuocChon ? "checked" : "") aria-label="Chọn sản phẩm" />
+                            </label>
+                            <a class="cart-img" href="@chiTiet">
+                                <img src="@(it.Anh != null ? Url.Content("~" + it.Anh) : noImg)" alt="@it.Ten"
+                                     onerror="this.onerror=null;this.src='@noImg'" />
+                            </a>
+                            <div class="cart-info">
+                                <div class="cart-top">
+                                    <a class="cart-name" href="@chiTiet">@it.Ten</a>
+                                    @using (Html.BeginForm("Xoa", "GioHang", FormMethod.Post, new { @class = "cart-delform" }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="lineId" value="@it.LineId" />
+                                        <button type="submit" class="cart-del" title="Xóa khỏi giỏ"><i class="bi bi-trash3"></i></button>
+                                    }
+                                </div>
+                                @if (bienThe != "")
+                                {<div class="cart-variant">@bienThe</div>}
+                                @if (it.SoLuong > it.Ton)
+                                {<div class="cart-warn">Kho chỉ còn @it.Ton sản phẩm</div>}
+
+                                <div class="cart-bottom">
+                                    <div class="cart-price">
+                                        <strong>@it.DonGia.VND()</strong>
+                                        @if (giam > 0)
+                                        {<del>@it.GiaGoc.VND()</del><span class="cart-off">-@giam%</span>}
+                                        @if (it.SoLuong > 1)
+                                        {<div class="cart-line-total">Thành tiền: @it.ThanhTien.VND()</div>}
+                                    </div>
+                                    @using (Html.BeginForm("CapNhat", "GioHang", FormMethod.Post, new { @class = "cart-qty", data_max = it.Ton }))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="lineId" value="@it.LineId" />
+                                        <input type="hidden" name="soLuong" value="@it.SoLuong" />
+                                        <button type="button" data-step="-1" aria-label="Giảm" @(it.SoLuong <= 1 ? "disabled" : "")>&minus;</button>
+                                        <span>@it.SoLuong</span>
+                                        <button type="button" data-step="1" aria-label="Tăng" @(it.SoLuong >= it.Ton ? "disabled" : "")>+</button>
+                                    }
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+
+                @if (Model.GoiY.Any())
+                {
+                    <div class="cart-upsell">
+                        <div class="cart-upsell-h"><i class="bi bi-bag-plus"></i> Phụ kiện mua cùng</div>
+                        <div class="cart-upsell-grid">
+                            @foreach (var p in Model.GoiY)
+                            {
+                                <div class="cart-up">
+                                    <a class="cart-up-img" href="@Url.Action("ChiTiet", "SanPham", new { id = p.Id })">
+                                        <img src="@(p.AnhDaiDien != null ? Url.Content("~" + p.AnhDaiDien) : noImg)" alt="@p.TenSanPham"
+                                             onerror="this.onerror=null;this.src='@noImg'" />
+                                    </a>
+                                    <div class="cart-up-name">@p.TenSanPham</div>
+                                    <div class="cart-up-price">@((p.GiaThapNhat ?? 0).VND())</div>
+                                    @using (Html.BeginForm("ThemSanPham", "GioHang", FormMethod.Post))
+                                    {
+                                        @Html.AntiForgeryToken()
+                                        <input type="hidden" name="sanPhamId" value="@p.Id" />
+                                        <button type="submit" class="btn btn-outline-brand btn-sm w-100">Thêm vào giỏ</button>
+                                    }
+                                </div>
+                            }
+                        </div>
+                    </div>
+                }
+            </div>
+
+            <div class="col-lg-4">
+                <div class="cart-summary">
+                    <h5>Thông tin đơn hàng</h5>
+                    <div class="cart-row"><span>Số lượng sản phẩm</span><strong>@Model.TongSoLuong</strong></div>
+                    <div class="cart-row"><span>Tổng tiền hàng</span><strong>@Model.TongGiaGoc.VND()</strong></div>
+                    @if (Model.TongGiamGia > 0)
+                    {<div class="cart-row"><span>Giảm giá trực tiếp</span><strong class="cart-save">-@Model.TongGiamGia.VND()</strong></div>}
+                    <hr />
+                    <div class="cart-row cart-total"><span>TỔNG TIỀN</span><strong>@Model.TongTien.VND()</strong></div>
+                    <div class="cart-sub">Chưa gồm phí vận chuyển và mã giảm giá</div>
+
+                    @if (Model.TongGiamGia > 0)
+                    {<div class="cart-save-row"><span>Bạn đã tiết kiệm được</span><span>@Model.TongGiamGia.VND()</span></div>}
+
+                    @if (Model.CoLoi)
+                    {<div class="cart-warn mt-2">Có sản phẩm vượt quá tồn kho, vui lòng chỉnh lại số lượng.</div>}
+                    @if (Model.SoDongChon == 0)
+                    {<div class="cart-warn mt-2">Hãy chọn ít nhất 1 sản phẩm để đặt hàng.</div>}
+                    <a class="btn btn-brand w-100 mt-3 cart-checkout @((Model.CoLoi || Model.SoDongChon == 0) ? "disabled" : "")"
+                       href="@Url.Action("Index", "DatHang")">
+                        <b>Đặt hàng (@Model.TongSoLuong)</b>
+                        <small>Chọn địa chỉ và thanh toán ở bước sau</small>
+                    </a>
+
+                    <a class="cart-trade" href="@Url.Action("Index", "ThuCu")">
+                        <i class="bi bi-arrow-repeat"></i> Có máy cũ? Thu cũ lên đời tiết kiệm <i class="bi bi-chevron-right"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="cart-bar-space"></div>
+        <div class="cart-bar">
+            <div><small>Tổng tiền</small><strong>@Model.TongTien.VND()</strong></div>
+            <a class="btn btn-brand @(Model.CoLoi ? "disabled" : "")" href="@Url.Action("Index", "DatHang")">Đặt hàng</a>
+        </div>
+    }
 </div>
 
-@if (!Model.Items.Any())
-{
-    <div class="box text-center py-5">
-        <p class="fs-5 mb-3">Giỏ hàng đang trống</p>
-        <a class="btn btn-brand" href="@Url.Action("Index", "SanPham")">Mua sắm ngay</a>
-    </div>
-}
-else
-{
-    <div class="row g-4">
-        <div class="col-lg-8">
-            <div class="box table-responsive">
-                <table class="table align-middle mb-0">
-                    <thead><tr><th>Sản phẩm</th><th>Đơn giá</th><th style="width:110px">Số lượng</th><th class="text-end">Thành tiền</th><th></th></tr></thead>
-                    <tbody>
-                        @foreach (var it in Model.Items)
-                        {
-                            <tr>
-                                <td>
-                                    <div class="d-flex gap-3 align-items-center">
-                                        <img src="@(it.Anh != null ? Url.Content("~" + it.Anh) : noImg)" width="70" height="70" style="object-fit:contain"
-                                             onerror="this.onerror=null;this.src='@noImg'" />
-                                        <div>
-                                            <a class="fw-semibold text-decoration-none" href="@Url.Action("ChiTiet", "SanPham", new { id = it.SanPhamId })">@it.Ten</a>
-                                            <div class="small text-muted">@it.DungLuong @(it.DungLuong != null ? "·" : "") @it.MauSac</div>
-                                            @if (it.SoLuong > it.Ton)
-                                            {<div class="small text-danger">Kho chỉ còn @it.Ton sản phẩm</div>}
-                                        </div>
-                                    </div>
-                                </td>
-                                <td>@it.DonGia.VND()</td>
-                                <td>
-                                    @using (Html.BeginForm("CapNhat", "GioHang", FormMethod.Post))
-                                    {
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="lineId" value="@it.LineId" />
-                                        <input type="number" name="soLuong" value="@it.SoLuong" min="0" max="@it.Ton" class="form-control form-control-sm" onchange="this.form.submit()" />
-                                    }
-                                </td>
-                                <td class="text-end fw-semibold">@it.ThanhTien.VND()</td>
-                                <td>
-                                    @using (Html.BeginForm("Xoa", "GioHang", FormMethod.Post))
-                                    {
-                                        @Html.AntiForgeryToken()
-                                        <input type="hidden" name="lineId" value="@it.LineId" />
-                                        <button class="btn btn-sm btn-outline-danger" title="Xóa"><i class="bi bi-trash"></i></button>
-                                    }
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-            <a class="btn btn-link mt-2" href="@Url.Action("Index", "SanPham")">&larr; Tiếp tục mua sắm</a>
-        </div>
+<script>
+    (function () {
+        var root = document.getElementById('cart-root');
+        if (!root) return;
+        var timer;
 
-        <div class="col-lg-4">
-            <div class="box">
-                <h5 class="mb-3">Tóm tắt đơn hàng</h5>
-                <div class="d-flex justify-content-between mb-2"><span>Tạm tính (@Model.TongSoLuong sản phẩm)</span><strong>@Model.TongTien.VND()</strong></div>
-                <div class="small text-muted mb-3">Phí vận chuyển và mã giảm giá được tính ở bước tiếp theo.</div>
-                <a class="btn btn-accent w-100 @(Model.CoLoi ? "disabled" : "")" href="@Url.Action("Index", "DatHang")">Tiến hành đặt hàng</a>
-            </div>
-        </div>
-    </div>
+        function toast(msg) {
+            var el = document.getElementById('cart-toast');
+            if (!el) { el = document.createElement('div'); el.id = 'cart-toast'; document.body.appendChild(el); }
+            el.textContent = msg; el.classList.add('show');
+            clearTimeout(timer);
+            timer = setTimeout(function () { el.classList.remove('show'); }, 2800);
+        }
+
+        function setBadge(n) {   // cập nhật số trên icon giỏ hàng ở header
+            document.querySelectorAll('.cart-badge').forEach(function (b) {
+                if (n > 0) b.textContent = n; else b.remove();
+            });
+        }
+
+        function refresh() {     // lấy lại HTML của trang rồi chỉ thay phần #cart-root
+            return fetch(location.href, { credentials: 'same-origin', headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+                .then(function (r) { return r.text(); })
+                .then(function (html) {
+                    var fresh = new DOMParser().parseFromString(html, 'text/html').getElementById('cart-root');
+                    if (fresh) root.innerHTML = fresh.innerHTML;
+                });
+        }
+
+        function send(f) {
+            var box = f.closest('.cart-item') || f;
+            box.classList.add('is-busy');
+            fetch(f.action, {
+                method: 'POST', body: new FormData(f), credentials: 'same-origin',
+                headers: { 'X-Requested-With': 'XMLHttpRequest' }
+            })
+                .then(function (r) { return r.json(); })
+                .then(function (d) {
+                    if (typeof d.count === 'number') setBadge(d.count);
+                    if (d.ok === false && d.message) toast(d.message);
+                    return refresh();
+                })
+                .catch(function () { f.submit(); });   // lỗi mạng hoặc hết phiên: gửi form kiểu thường
+        }
+        function chon(lineId, val) {
+    var token = root.querySelector('input[name="__RequestVerificationToken"]');
+    var fd = new FormData();
+    if (token) fd.append('__RequestVerificationToken', token.value);
+    if (lineId) fd.append('lineId', lineId);
+    fd.append('chon', val ? 'true' : 'false');
+    fetch('@Url.Action("Chon", "GioHang")', { method: 'POST', body: fd, credentials: 'same-origin',
+                                              headers: { 'X-Requested-With': 'XMLHttpRequest' } })
+        .then(refresh)
+        .catch(function () { location.reload(); });
 }
+
+root.addEventListener('change', function (e) {
+    var t = e.target;
+    if (t.id === 'cart-all') chon(null, t.checked);
+    else if (t.classList.contains('cart-pick-input')) chon(t.getAttribute('data-line'), t.checked);
+});
+        root.addEventListener('click', function (e) {   // nút − / +
+            var b = e.target.closest('.cart-qty button[data-step]');
+            if (!b || b.disabled) return;
+            var f = b.closest('form');
+            var input = f.querySelector('input[name="soLuong"]');
+            var max = parseInt(f.getAttribute('data-max'), 10) || 0;
+            var next = parseInt(input.value, 10) + parseInt(b.getAttribute('data-step'), 10);
+            if (next < 1) next = 1;
+            if (max > 0 && next > max) next = max;
+            if (String(next) === input.value) return;
+            input.value = next;
+            f.querySelectorAll('button').forEach(function (x) { x.disabled = true; });
+            send(f);
+        });
+
+        root.addEventListener('submit', function (e) {  // nút xóa
+            var f = e.target;
+            if (!f.classList.contains('cart-delform')) return;
+            e.preventDefault();
+            send(f);
+        });
+    })();
+</script>
