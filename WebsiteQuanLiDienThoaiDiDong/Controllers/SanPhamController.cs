@@ -1,3 +1,4 @@
+
 using System;
 using System.Collections.Generic;
 using System.Data;
@@ -30,6 +31,7 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
             var ketQua = LocSanPham(tuKhoa, loaiId, thuongHieuId, giaTu, giaDen,
                 ramGB, dungLuongGB, conHang, sapXep, trang, SoDongMoiTrang, saoToiThieu);
             var tong = ketQua.FirstOrDefault() == null ? 0 : ketQua[0].TongSoDong.GetValueOrDefault();
+
             var vm = new DanhSachSanPhamVM
             {
                 SanPhams = ketQua.Select(x => new SanPhamCardVM
@@ -46,9 +48,14 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
                     SoDanhGia = x.SoDanhGia,
                     DaBan = x.DaBan
                 }).ToList(),
+
                 Loais = db.LoaiSanPhams.Where(x => x.HienThi).OrderBy(x => x.TenLoai).ToList(),
-                ThuongHieus = db.SanPhams.Where(x => x.HienThi && (!loaiId.HasValue || x.LoaiId == loaiId.Value))
-                    .Select(x => x.ThuongHieu).Distinct().OrderBy(x => x.TenThuongHieu).ToList(),
+
+                ThuongHieus = db.SanPhams
+                    .Where(x => x.HienThi && (!loaiId.HasValue || x.LoaiId == loaiId.Value))
+                    .Select(x => x.ThuongHieu).Distinct()
+                    .OrderBy(x => x.TenThuongHieu).ToList(),
+
                 TuKhoa = tuKhoa,
                 LoaiId = loaiId,
                 ThuongHieuId = thuongHieuId,
@@ -62,6 +69,7 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
                 SaoToiThieu = saoToiThieu,
                 SoTrang = Math.Max(1, (int)Math.Ceiling(tong / (double)SoDongMoiTrang))
             };
+
             return View(vm);
         }
 
@@ -84,6 +92,7 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
                 new SqlParameter("@SoDong", SqlDbType.Int) { Value = soDong },
                 new SqlParameter("@SaoToiThieu", SqlDbType.TinyInt) { Value = (object)saoToiThieu ?? DBNull.Value }
             };
+
             return db.Database.SqlQuery<sp_LocSanPham_Result>(
                 "EXEC sp_LocSanPham @TuKhoa, @LoaiId, @ThuongHieuId, @GiaTu, @GiaDen, @RamGB, @DungLuongGB, @ConHang, @SapXep, @Trang, @SoDong, @SaoToiThieu", ps).ToList();
         }
@@ -102,55 +111,164 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
                 anh = x.AnhDaiDien,
                 gia = x.GiaThapNhat
             });
+
             return Json(ketQua, JsonRequestBehavior.AllowGet);
         }
 
         [HttpGet]
-        public ActionResult ChiTiet(int id)
+        public ActionResult ChiTiet(int id, byte? sao, string sapXepDanhGia = "moi")
         {
             var sp = db.SanPhams
                 .Include(x => x.BienTheSanPhams)
                 .Include(x => x.HinhAnhSanPhams)
                 .FirstOrDefault(x => x.Id == id && x.HienThi);
+
             if (sp == null) return HttpNotFound("Không tìm thấy sản phẩm.");
 
-            db.Database.ExecuteSqlCommand("UPDATE SanPham SET LuotXem = LuotXem + 1 WHERE Id = @p0", id);
-            var userId = Session["UserId"] as int?;
-            var daMua = userId.HasValue && db.vw_NguoiDaMuaSanPham.Any(x => x.SanPhamId == id && x.NguoiDungId == userId.Value);
-            var daDanhGia = userId.HasValue && db.DanhGias.Any(x => x.SanPhamId == id && x.NguoiDungId == userId.Value);
+            db.Database.ExecuteSqlCommand(
+                "UPDATE SanPham SET LuotXem = LuotXem + 1 WHERE Id = @p0", id);
 
-            var lienQuanIds = db.SanPhamLienQuans.Where(x => x.SanPhamId == id)
-                .Select(x => x.SanPhamLienQuanId).Take(5).ToList();
+            var userId = Session["UserId"] as int?;
+
+            var daMua = userId.HasValue &&
+                db.vw_NguoiDaMuaSanPham.Any(x =>
+                    x.SanPhamId == id && x.NguoiDungId == userId.Value);
+
+            var daDanhGia = userId.HasValue &&
+                db.DanhGias.Any(x =>
+                    x.SanPhamId == id && x.NguoiDungId == userId.Value);
+
+            // Lấy đánh giá đã được duyệt
+            var danhGiaQuery = db.DanhGias
+                .Where(x => x.SanPhamId == id && x.DaDuyet);
+
+            // Thống kê đánh giá
+            var tongDanhGia = danhGiaQuery.Count();
+
+            var diemTrungBinh = tongDanhGia > 0
+                ? danhGiaQuery.Average(x => (double)x.SoSao)
+                : 0;
+
+            var soSao5 = danhGiaQuery.Count(x => x.SoSao == 5);
+            var soSao4 = danhGiaQuery.Count(x => x.SoSao == 4);
+            var soSao3 = danhGiaQuery.Count(x => x.SoSao == 3);
+            var soSao2 = danhGiaQuery.Count(x => x.SoSao == 2);
+            var soSao1 = danhGiaQuery.Count(x => x.SoSao == 1);
+
+            // Kiểm tra số sao hợp lệ
+            if (sao.HasValue && (sao.Value < 1 || sao.Value > 5))
+                sao = null;
+
+            // Kiểm tra kiểu sắp xếp
+            if (sapXepDanhGia != "cao" &&
+                sapXepDanhGia != "thap" &&
+                sapXepDanhGia != "moi")
+            {
+                sapXepDanhGia = "moi";
+            }
+
+            // Lọc đánh giá theo số sao
+            var danhGiaLoc = danhGiaQuery.Include(x => x.NguoiDung);
+
+            if (sao.HasValue)
+            {
+                danhGiaLoc = danhGiaLoc.Where(x => x.SoSao == sao.Value);
+            }
+
+            // Sắp xếp đánh giá
+            switch (sapXepDanhGia)
+            {
+                case "cao":
+                    danhGiaLoc = danhGiaLoc
+                        .OrderByDescending(x => x.SoSao)
+                        .ThenByDescending(x => x.NgayDanhGia);
+                    break;
+
+                case "thap":
+                    danhGiaLoc = danhGiaLoc
+                        .OrderBy(x => x.SoSao)
+                        .ThenByDescending(x => x.NgayDanhGia);
+                    break;
+
+                default:
+                    danhGiaLoc = danhGiaLoc
+                        .OrderByDescending(x => x.NgayDanhGia);
+                    break;
+            }
+
+            var lienQuanIds = db.SanPhamLienQuans
+                .Where(x => x.SanPhamId == id)
+                .Select(x => x.SanPhamLienQuanId)
+                .Take(5)
+                .ToList();
+
             if (!lienQuanIds.Any())
-                lienQuanIds = db.SanPhams.Where(x => x.HienThi && x.Id != id && x.ThuongHieuId == sp.ThuongHieuId)
-                    .OrderByDescending(x => x.NoiBat).Select(x => x.Id).Take(5).ToList();
+            {
+                lienQuanIds = db.SanPhams
+                    .Where(x => x.HienThi && x.Id != id &&
+                                x.ThuongHieuId == sp.ThuongHieuId)
+                    .OrderByDescending(x => x.NoiBat)
+                    .Select(x => x.Id)
+                    .Take(5)
+                    .ToList();
+            }
 
             var vm = new SanPhamChiTietVM
             {
                 SanPham = sp,
-                HinhAnhs = sp.HinhAnhSanPhams.OrderByDescending(x => x.LaAnhChinh).ThenBy(x => x.ThuTu).ToList(),
-                DanhGias = db.DanhGias.Include(x => x.NguoiDung).Where(x => x.SanPhamId == id && x.DaDuyet)
-                    .OrderByDescending(x => x.NgayDanhGia).Take(20).ToList(),
+
+                HinhAnhs = sp.HinhAnhSanPhams
+                    .OrderByDescending(x => x.LaAnhChinh)
+                    .ThenBy(x => x.ThuTu)
+                    .ToList(),
+
+                DanhGias = danhGiaLoc.Take(20).ToList(),
+
                 CoTheDanhGia = daMua && !daDanhGia,
                 DaDanhGia = daDanhGia,
-                KyHanTraGop = db.GoiTraGops.Where(x => x.HienThi).OrderBy(x => x.SoThang).Select(x => x.SoThang).ToList(),
-                SanPhamLienQuan = db.vw_SanPhamHienThi.Where(x => lienQuanIds.Contains(x.Id)).ToList().Select(x => new SanPhamCardVM
-                {
-                    Id = x.Id,
-                    LoaiId = x.LoaiId,
-                    TenSanPham = x.TenSanPham,
-                    TenThuongHieu = x.TenThuongHieu,
-                    AnhDaiDien = x.AnhDaiDien,
-                    GiaThapNhat = x.GiaThapNhat,
-                    GiaCaoNhat = x.GiaCaoNhat,
-                    TongTon = x.TongTon,
-                    SaoTrungBinh = x.SaoTrungBinh,
-                    SoDanhGia = x.SoDanhGia,
-                    DaBan = x.DaBan
-                }).ToList()
+
+                KyHanTraGop = db.GoiTraGops
+                    .Where(x => x.HienThi)
+                    .OrderBy(x => x.SoThang)
+                    .Select(x => x.SoThang)
+                    .ToList(),
+
+                SanPhamLienQuan = db.vw_SanPhamHienThi
+                    .Where(x => lienQuanIds.Contains(x.Id))
+                    .ToList()
+                    .Select(x => new SanPhamCardVM
+                    {
+                        Id = x.Id,
+                        LoaiId = x.LoaiId,
+                        TenSanPham = x.TenSanPham,
+                        TenThuongHieu = x.TenThuongHieu,
+                        AnhDaiDien = x.AnhDaiDien,
+                        GiaThapNhat = x.GiaThapNhat,
+                        GiaCaoNhat = x.GiaCaoNhat,
+                        TongTon = x.TongTon,
+                        SaoTrungBinh = x.SaoTrungBinh,
+                        SoDanhGia = x.SoDanhGia,
+                        DaBan = x.DaBan
+                    }).ToList(),
+
+                // Thống kê đánh giá
+                TongDanhGia = tongDanhGia,
+                DiemTrungBinh = diemTrungBinh,
+                SoSao5 = soSao5,
+                SoSao4 = soSao4,
+                SoSao3 = soSao3,
+                SoSao2 = soSao2,
+                SoSao1 = soSao1,
+
+                // Trạng thái bộ lọc
+                SaoDanhGia = sao,
+                SapXepDanhGia = sapXepDanhGia
             };
+
             vm.ThongSos = db.Database.SqlQuery<ThongSoDong>(
-                "SELECT Nhom, TenThongSo, GiaTri FROM ThongSoKyThuat WHERE SanPhamId = @p0 ORDER BY ThuTu", id).ToList();
+                "SELECT Nhom, TenThongSo, GiaTri FROM ThongSoKyThuat WHERE SanPhamId = @p0 ORDER BY ThuTu",
+                id).ToList();
+
             return View(vm);
         }
 
@@ -160,7 +278,10 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
             try
             {
                 var result = db.sp_TinhTraGop(bienTheId, soThang, traTruocPT).FirstOrDefault();
-                if (result == null) return Json(new { ok = false, message = "Không tính được khoản trả góp." }, JsonRequestBehavior.AllowGet);
+
+                if (result == null)
+                    return Json(new { ok = false, message = "Không tính được khoản trả góp." }, JsonRequestBehavior.AllowGet);
+
                 return Json(new
                 {
                     ok = true,
@@ -183,9 +304,12 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
         public JsonResult YeuThichIds()
         {
             var userId = Session["UserId"] as int?;
+
             var ids = userId.HasValue
-                ? db.YeuThiches.Where(x => x.NguoiDungId == userId.Value).Select(x => x.SanPhamId).ToList()
+                ? db.YeuThiches.Where(x => x.NguoiDungId == userId.Value)
+                    .Select(x => x.SanPhamId).ToList()
                 : new List<int>();
+
             return Json(ids, JsonRequestBehavior.AllowGet);
         }
 
@@ -194,6 +318,7 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
         public JsonResult ChuyenYeuThich(int sanPhamId)
         {
             var userId = Session["UserId"] as int?;
+
             if (!userId.HasValue)
             {
                 return Json(new
@@ -207,8 +332,11 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
             if (!db.SanPhams.Any(x => x.Id == sanPhamId && x.HienThi))
                 return Json(new { ok = false, message = "Sản phẩm không tồn tại hoặc đã ngừng bán." });
 
-            var saved = db.YeuThiches.FirstOrDefault(x => x.NguoiDungId == userId.Value && x.SanPhamId == sanPhamId);
+            var saved = db.YeuThiches.FirstOrDefault(x =>
+                x.NguoiDungId == userId.Value && x.SanPhamId == sanPhamId);
+
             var daYeuThich = saved == null;
+
             if (daYeuThich)
             {
                 db.YeuThiches.Add(new YeuThich
@@ -222,9 +350,11 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
             {
                 db.YeuThiches.Remove(saved);
             }
+
             db.SaveChanges();
 
             var count = db.YeuThiches.Count(x => x.NguoiDungId == userId.Value);
+
             return Json(new
             {
                 ok = true,
@@ -238,6 +368,7 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
         public ActionResult YeuThich()
         {
             var userId = Session["UserId"] as int?;
+
             if (!userId.HasValue)
                 return RedirectToAction("Login", "Account", new { returnUrl = Url.Action("YeuThich") });
 
@@ -246,6 +377,7 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
                         where favorite.NguoiDungId == userId.Value
                         orderby favorite.NgayThem descending
                         select product).ToList();
+
             var vm = rows.Select(x => new SanPhamCardVM
             {
                 Id = x.Id,
@@ -261,6 +393,7 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
                 DaBan = x.DaBan,
                 DaYeuThich = true
             }).ToList();
+
             return View(vm);
         }
 
@@ -269,11 +402,13 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
         public ActionResult DanhGia(DanhGiaVM model)
         {
             var userId = Session["UserId"] as int?;
+
             if (!userId.HasValue)
             {
                 TempData["Err"] = "Vui lòng đăng nhập để đánh giá sản phẩm.";
                 return RedirectToAction("Login", "Account");
             }
+
             if (!ModelState.IsValid)
             {
                 TempData["Err"] = "Thông tin đánh giá chưa hợp lệ.";
@@ -288,12 +423,14 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
             catch (Exception ex)
             {
                 var message = ex.GetBaseException().Message;
+
                 TempData["Err"] = message.Contains("50040") || message.Contains("nhận hàng")
                     ? "Chỉ khách đã nhận hàng mới được đánh giá sản phẩm này."
                     : (message.Contains("50041") || message.Contains("đánh giá sản phẩm này")
                         ? "Bạn đã đánh giá sản phẩm này rồi."
                         : "Không gửi được đánh giá. Vui lòng thử lại.");
             }
+
             return RedirectToAction("ChiTiet", new { id = model.SanPhamId });
         }
 
@@ -302,6 +439,7 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
         public ActionResult ThemSoSanh(int id)
         {
             var ids = LayDanhSachSoSanh();
+
             if (!db.SanPhams.Any(x => x.Id == id && x.HienThi))
                 TempData["Err"] = "Sản phẩm không tồn tại hoặc đã ngừng bán.";
             else if (!ids.Contains(id) && ids.Count >= 4)
@@ -312,6 +450,7 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
                 Session[SoSanhSessionKey] = ids;
                 TempData["Msg"] = "Đã thêm sản phẩm vào danh sách so sánh.";
             }
+
             return RedirectToAction("SoSanh");
         }
 
@@ -319,11 +458,13 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
         public ActionResult SoSanh()
         {
             var ids = LayDanhSachSoSanh();
+
             var vm = new SoSanhVM
             {
                 SanPhams = db.SanPhams.Include(x => x.BienTheSanPhams)
                     .Where(x => ids.Contains(x.Id) && x.HienThi).ToList()
             };
+
             return View(vm);
         }
 
@@ -334,6 +475,7 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
             var ids = LayDanhSachSoSanh();
             ids.Remove(id);
             Session[SoSanhSessionKey] = ids;
+
             return RedirectToAction("SoSanh");
         }
 
