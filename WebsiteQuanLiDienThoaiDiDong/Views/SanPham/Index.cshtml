@@ -68,7 +68,7 @@ else
         <ul class="pagination justify-content-center">
             @for (var p = 1; p <= Model.SoTrang; p++)
             {
-                <li class="page-item @(p == Model.Trang ? "active" : "")"><a class="page-link" href="@Url.Action("Index", new { tuKhoa = Model.TuKhoa, loaiId = Model.LoaiId, thuongHieuId = Model.ThuongHieuId, giaTu = Model.GiaTu, giaDen = Model.GiaDen, ramGB = Model.RamGB, dungLuongGB = Model.DungLuongGB, conHang = Model.ConHang, sapXep = Model.SapXep, trang = p })">@p</a></li>
+                <li class="page-item @(p == Model.Trang ? "active" : "")"><a class="page-link" href="@Url.Action("Index", new { tuKhoa = Model.TuKhoa, loaiId = Model.LoaiId, thuongHieuId = Model.ThuongHieuId, giaTu = Model.GiaTu, giaDen = Model.GiaDen, ramGB = Model.RamGB, dungLuongGB = Model.DungLuongGB, conHang = Model.ConHang, saoToiThieu = Model.SaoToiThieu, sapXep = Model.SapXep, trang = p })">@p</a></li>
             }
         </ul>
     </nav>
