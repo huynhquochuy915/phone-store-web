@@ -36,6 +36,45 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
                 Tin = NewsService.GetNews(4),
                 Video = NewsService.GetVideos(3)
             };
+            // ----- khuyến mãi đang chạy: đang bật, còn hạn, còn lượt dùng -----
+            var now = DateTime.Now;
+            var kms = db.KhuyenMais
+                .Where(k => k.TrangThai && k.NgayBatDau <= now && k.NgayKetThuc >= now
+                            && (!k.SoLuong.HasValue || k.DaDung < k.SoLuong.Value))
+                .OrderBy(k => k.NgayKetThuc).ThenBy(k => k.LoaiGiam).ThenBy(k => k.Id)
+                .Take(6).ToList();
+
+            vm.KhuyenMais = kms.Select(k =>
+            {
+                var text = (k.TenKhuyenMai + " " + k.MaCode).ToLower();
+                return new KhuyenMaiCardVM
+                {
+                    MaCode = k.MaCode,
+                    Ten = k.TenKhuyenMai,
+                    LoaiGiam = k.LoaiGiam,
+                    Nhom = k.LoaiGiam == "PHANTRAM" ? "pct"
+                         : (text.Contains("vận chuyển") || text.Contains("freeship") ? "ship" : "amt"),
+                    GiaTriGiam = k.GiaTriGiam,
+                    GiamToiDa = k.GiamToiDa,
+                    DonToiThieu = k.DonToiThieu,
+                    NgayKetThuc = k.NgayKetThuc,
+                    SoLuong = k.SoLuong,
+                    DaDung = k.DaDung
+                };
+            }).ToList();
+
+            // ----- thương hiệu có sản phẩm đang bán -----
+            var dem = db.SanPhams.Where(s => s.HienThi).GroupBy(s => s.ThuongHieuId)
+                .Select(g => new { Id = g.Key, N = g.Count() }).ToList();
+            var hangIds = dem.Select(d => d.Id).ToList();
+            vm.ThuongHieus = db.ThuongHieux.Where(t => hangIds.Contains(t.Id)).ToList()
+                .Select(t => new ThuongHieuTileVM
+                {
+                    Id = t.Id,
+                    Ten = t.TenThuongHieu,
+                    SoSanPham = dem.First(d => d.Id == t.Id).N
+                })
+                .OrderByDescending(x => x.SoSanPham).ThenBy(x => x.Ten).Take(5).ToList();
             return View(vm);
         }
 

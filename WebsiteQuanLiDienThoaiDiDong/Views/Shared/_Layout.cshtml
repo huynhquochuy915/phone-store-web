@@ -9,7 +9,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" rel="stylesheet" />
-    <link href="~/Content/site.css?v=22" rel="stylesheet" />
+    <link href="~/Content/site.css?v=25" rel="stylesheet" />
+    <link href="~/Content/chat.css?v=1" rel="stylesheet" />
 </head>
 <body>
     <div class="promo-strip">
@@ -445,6 +446,8 @@
             new bootstrap.Toast(el[0], { delay: 2500 }).show();
         }
     </script>
+    @* khung chat "Liên hệ" ở góc phải dưới *@
+    @Html.Partial("_ChatWidget")
     @RenderSection("scripts", required: false)
 </body>
 </html>

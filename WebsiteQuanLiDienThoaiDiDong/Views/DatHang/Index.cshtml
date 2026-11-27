@@ -115,27 +115,17 @@
                     @Html.RadioButtonFor(m => m.PhuongThucThanhToan, "QR", new { id = "payQR" })
                     <span class="pay-ico"><i class="bi bi-qr-code-scan"></i></span>
                     <span class="pay-txt">
-                        <b>Chuyển khoản qua mã QR (VietQR)</b>
-                        <small>Quét bằng app ngân hàng. Đơn chưa thanh toán tự hủy sau @hetHanPhut phút.</small>
+                        <b>Thanh toán online qua VNPay</b>
+                        <small>Quét VNPAY-QR, thẻ ATM nội địa hoặc thẻ quốc tế. Đơn chưa thanh toán tự hủy sau @hetHanPhut phút.</small>
                     </span>
                     <span class="pay-tick"></span>
                 </label>
                 @Html.ValidationMessageFor(m => m.PhuongThucThanhToan, "", new { @class = "text-danger small" })
 
-                <div id="qrPreview" class="qr-box co-qr" style="display:none">
-                    <h3>Quét mã để chuyển khoản</h3>
-                    <img id="qrImg" alt="Mã QR chuyển khoản" />
-                    <div class="qr-info">
-                        <div><span>Ngân hàng</span><b>@nganHang</b></div>
-                        <div><span>Số tài khoản</span><b>@soTk</b></div>
-                        <div><span>Chủ tài khoản</span><b>@tenTk</b></div>
-                        <div><span>Số tiền</span><b class="text-danger" id="qrAmount"></b></div>
-                        <div><span>Nội dung</span><b>Mã đơn hàng (có sau khi đặt hàng)</b></div>
-                    </div>
-                    <p class="text-muted small mb-0">
-                        Đây là mã xem trước. Bấm "Đặt hàng" để nhận mã QR chính thức kèm mã đơn.
-                    </p>
-                </div>
+            <div id="qrPreview" class="co-qr" style="display:none">
+                <h3>Thanh toán qua cổng VNPay</h3>
+                <p class="text-muted small mb-0">Sau khi bấm "Đặt hàng", bạn được chuyển sang trang VNPay để quét mã hoặc nhập thẻ. Thanh toán xong hệ thống tự xác nhận đơn.</p>
+            </div>
             </div>
         </div>
 

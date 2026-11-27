@@ -1,0 +1,282 @@
+﻿@{
+    ViewBag.Title = "Tin nhắn khách hàng";
+}
+
+@Html.AntiForgeryToken()
+
+<div class="achat" id="achat"
+     data-list="@Url.Action("DanhSach", "Chat", new { area = "Admin" })"
+     data-msgs="@Url.Action("TinNhan", "Chat", new { area = "Admin" })"
+     data-send="@Url.Action("Gui", "Chat", new { area = "Admin" })"
+     data-state="@Url.Action("DoiTrangThai", "Chat", new { area = "Admin" })">
+
+    <aside class="achat-list">
+        <div class="achat-search">
+            <i class="bi bi-search"></i>
+            <input type="search" id="achatQ" placeholder="Tìm theo tên hoặc số điện thoại" autocomplete="off" />
+        </div>
+        <div class="achat-tabs" id="achatTabs">
+            <button type="button" data-t="mo" class="on">Đang mở</button>
+            <button type="button" data-t="chua">Chưa đọc</button>
+            <button type="button" data-t="dong">Đã đóng</button>
+        </div>
+        <div class="achat-items" id="achatItems"><div class="achat-none">Đang tải...</div></div>
+    </aside>
+
+    <section class="achat-pane">
+        <div class="achat-empty" id="achatEmpty">
+            <i class="bi bi-chat-dots"></i>
+            <div>Chọn một cuộc trò chuyện ở bên trái để trả lời khách</div>
+        </div>
+
+        <div class="achat-thread" id="achatThread" hidden>
+            <div class="achat-head">
+                <span class="achat-av" id="achatHeadAv">?</span>
+                <div class="achat-who">
+                    <b><span id="achatHeadName"></span><span class="achat-tag" id="achatHeadTag"></span></b>
+                    <small id="achatHeadSub"></small>
+                </div>
+                <button type="button" class="btn btn-sm btn-outline-secondary" id="achatToggle"></button>
+            </div>
+
+            <div class="achat-msgs" id="achatMsgs"></div>
+
+            <div id="achatBottom">
+                <div class="achat-quick" id="achatQuick">
+                    <button type="button">Chào bạn, mình có thể hỗ trợ gì cho bạn ạ?</button>
+                    <button type="button">Bạn vui lòng cho mình xin số điện thoại để tiện hỗ trợ nhé.</button>
+                    <button type="button">Bạn cho mình xin mã đơn hàng để mình kiểm tra giúp ạ.</button>
+                    <button type="button">Cảm ơn bạn đã liên hệ. Chúc bạn một ngày tốt lành!</button>
+                </div>
+                <form class="achat-composer" id="achatForm">
+                    <textarea id="achatText" rows="1" maxlength="1000" placeholder="Nhập tin nhắn... (Enter để gửi, Shift+Enter xuống dòng)"></textarea>
+                    <button type="submit" class="btn btn-danger" id="achatSend"><i class="bi bi-send-fill"></i> Gửi</button>
+                </form>
+            </div>
+            <div class="achat-closed" id="achatClosedNote" hidden>Cuộc trò chuyện này đã đóng. Bấm "Mở lại" để tiếp tục trả lời, hoặc khách nhắn tin mới thì tự mở lại.</div>
+        </div>
+    </section>
+</div>
+
+@section scripts {
+    <script>
+    (function () {
+        var root = document.getElementById('achat');
+        var urls = {
+            list: root.getAttribute('data-list'), msgs: root.getAttribute('data-msgs'),
+            send: root.getAttribute('data-send'), state: root.getAttribute('data-state')
+        };
+        var token = document.querySelector('input[name="__RequestVerificationToken"]').value;
+        function $(id) { return document.getElementById(id); }
+        var elItems = $('achatItems'), elMsgs = $('achatMsgs'), elTa = $('achatText'), elQ = $('achatQ');
+
+        var tab = 'mo', cur = 0, last = 0, items = [], seen = {}, prevTotal = null, timer = null, busy = false, curClosed = false;
+
+        // ---------- tiện ích ----------
+        function pad(n) { return ('0' + n).slice(-2); }
+        function fmt(ts) {
+            var d = new Date(ts), now = new Date();
+            var t = pad(d.getHours()) + ':' + pad(d.getMinutes());
+            return d.toDateString() === now.toDateString() ? t : pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + ' ' + t;
+        }
+        function fillText(el, text) {
+            var re = /(https?:\/\/[^\s<>"']+)/g, pos = 0, m;
+            while ((m = re.exec(text)) !== null) {
+                if (m.index > pos) el.appendChild(document.createTextNode(text.slice(pos, m.index)));
+                var a = document.createElement('a');
+                a.href = m[1]; a.textContent = m[1]; a.target = '_blank'; a.rel = 'noopener nofollow';
+                el.appendChild(a);
+                pos = m.index + m[1].length;
+            }
+            if (pos < text.length) el.appendChild(document.createTextNode(text.slice(pos)));
+        }
+        function initial(name) { name = (name || '?').replace(/^\s+/, ''); return name ? name.charAt(0).toUpperCase() : '?'; }
+        function getJson(url) {
+            return fetch(url + (url.indexOf('?') < 0 ? '?' : '&') + '_=' + Date.now(), { credentials: 'same-origin', cache: 'no-store' })
+                .then(function (r) { return r.json(); });
+        }
+        function postJson(url, data) {
+            data.__RequestVerificationToken = token;
+            var body = Object.keys(data).map(function (k) { return encodeURIComponent(k) + '=' + encodeURIComponent(data[k]); }).join('&');
+            return fetch(url, {
+                method: 'POST', credentials: 'same-origin',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'X-Requested-With': 'XMLHttpRequest' },
+                body: body
+            }).then(function (r) { return r.json(); });
+        }
+        function el(tag, cls, text) {
+            var e = document.createElement(tag);
+            if (cls) e.className = cls;
+            if (text != null) e.textContent = text;
+            return e;
+        }
+
+        // ---------- âm báo + số chưa đọc ----------
+        var audioCtx = null;
+        function beep() {
+            try {
+                audioCtx = audioCtx || new (window.AudioContext || window.webkitAudioContext)();
+                var o = audioCtx.createOscillator(), g = audioCtx.createGain();
+                o.type = 'sine'; o.frequency.value = 880; g.gain.value = 0.08;
+                o.connect(g); g.connect(audioCtx.destination);
+                o.start(); o.stop(audioCtx.currentTime + 0.14);
+            } catch (e) { }
+        }
+        var baseTitle = document.title;
+        function setTotal(n) {
+            var b = $('chatNavBadge');
+            if (b) { b.style.display = n ? 'inline-flex' : 'none'; b.textContent = n > 99 ? '99+' : n; }
+            document.title = n ? '(' + n + ') ' + baseTitle : baseTitle;
+            if (prevTotal !== null && n > prevTotal) beep();
+            prevTotal = n;
+        }
+
+        // ---------- danh sách hội thoại ----------
+        function renderList() {
+            var shown = tab === 'chua' ? items.filter(function (x) { return x.chuaDoc > 0; }) : items;
+            var keepScroll = elItems.scrollTop;
+            elItems.innerHTML = '';
+            if (!shown.length) {
+                elItems.appendChild(el('div', 'achat-none', tab === 'chua' ? 'Không có tin chưa đọc' : (tab === 'dong' ? 'Chưa có cuộc trò chuyện nào đã đóng' : 'Chưa có cuộc trò chuyện nào')));
+                return;
+            }
+            shown.forEach(function (it) {
+                var row = el('div', 'achat-item' + (it.id === cur ? ' on' : '') + (it.chuaDoc > 0 ? ' unread' : ''));
+                row.appendChild(el('div', 'achat-av', initial(it.ten)));
+                var mid = el('div', 'achat-mid');
+                var top = el('div', 'achat-top');
+                top.appendChild(el('div', 'achat-name', it.ten));
+                top.appendChild(el('div', 'achat-time', fmt(it.ts)));
+                var lastRow = el('div', 'achat-last');
+                lastRow.appendChild(el('div', 'achat-snip', (it.nv ? 'Bạn: ' : '') + (it.tin || '')));
+                if (it.chuaDoc > 0) lastRow.appendChild(el('span', 'achat-dot', it.chuaDoc > 9 ? '9+' : it.chuaDoc));
+                mid.appendChild(top); mid.appendChild(lastRow);
+                row.appendChild(mid);
+                row.addEventListener('click', function () { select(it.id); });
+                elItems.appendChild(row);
+            });
+            elItems.scrollTop = keepScroll;
+        }
+
+        function loadList() {
+            var q = encodeURIComponent(elQ.value.replace(/^\s+|\s+$/g, ''));
+            return getJson(urls.list + '?tt=' + (tab === 'dong' ? 'dong' : 'mo') + '&q=' + q)
+                .then(function (d) {
+                    if (!d || !d.ok) return;
+                    items = d.items || [];
+                    setTotal(d.tong || 0);
+                    renderList();
+                }).catch(function () { });
+        }
+
+        // ---------- một cuộc trò chuyện ----------
+        function select(id) {
+            cur = id; last = 0; seen = {}; elMsgs.innerHTML = '';
+            $('achatEmpty').hidden = true; $('achatThread').hidden = false;
+            renderList();
+            loadThread(true);
+            elTa.focus();
+        }
+
+        function msgRow(m) {
+            var row = el('div', 'achat-row' + (m.nv ? ' nv' : ''));
+            var b = el('div', 'achat-bub'); fillText(b, m.nd); row.appendChild(b);
+            row.appendChild(el('div', 'achat-meta', (m.nv && m.ten ? m.ten + ' · ' : '') + fmt(m.ts)));
+            return row;
+        }
+        function addMessages(msgs) {
+            var stick = elMsgs.scrollHeight - elMsgs.scrollTop - elMsgs.clientHeight < 90;
+            var mine = false;
+            msgs.forEach(function (m) {
+                if (seen[m.id]) return;
+                seen[m.id] = 1;
+                if (m.id > last) last = m.id;
+                if (m.nv) mine = true;
+                elMsgs.appendChild(msgRow(m));
+            });
+            if (stick || mine) elMsgs.scrollTop = elMsgs.scrollHeight;
+        }
+
+        function showHead(p) {
+            $('achatHeadAv').textContent = initial(p.ten);
+            $('achatHeadName').textContent = p.ten;
+            var tag = $('achatHeadTag');
+            tag.textContent = p.tv ? 'Thành viên' : 'Khách vãng lai';
+            tag.className = 'achat-tag' + (p.tv ? '' : ' guest');
+            var sub = [];
+            if (p.sdt) sub.push('SĐT: ' + p.sdt);
+            if (p.email) sub.push(p.email);
+            $('achatHeadSub').textContent = sub.length ? sub.join('  ·  ') : 'Chưa để lại số điện thoại';
+            curClosed = !!p.dong;
+            $('achatToggle').innerHTML = curClosed ? '<i class="bi bi-arrow-counterclockwise"></i> Mở lại' : '<i class="bi bi-check2-circle"></i> Đóng cuộc trò chuyện';
+            $('achatBottom').hidden = curClosed;
+            $('achatClosedNote').hidden = !curClosed;
+        }
+
+        // first = lần đầu mở hội thoại (tải lịch sử); các lần sau chỉ lấy tin mới
+        function loadThread(first) {
+            var id = cur; if (!id) return Promise.resolve();
+            var doc = document.hidden ? 0 : 1;           // tab đang ẩn thì chưa tính là đã đọc
+            return getJson(urls.msgs + '?id=' + id + '&after=' + last + '&doc=' + doc)
+                .then(function (d) {
+                    if (id !== cur) return;               // đã chuyển sang hội thoại khác
+                    if (!d || !d.ok) return;
+                    showHead(d.phien);
+                    addMessages(d.messages || []);
+                }).catch(function () { });
+        }
+
+        function send(text) {
+            text = (text || '').replace(/^\s+|\s+$/g, '');
+            if (!text || !cur || busy) return;
+            busy = true; $('achatSend').disabled = true;
+            postJson(urls.send, { id: cur, noiDung: text })
+                .then(function (d) {
+                    if (d && d.ok) { elTa.value = ''; autosize(); addMessages([d.msg]); loadList(); }
+                    else alert((d && d.err) || 'Không gửi được tin nhắn.');
+                })
+                .catch(function () { alert('Mất kết nối hoặc phiên đăng nhập đã hết hạn. Hãy tải lại trang.'); })
+                .then(function () { busy = false; $('achatSend').disabled = false; elTa.focus(); });
+        }
+        function autosize() { elTa.style.height = 'auto'; elTa.style.height = Math.min(elTa.scrollHeight, 120) + 'px'; }
+
+        // ---------- sự kiện ----------
+        $('achatForm').addEventListener('submit', function (e) { e.preventDefault(); send(elTa.value); });
+        elTa.addEventListener('input', autosize);
+        elTa.addEventListener('keydown', function (e) {
+            if (e.key === 'Enter' && !e.shiftKey && !e.isComposing && e.keyCode !== 229) { e.preventDefault(); send(elTa.value); }
+        });
+        $('achatQuick').addEventListener('click', function (e) {
+            var b = e.target.closest('button');
+            if (b) { elTa.value = b.textContent; autosize(); elTa.focus(); }
+        });
+        $('achatToggle').addEventListener('click', function () {
+            if (!cur) return;
+            postJson(urls.state, { id: cur, dong: curClosed ? 'false' : 'true' }).then(function (d) {
+                if (d && d.ok) {
+                    if (!curClosed) { cur = 0; $('achatThread').hidden = true; $('achatEmpty').hidden = false; }   // đã đóng thì quay về danh sách
+                    else loadThread();
+                    loadList();
+                }
+            });
+        });
+        $('achatTabs').addEventListener('click', function (e) {
+            var b = e.target.closest('button'); if (!b) return;
+            tab = b.getAttribute('data-t');
+            Array.prototype.forEach.call($('achatTabs').children, function (x) { x.classList.toggle('on', x === b); });
+            loadList();
+        });
+        var qTimer = null;
+        elQ.addEventListener('input', function () { clearTimeout(qTimer); qTimer = setTimeout(loadList, 300); });
+
+        // ---------- cập nhật định kỳ ----------
+        function tick() {
+            Promise.all([loadList(), cur ? loadThread() : null]).then(function () {
+                timer = setTimeout(tick, document.hidden ? 8000 : 2500);
+            });
+        }
+        document.addEventListener('visibilitychange', function () { if (!document.hidden) { clearTimeout(timer); tick(); } });
+        tick();
+    })();
+    </script>
+}

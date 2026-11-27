@@ -42,6 +42,8 @@ namespace WebsiteQuanLiDienThoaiDiDong.Models.ViewModels
 
     public class TrangChuVM
     {
+        public List<KhuyenMaiCardVM> KhuyenMais { get; set; } = new List<KhuyenMaiCardVM>();
+        public List<ThuongHieuTileVM> ThuongHieus { get; set; } = new List<ThuongHieuTileVM>();
         public List<SanPhamCardVM> MayCu { get; set; } = new List<SanPhamCardVM>();
         public List<WebsiteQuanLiDienThoaiDiDong.Services.NewsItem> Tin { get; set; } = new List<WebsiteQuanLiDienThoaiDiDong.Services.NewsItem>();
         public List<WebsiteQuanLiDienThoaiDiDong.Services.VideoItem> Video { get; set; } = new List<WebsiteQuanLiDienThoaiDiDong.Services.VideoItem>();
@@ -49,6 +51,26 @@ namespace WebsiteQuanLiDienThoaiDiDong.Models.ViewModels
         public List<SanPhamCardVM> BanChay { get; set; }
         public List<SanPhamCardVM> DienThoai { get; set; } = new List<SanPhamCardVM>();
         public List<SanPhamCardVM> PhuKien { get; set; } = new List<SanPhamCardVM>();
+    }
+    public class KhuyenMaiCardVM
+    {
+        public string MaCode { get; set; }
+        public string Ten { get; set; }
+        public string LoaiGiam { get; set; }       // PHANTRAM | SOTIEN
+        public string Nhom { get; set; }           // pct | amt | ship (quyết định màu thẻ)
+        public decimal GiaTriGiam { get; set; }
+        public decimal? GiamToiDa { get; set; }
+        public decimal DonToiThieu { get; set; }
+        public System.DateTime NgayKetThuc { get; set; }
+        public int? SoLuong { get; set; }
+        public int DaDung { get; set; }
+    }
+
+    public class ThuongHieuTileVM
+    {
+        public int Id { get; set; }
+        public string Ten { get; set; }
+        public int SoSanPham { get; set; }
     }
 
     public class DanhSachSanPhamVM

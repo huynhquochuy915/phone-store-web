@@ -36,6 +36,20 @@
         }
         return null;
     };
+    // rút gọn số tiền: 500000 -> 500K, 1500000 -> 1,5Tr
+    Func<decimal, string> giaTriNgan = v => v >= 1000000m
+        ? (v / 1000000m).ToString("0.##") + "Tr"
+        : (v / 1000m).ToString("0.##") + "K";
+
+    // màu từng hãng (khóa = tên hãng viết thường, bỏ ký tự đặc biệt)
+    var mauHang = new Dictionary<string, string[]> {
+        { "apple",   new[] { "#2b2b2e", "#5a5a60" } },
+        { "samsung", new[] { "#1428a0", "#4a6cf7" } },
+        { "xiaomi",  new[] { "#ff6900", "#ff9a4d" } },
+        { "oppo",    new[] { "#0a8f4e", "#3ccf8a" } },
+        { "vivo",    new[] { "#2a4bff", "#5f86ff" } },
+        { "anker",   new[] { "#0092d6", "#4cc9f0" } }
+    };
 }
 
 <section class="hero">
@@ -113,6 +127,57 @@
     <div><i class="bi bi-qr-code-scan"></i><span><b>Thanh toán QR</b>Chuyển khoản VietQR</span></div>
 </section>
 
+@if (Model.ThuongHieus.Any())
+{
+    <section class="sec">
+        <h2 class="brand-head">Chuyên trang thương hiệu</h2>
+        <div class="brand-grid">
+            @foreach (var t in Model.ThuongHieus)
+            {
+                var slug = System.Text.RegularExpressions.Regex.Replace(t.Ten.ToLower(), "[^a-z0-9]", "");
+                var mau = mauHang.ContainsKey(slug) ? mauHang[slug] : new[] { "#d70018", "#ff5a5f" };
+                var logoPath = "~/Content/images/brands/" + slug + ".png";
+                var coLogo = slug != "" && System.IO.File.Exists(Server.MapPath(logoPath));
+
+                // tìm hình nền Content/images/brand-bg/<slug>.jpg|jpeg|png|webp
+                string bgUrl = null;
+                if (slug != "")
+                {
+                    foreach (var ext in new[] { ".jpg", ".jpeg", ".png", ".webp" })
+                    {
+                        var p = "~/Content/images/brand-bg/" + slug + ext;
+                        if (System.IO.File.Exists(Server.MapPath(p))) { bgUrl = Url.Content(p); break; }
+                    }
+                }
+
+                <a class="bt @(bgUrl != null ? "has-bg" : "")" style="--c1:@mau[0];--c2:@mau[1]"
+                   href="@Url.Action("Index", "SanPham", new { area = "", thuongHieuId = t.Id })">
+                    @if (bgUrl != null)
+                    {
+                        <img class="bt-bg" src="@bgUrl" alt="" loading="lazy" />
+                    }
+                    <div class="bt-txt">
+                        <div class="bt-small">CHÍNH HÃNG</div>
+                        <div class="bt-name">@t.Ten</div>
+                        <div class="bt-count">@t.SoSanPham sản phẩm</div>
+                        <span class="bt-go">Xem ngay →</span>
+                    </div>
+                    @if (bgUrl == null)
+                    {
+                        if (coLogo)
+                        {
+                            <img class="bt-logo" src="@Url.Content(logoPath)" alt="@t.Ten" loading="lazy" />
+                        }
+                        else
+                        {
+                            <div class="bt-logo ph">@t.Ten.Substring(0, 1).ToUpper()</div>
+                        }
+                    }
+                </a>
+            }
+        </div>
+    </section>
+}
 @if (Model.NoiBat.Any())
 {
     <section class="sec deal">
@@ -161,6 +226,62 @@
     </section>
 }
 @{ var hangCuId = CauHinh.Get("LoaiId_HangCu", "0"); }
+@if (Model.KhuyenMais.Any())
+{
+    <section class="sec">
+        <div class="promo-panel">
+            <h2 class="promo-title">Ưu đãi &amp; mã giảm giá</h2>
+            <p class="promo-sub">Sao chép mã và dán ở bước thanh toán</p>
+            <div class="promo-grid">
+                @foreach (var k in Model.KhuyenMais)
+                {
+                    var cls = k.Nhom == "pct" ? "c-pct" : (k.Nhom == "ship" ? "c-ship" : "c-amt");
+                    var conNgay = (int)Math.Ceiling((k.NgayKetThuc - DateTime.Now).TotalDays);
+                    var phanTram = k.SoLuong.HasValue && k.SoLuong.Value > 0
+                        ? (int)Math.Min(100, Math.Round(k.DaDung * 100.0 / k.SoLuong.Value)) : 0;
+
+                    <div class="cp @cls">
+                        <div class="cp-left">
+                            @if (k.Nhom == "ship")
+                            {<i class="bi bi-truck"></i>}
+                            <span class="cp-small">@(k.Nhom == "ship" ? "FREESHIP" : "GIẢM")</span>
+                            <span class="cp-big">@(k.LoaiGiam == "PHANTRAM" ? k.GiaTriGiam.ToString("0.##") + "%" : giaTriNgan(k.GiaTriGiam))</span>
+                        </div>
+                        <div class="cp-body">
+                            @if (conNgay <= 3)
+                            {
+                                <span class="cp-hot">@(conNgay <= 1 ? "Hết hạn hôm nay" : "Còn " + conNgay + " ngày")</span>
+                            }
+                            <div class="cp-name">@k.Ten</div>
+                            <div class="cp-cond">
+                                @(k.DonToiThieu > 0 ? "Đơn từ " + k.DonToiThieu.VND() : "Áp dụng mọi đơn hàng")
+                                @if (k.LoaiGiam == "PHANTRAM" && k.GiamToiDa.HasValue)
+                                {
+                                    <text> · Giảm tối đa @k.GiamToiDa.VND()</text>
+                                }
+                            </div>
+                            <div>
+                                @if (k.SoLuong.HasValue)
+                                {
+                                    <div class="cp-bar"><i style="width:@(phanTram)%"></i></div>
+                                }
+                                <div class="cp-meta">
+                                    <span>@(k.SoLuong.HasValue ? "Còn " + Math.Max(0, k.SoLuong.Value - k.DaDung) + " lượt" : "Không giới hạn lượt")</span>
+                                    <span>HSD @k.NgayKetThuc.ToString("dd/MM/yyyy")</span>
+                                </div>
+                            </div>
+                            <div class="cp-foot">
+                                <span class="cp-code">@k.MaCode</span>
+                                <button type="button" class="cp-copy" data-code="@k.MaCode">Sao chép</button>
+                            </div>
+                        </div>
+                    </div>
+                }
+            </div>
+        </div>
+    </section>
+}
+
 @if (Model.MayCu.Any())
 {
     <section class="sec" id="may-cu">
@@ -395,5 +516,20 @@
             if (slides.length > 1 && !window.matchMedia('(prefers-reduced-motion: reduce)').matches)
                 setInterval(function () { if (!paused) show(cur + 1); }, 5000);
         })();
+        $('.cp-copy').on('click', function () {
+            var btn = this, code = $(this).data('code'), old = btn.textContent;
+            function ok() {
+                btn.textContent = 'Đã chép ✓'; btn.classList.add('done');
+                setTimeout(function () { btn.textContent = old; btn.classList.remove('done'); }, 1800);
+            }
+            if (navigator.clipboard && window.isSecureContext) {
+                navigator.clipboard.writeText(code).then(ok);
+            } else {                                   // trình duyệt cũ / chạy bằng http
+                var t = document.createElement('textarea');
+                t.value = code; document.body.appendChild(t); t.select();
+                try { document.execCommand('copy'); ok(); } catch (e) { }
+                document.body.removeChild(t);
+            }
+        });
     </script>
 }

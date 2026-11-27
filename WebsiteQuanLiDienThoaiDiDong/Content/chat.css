@@ -1,0 +1,488 @@
+﻿/* =====================================================================
+   CHAT "LIÊN HỆ"  -  khung chat nổi (khách hàng) + trang chat (admin)
+   Dùng lại biến màu của Site.css: --red, --red-dark, --gold, --ink, --muted, --line, --font
+   ===================================================================== */
+
+/* ---------- KHUNG CHAT CỦA KHÁCH ---------- */
+.chatw, .chatw * { box-sizing: border-box; }
+.chatw [hidden] { display: none !important; }
+
+.chatw-fab {
+    position: fixed;
+    right: 18px;
+    bottom: 24px;
+    z-index: 1036;
+    height: 52px;
+    padding: 0 20px 0 16px;
+    border: 0;
+    border-radius: 26px;
+    background: linear-gradient(135deg, var(--red), var(--red-dark));
+    color: #fff;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font: 600 .95rem var(--font);
+    box-shadow: 0 6px 20px rgba(215, 0, 24, .35);
+    cursor: pointer;
+    transition: transform .15s, box-shadow .15s;
+}
+.chatw-fab:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(215, 0, 24, .45); }
+.chatw-fab i { font-size: 1.35rem; line-height: 1; }
+
+.chatw-badge {
+    position: absolute;
+    top: -6px;
+    right: -4px;
+    min-width: 21px;
+    height: 21px;
+    padding: 0 5px;
+    border-radius: 11px;
+    background: var(--gold);
+    color: #1f2328;
+    font-size: .72rem;
+    font-weight: 800;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid #fff;
+    animation: chatw-pulse 1.6s infinite;
+}
+
+/* nút "lên đầu trang" của site nằm cùng góc nên đẩy lên phía trên nút chat */
+body.has-chat .to-top { bottom: 90px; }
+body.has-chat.has-pdbar .to-top { bottom: 150px; }
+body.has-chat.has-pdbar .chatw-fab { bottom: 84px; }
+body.has-chat.has-pdbar .chatw-box { bottom: 150px; }
+
+.chatw-box {
+    position: fixed;
+    right: 18px;
+    bottom: 90px;
+    z-index: 1055;
+    width: 370px;
+    height: min(560px, calc(100vh - 120px));
+    background: #fff;
+    border-radius: 16px;
+    box-shadow: 0 12px 40px rgba(0, 0, 0, .28);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    transform-origin: bottom right;
+    animation: chatw-pop .18s ease-out;
+    font-family: var(--font);
+    color: var(--ink);
+}
+
+.chatw-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 14px 14px 16px;
+    background: linear-gradient(135deg, var(--red), var(--red-dark));
+    color: #fff;
+}
+.chatw-avatar {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .2);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.3rem;
+}
+.chatw-title { flex: 1; min-width: 0; line-height: 1.25; }
+.chatw-title b { display: block; font-size: 1rem; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.chatw-title small { opacity: .9; font-size: .78rem; }
+.chatw-x {
+    width: 32px;
+    height: 32px;
+    border: 0;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, .18);
+    color: #fff;
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+}
+.chatw-x:hover { background: rgba(255, 255, 255, .3); }
+
+/* form hỏi tên cho khách chưa đăng nhập */
+.chatw-pre { flex: 1; overflow-y: auto; padding: 20px 18px; background: #f5f6f8; }
+.chatw-pre h6 { font-weight: 700; margin: 0 0 4px; }
+.chatw-pre p { color: var(--muted); font-size: .88rem; margin: 0 0 14px; }
+.chatw-pre label { display: block; font-size: .8rem; font-weight: 600; margin: 10px 0 4px; }
+.chatw-pre input {
+    width: 100%;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 10px 12px;
+    font: inherit;
+    font-size: .92rem;
+    background: #fff;
+}
+.chatw-pre input:focus, .chatw-foot textarea:focus { outline: 0; border-color: var(--red); box-shadow: 0 0 0 3px rgba(215, 0, 24, .12); }
+.chatw-start {
+    width: 100%;
+    margin-top: 16px;
+    padding: 11px;
+    border: 0;
+    border-radius: 10px;
+    background: var(--red);
+    color: #fff;
+    font: 700 .95rem var(--font);
+    cursor: pointer;
+}
+.chatw-start:hover { background: var(--red-dark); }
+.chatw-login { margin-top: 12px; font-size: .82rem; color: var(--muted); text-align: center; }
+.chatw-login a { color: var(--red); font-weight: 600; text-decoration: none; }
+
+/* khu vực tin nhắn */
+.chatw-body { flex: 1; overflow-y: auto; padding: 14px 12px; background: #f5f6f8; scroll-behavior: smooth; }
+.chatw-row { display: flex; flex-direction: column; max-width: 82%; margin-bottom: 10px; }
+.chatw-row.them { align-items: flex-start; }
+.chatw-row.me { align-items: flex-end; margin-left: auto; }
+.chatw-name { font-size: .72rem; color: var(--muted); margin: 0 6px 2px; font-weight: 600; }
+.chatw-bubble {
+    padding: 9px 13px;
+    border-radius: 16px;
+    font-size: .92rem;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+}
+.chatw-row.them .chatw-bubble { background: #fff; border: 1px solid var(--line); border-bottom-left-radius: 4px; }
+.chatw-row.me .chatw-bubble { background: var(--red); color: #fff; border-bottom-right-radius: 4px; }
+.chatw-row.me .chatw-bubble a { color: #fff; }
+.chatw-bubble a { text-decoration: underline; }
+.chatw-time { font-size: .68rem; color: #9ca3af; margin: 3px 6px 0; }
+
+.chatw-chips { display: flex; flex-wrap: wrap; gap: 7px; margin: 2px 0 12px; }
+.chatw-chips button {
+    border: 1px solid var(--red);
+    background: #fff;
+    color: var(--red);
+    border-radius: 16px;
+    padding: 6px 12px;
+    font: 600 .8rem var(--font);
+    cursor: pointer;
+}
+.chatw-chips button:hover { background: var(--red); color: #fff; }
+
+.chatw-err { padding: 7px 14px; background: #fff1f2; color: #be123c; font-size: .8rem; border-top: 1px solid #fecdd3; }
+
+.chatw-foot {
+    display: flex;
+    align-items: flex-end;
+    gap: 8px;
+    padding: 10px 12px;
+    background: #fff;
+    border-top: 1px solid var(--line);
+}
+.chatw-foot textarea {
+    flex: 1;
+    resize: none;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    padding: 9px 14px;
+    font: inherit;
+    font-size: .92rem;
+    line-height: 1.35;
+    max-height: 96px;
+    background: #f9fafb;
+}
+.chatw-send {
+    width: 40px;
+    height: 40px;
+    flex-shrink: 0;
+    border: 0;
+    border-radius: 50%;
+    background: var(--red);
+    color: #fff;
+    font-size: 1.05rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.chatw-send:hover { background: var(--red-dark); }
+.chatw-send:disabled { background: #d1d5db; cursor: default; }
+
+@keyframes chatw-pop { from { opacity: 0; transform: scale(.92) translateY(10px); } to { opacity: 1; transform: none; } }
+@keyframes chatw-pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.15); } }
+
+/* điện thoại: khung chat chiếm toàn màn hình, nút chỉ còn biểu tượng */
+@media (max-width: 575px) {
+    .chatw-botinput, .chatw-foot textarea, .chatw-pre input { font-size: 16px; }
+    .chatw-fab { width: 54px; height: 54px; padding: 0; justify-content: center; border-radius: 50%; }
+    .chatw-fab .chatw-fab-txt { display: none; }
+    .chatw-fab.on { display: none; }
+    .chatw-box, body.has-chat.has-pdbar .chatw-box { right: 0; bottom: 0; width: 100%; height: 100%; border-radius: 0; }
+    body.has-chat .to-top { bottom: 90px; }
+}
+
+/* ---------- TAB: TRỢ LÝ TƯ VẤN / NHÂN VIÊN ---------- */
+.chatw-tabs { display: flex; background: #fff; border-bottom: 1px solid var(--line); }
+.chatw-tabs button {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 10px 6px;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    background: #fff;
+    color: var(--muted);
+    font: 600 .85rem var(--font);
+    cursor: pointer;
+}
+.chatw-tabs button:hover { color: var(--ink); }
+.chatw-tabs button.on { color: var(--red); border-bottom-color: var(--red); }
+.chatw-tabdot {
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 9px;
+    background: var(--red);
+    color: #fff;
+    font-size: .68rem;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+.chatw-pane { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.chatw-botinput {
+    flex: 1;
+    min-width: 0;
+    padding: 9px 14px;
+    border: 1px solid var(--line);
+    border-radius: 18px;
+    font: inherit;
+    font-size: .92rem;
+    background: #f9fafb;
+}
+.chatw-botinput:focus { outline: 0; border-color: var(--red); box-shadow: 0 0 0 3px rgba(215, 0, 24, .12); }
+
+/* ---------- TRỢ LÝ TƯ VẤN: tin nhắn, thẻ sản phẩm ---------- */
+.chatw-bm { display: flex; flex-direction: column; margin-bottom: 10px; }
+.chatw-bm.u { align-items: flex-end; }
+.chatw-bm.b { align-items: flex-start; }
+.chatw-bm .chatw-bubble { max-width: 90%; white-space: pre-line; }
+.chatw-bm.u .chatw-bubble { background: var(--red); color: #fff; border-bottom-right-radius: 4px; }
+.chatw-bm.b .chatw-bubble { background: #fff; border: 1px solid var(--line); border-bottom-left-radius: 4px; }
+
+.chatw-prods { width: 100%; display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+.chatw-card {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    color: inherit;
+    text-decoration: none;
+    transition: border-color .15s, box-shadow .15s;
+}
+.chatw-card:hover { border-color: var(--red); box-shadow: 0 4px 12px rgba(0, 0, 0, .08); color: inherit; }
+.chatw-card img { width: 58px; height: 58px; object-fit: contain; flex: none; }
+.chatw-card-info { min-width: 0; flex: 1; }
+.chatw-card-name { font-weight: 600; font-size: .86rem; line-height: 1.3; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+.chatw-card-meta { font-size: .75rem; color: var(--muted); margin-top: 1px; }
+.chatw-card-price { margin-top: 3px; font-size: .9rem; }
+.chatw-card-price strong { color: var(--red); }
+.chatw-card-price del { margin-left: 6px; font-size: .75rem; color: #9ca3af; }
+.chatw-out { margin-left: 6px; padding: 1px 6px; border-radius: 6px; font-size: .7rem; color: #b91c1c; background: #fee2e2; }
+.chatw-star { color: var(--gold); }
+.chatw-lk {
+    align-self: flex-start;
+    margin-top: 8px;
+    padding: 7px 14px;
+    border: 1px solid var(--red);
+    border-radius: 999px;
+    font-size: .82rem;
+    font-weight: 600;
+    color: var(--red);
+    text-decoration: none;
+    background: #fff;
+}
+.chatw-lk:hover { background: var(--red); color: #fff; }
+.chatw-bm .chatw-chips { margin: 8px 0 0; }
+.chatw-chips button.chatw-handoff { background: var(--red); color: #fff; }
+.chatw-chips button.chatw-handoff:hover { background: var(--red-dark); border-color: var(--red-dark); }
+
+.chatw-typing { display: inline-flex; gap: 4px; align-items: center; padding: 12px 14px; }
+.chatw-typing span { width: 6px; height: 6px; border-radius: 50%; background: #9ca3af; animation: chatw-dot 1s infinite ease-in-out; }
+.chatw-typing span:nth-child(2) { animation-delay: .15s; }
+.chatw-typing span:nth-child(3) { animation-delay: .3s; }
+@keyframes chatw-dot { 0%, 80%, 100% { opacity: .3; transform: translateY(0); } 40% { opacity: 1; transform: translateY(-3px); } }
+@media (prefers-reduced-motion: reduce) { .chatw-box, .chatw-typing span, .chatw-badge { animation: none; } .chatw-body { scroll-behavior: auto; } }
+
+/* ---------- TRANG CHAT CỦA ADMIN / NHÂN VIÊN ---------- */
+.chat-nav-badge {
+    margin-left: auto;
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 10px;
+    background: #d70018;
+    color: #fff;
+    font-size: .72rem;
+    font-weight: 700;
+    display: none;
+    align-items: center;
+    justify-content: center;
+}
+
+.achat {
+    display: grid;
+    grid-template-columns: 340px minmax(0, 1fr);
+    height: calc(100vh - 120px);
+    min-height: 480px;
+    background: #fff;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, .08);
+}
+.achat-list { display: flex; flex-direction: column; border-right: 1px solid var(--line, #e5e7eb); min-height: 0; }
+.achat-search { position: relative; padding: 12px 12px 8px; }
+.achat-search i { position: absolute; left: 24px; top: 21px; color: #9ca3af; }
+.achat-search input {
+    width: 100%;
+    border: 1px solid #e5e7eb;
+    border-radius: 20px;
+    padding: 8px 14px 8px 36px;
+    font-size: .9rem;
+    background: #f9fafb;
+}
+.achat-search input:focus { outline: 0; border-color: #d70018; }
+.achat-tabs { display: flex; gap: 6px; padding: 0 12px 10px; border-bottom: 1px solid #e5e7eb; }
+.achat-tabs button {
+    flex: 1;
+    border: 0;
+    background: #f3f4f6;
+    color: #4b5563;
+    border-radius: 16px;
+    padding: 6px 4px;
+    font-size: .8rem;
+    font-weight: 600;
+    cursor: pointer;
+}
+.achat-tabs button.on { background: #d70018; color: #fff; }
+.achat-items { flex: 1; overflow-y: auto; }
+.achat-item {
+    display: flex;
+    gap: 11px;
+    padding: 12px;
+    cursor: pointer;
+    border-bottom: 1px solid #f3f4f6;
+    border-left: 3px solid transparent;
+}
+.achat-item:hover { background: #f9fafb; }
+.achat-item.on { background: #fef2f2; border-left-color: #d70018; }
+.achat-av {
+    width: 42px;
+    height: 42px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: #e5e7eb;
+    color: #374151;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.achat-item.unread .achat-av { background: #d70018; color: #fff; }
+.achat-mid { flex: 1; min-width: 0; }
+.achat-top { display: flex; justify-content: space-between; gap: 8px; align-items: baseline; }
+.achat-name { font-weight: 600; font-size: .92rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.achat-time { font-size: .72rem; color: #9ca3af; flex-shrink: 0; }
+.achat-last { display: flex; justify-content: space-between; gap: 8px; align-items: center; margin-top: 2px; }
+.achat-snip { font-size: .83rem; color: #6b7280; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.achat-item.unread .achat-snip { color: #111827; font-weight: 600; }
+.achat-dot {
+    min-width: 20px;
+    height: 20px;
+    padding: 0 6px;
+    border-radius: 10px;
+    background: #d70018;
+    color: #fff;
+    font-size: .72rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+}
+.achat-none { padding: 40px 20px; text-align: center; color: #9ca3af; font-size: .9rem; }
+
+.achat-pane { display: flex; flex-direction: column; min-width: 0; min-height: 0; background: #f5f6f8; }
+.achat-pane [hidden] { display: none !important; }
+.achat-empty { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; color: #9ca3af; gap: 8px; }
+.achat-empty i { font-size: 3rem; }
+.achat-thread { flex: 1; display: flex; flex-direction: column; min-height: 0; }
+.achat-head {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 18px;
+    background: #fff;
+    border-bottom: 1px solid #e5e7eb;
+}
+.achat-head .achat-who { flex: 1; min-width: 0; }
+.achat-head b { display: block; }
+.achat-head small { color: #6b7280; }
+.achat-tag { display: inline-block; padding: 1px 8px; border-radius: 10px; background: #dcfce7; color: #166534; font-size: .7rem; font-weight: 700; margin-left: 6px; }
+.achat-tag.guest { background: #f3f4f6; color: #4b5563; }
+.achat-msgs { flex: 1; overflow-y: auto; padding: 16px 18px; min-height: 0; }
+.achat-row { display: flex; flex-direction: column; max-width: 70%; margin-bottom: 10px; align-items: flex-start; }
+.achat-row.nv { margin-left: auto; align-items: flex-end; }
+.achat-bub {
+    padding: 9px 14px;
+    border-radius: 16px;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    font-size: .93rem;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    word-break: break-word;
+    overflow-wrap: anywhere;
+    border-bottom-left-radius: 4px;
+}
+.achat-row.nv .achat-bub { background: #d70018; color: #fff; border: 0; border-bottom-left-radius: 16px; border-bottom-right-radius: 4px; }
+.achat-row.nv .achat-bub a { color: #fff; }
+.achat-bub a { text-decoration: underline; }
+.achat-meta { font-size: .7rem; color: #9ca3af; margin: 3px 6px 0; }
+.achat-quick { display: flex; flex-wrap: wrap; gap: 6px; padding: 8px 18px 0; background: #fff; border-top: 1px solid #e5e7eb; }
+.achat-quick button {
+    border: 1px solid #e5e7eb;
+    background: #f9fafb;
+    border-radius: 14px;
+    padding: 4px 11px;
+    font-size: .78rem;
+    color: #374151;
+    cursor: pointer;
+}
+.achat-quick button:hover { border-color: #d70018; color: #d70018; }
+.achat-composer { display: flex; gap: 10px; align-items: flex-end; padding: 10px 18px 14px; background: #fff; }
+.achat-composer textarea {
+    flex: 1;
+    resize: none;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    padding: 9px 13px;
+    font: inherit;
+    font-size: .93rem;
+    max-height: 120px;
+}
+.achat-composer textarea:focus { outline: 0; border-color: #d70018; }
+.achat-closed { padding: 14px 18px; background: #fff; text-align: center; color: #6b7280; font-size: .9rem; }
+
+@media (max-width: 991px) {
+    .achat { grid-template-columns: 1fr; height: auto; }
+    .achat-list { max-height: 300px; border-right: 0; border-bottom: 1px solid #e5e7eb; }
+    .achat-pane { min-height: 520px; }
+}

@@ -1,0 +1,71 @@
+﻿@model WebsiteQuanLiDienThoaiDiDong.Areas.Admin.Controllers.TaoSanPhamVM
+@{ ViewBag.Title = "Thêm sản phẩm"; }
+
+@Html.ValidationSummary(false, "", new { @class = "alert alert-danger" })
+
+@using (Html.BeginForm("Tao", "SanPham", new { area = "Admin" }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+{
+    @Html.AntiForgeryToken()
+
+    <div class="adm-card p-3 mb-3">
+        <h6 class="mb-3">Thông tin sản phẩm</h6>
+        <div class="row g-3">
+            <div class="col-md-8">
+                <label class="form-label">Tên sản phẩm *</label>
+                @Html.TextBoxFor(m => m.TenSanPham, new { @class = "form-control", maxlength = 200 })
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Loại *</label>
+                @Html.DropDownListFor(m => m.LoaiId, (SelectList)ViewBag.Loais, "-- Chọn --", new { @class = "form-select" })
+            </div>
+            <div class="col-md-2">
+                <label class="form-label">Thương hiệu *</label>
+                @Html.DropDownListFor(m => m.ThuongHieuId, (SelectList)ViewBag.ThuongHieus, "-- Chọn --", new { @class = "form-select" })
+            </div>
+            <div class="col-12">
+                <label class="form-label">Mô tả</label>
+                @Html.TextAreaFor(m => m.MoTa, 3, 0, new { @class = "form-control" })
+            </div>
+            <div class="col-md-6"><label class="form-label">Màn hình</label>@Html.TextBoxFor(m => m.ManHinh, new { @class = "form-control" })</div>
+            <div class="col-md-6"><label class="form-label">Chip xử lý</label>@Html.TextBoxFor(m => m.ChipXuLy, new { @class = "form-control" })</div>
+            <div class="col-md-3"><label class="form-label">RAM (GB)</label>@Html.TextBoxFor(m => m.RamGB, new { @class = "form-control", type = "number" })</div>
+            <div class="col-md-5"><label class="form-label">Camera sau</label>@Html.TextBoxFor(m => m.CameraSau, new { @class = "form-control" })</div>
+            <div class="col-md-4"><label class="form-label">Camera trước</label>@Html.TextBoxFor(m => m.CameraTruoc, new { @class = "form-control" })</div>
+            <div class="col-md-4"><label class="form-label">Pin</label>@Html.TextBoxFor(m => m.Pin, new { @class = "form-control" })</div>
+            <div class="col-md-3"><label class="form-label">Hệ điều hành</label>@Html.TextBoxFor(m => m.HeDieuHanh, new { @class = "form-control" })</div>
+            <div class="col-md-2"><label class="form-label">Trọng lượng</label>@Html.TextBoxFor(m => m.TrongLuong, new { @class = "form-control" })</div>
+            <div class="col-md-3"><label class="form-label">Bảo hành (tháng)</label>@Html.TextBoxFor(m => m.BaoHanhThang, new { @class = "form-control", type = "number" })</div>
+            <div class="col-md-6">
+                <label class="form-label">Ảnh đại diện (jpg/png/webp, tối đa 2MB)</label>
+                <input type="file" name="anh" class="form-control" accept=".jpg,.jpeg,.png,.webp" />
+            </div>
+            <div class="col-md-6 d-flex align-items-end">
+                <div class="form-check">
+                    @Html.CheckBoxFor(m => m.NoiBat, new { @class = "form-check-input" })
+                    <label class="form-check-label">Sản phẩm nổi bật (hiện ở trang chủ)</label>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="adm-card p-3 mb-3">
+        <h6 class="mb-3">Biến thể đầu tiên (màu / dung lượng / giá / tồn kho)</h6>
+        <div class="row g-3">
+            <div class="col-md-3"><label class="form-label">Màu sắc *</label>@Html.TextBoxFor(m => m.MauSac, new { @class = "form-control" })</div>
+            <div class="col-md-3">
+                <label class="form-label">Dung lượng (GB)</label>
+                @Html.TextBoxFor(m => m.DungLuongGB, new { @class = "form-control", type = "number", placeholder = "VD: 256, 1TB = 1024" })
+            </div>
+            <div class="col-md-3"><label class="form-label">SKU *</label>@Html.TextBoxFor(m => m.SKU, new { @class = "form-control", maxlength = 50 })</div>
+            <div class="col-md-3"><label class="form-label">Số lượng nhập ban đầu</label>@Html.TextBoxFor(m => m.SoLuongBanDau, new { @class = "form-control", type = "number" })</div>
+            <div class="col-md-3"><label class="form-label">Giá gốc (₫) *</label>@Html.TextBoxFor(m => m.GiaGoc, new { @class = "form-control", type = "number" })</div>
+            <div class="col-md-3"><label class="form-label">Giá bán (₫) *</label>@Html.TextBoxFor(m => m.GiaBan, new { @class = "form-control", type = "number" })</div>
+            <div class="col-md-3"><label class="form-label">Ngưỡng cảnh báo tồn</label>@Html.TextBoxFor(m => m.NguongCanhBao, new { @class = "form-control", type = "number" })</div>
+        </div>
+    </div>
+
+    <div class="d-flex gap-2">
+        <button type="submit" class="btn btn-brand">Lưu sản phẩm</button>
+        <a class="btn btn-outline-secondary" href="@Url.Action("Index")">Hủy</a>
+    </div>
+}

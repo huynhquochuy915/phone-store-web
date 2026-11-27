@@ -67,6 +67,10 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
                 ).Single();
                 ApDungUuDaiHang(kq.DonHangId);
                 // TODO (TV5): gửi email xác nhận đơn tại đây
+                ApDungUuDaiHang(kq.DonHangId);
+                // TODO (TV5): gửi email xác nhận đơn tại đây
+                if (vm.PhuongThucThanhToan == "QR")
+                    return RedirectToAction("Pay", "VnPay", new { id = kq.DonHangId });   // sang trang VNPay
                 return RedirectToAction("ThanhCong", new { id = kq.DonHangId });
             }
             catch (Exception ex)
@@ -89,7 +93,7 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
             ViewBag.Tong = tong;
             if (dh.PhuongThucThanhToan == "QR" && dh.TrangThaiThanhToan == "ChuaThanhToan" && dh.TrangThai == "ChoXacNhan")
             {
-                ViewBag.QrUrl = VietQrHelper.BuildUrl(tong, dh.MaDonHang);
+                ViewBag.ChoVnPay = true;
                 int phut = int.Parse(CauHinh.Get("QR_HetHan_Phut", "30"));
                 ViewBag.ConLaiGiay = Math.Max(0, (int)(dh.NgayDat.AddMinutes(phut) - DateTime.Now).TotalSeconds);
             }

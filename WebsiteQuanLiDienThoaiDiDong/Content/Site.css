@@ -1,18 +1,6 @@
 ﻿:root {
-    /* ===== BANG MAU CHU DAO (teal) - sua khoi nay de doi mau ca web ===== */
-    --red: #0f766e;
-    --red-dark: #115e59;
-    --brand-deep: #134e4a;
-    --brand-mid: #115e59;
-    --brand-light: #14b8a6;
-    --brand-accent: #f59e0b;
-    --brand-tint-1: #f0fdfa;
-    --brand-tint-2: #ccfbf1;
-    --brand-tint-3: #99f6e4;
-    --brand-tint-4: #5eead4;
-    --brand-rgb: 15, 118, 110;
-    --brand-dark-rgb: 17, 94, 89;
-    /* ===== het bang mau ===== */
+    --red: #d70018;
+    --red-dark: #a80012;
     --ink: #1f2328;
     --muted: #6b7280;
     --bg: #f3f4f6;
@@ -20,10 +8,8 @@
     --gold: #ffb800;
     --font: 'Be Vietnam Pro','Segoe UI',system-ui,sans-serif;
     --bs-body-font-family: var(--font);
-    --bs-link-color-rgb: var(--brand-rgb);
-    --bs-link-hover-color-rgb: var(--brand-dark-rgb);
-    --bs-primary: var(--red);
-    --bs-primary-rgb: var(--brand-rgb);
+    --bs-link-color-rgb: 215,0,24;
+    --bs-link-hover-color-rgb: 168,0,18;
 }
 
 body {
@@ -62,7 +48,7 @@ body {
     }
 
 .btn-accent {
-    background: linear-gradient(var(--brand-light),var(--red));
+    background: linear-gradient(#e51a30,#c40014);
     border: 0;
     color: #fff;
 }
@@ -99,7 +85,7 @@ body {
 /* ---------- thanh khuyến mãi + header ---------- */
 .promo-strip {
     background: var(--red-dark);
-    color: var(--brand-tint-2);
+    color: #ffe3e6;
     font-size: .8rem;
 }
 
@@ -233,7 +219,7 @@ body {
     width: calc(100% - 16px);
     padding: .55rem .75rem;
     border-radius: 8px;
-    background: var(--brand-tint-1);
+    background: #fff1f2;
     color: var(--red);
     font-weight: 600;
     transition: background-color .15s ease, color .15s ease;
@@ -355,7 +341,7 @@ body {
             }
 
         .cat-list > li:hover > a {
-            background: var(--brand-tint-1);
+            background: #fff1f2;
             color: var(--red);
         }
 
@@ -433,7 +419,7 @@ body {
     .mega-tile:hover {
         border-color: var(--red);
         color: var(--red);
-        box-shadow: 0 2px 8px rgba(var(--brand-rgb), .12);
+        box-shadow: 0 2px 8px rgba(215, 0, 24, .12);
     }
 
 .mega-chips {
@@ -455,7 +441,7 @@ body {
     .mega-chip:hover {
         border-color: var(--red);
         color: var(--red);
-        background: var(--brand-tint-1);
+        background: #fff5f5;
     }
 
 /* trong thanh Danh mục trên header: panel hẹp hơn */
@@ -506,7 +492,7 @@ body {
     }
 
 .slide-1 {
-    background: linear-gradient(115deg,var(--red),var(--brand-deep));
+    background: linear-gradient(115deg,#d70018,#8e000f);
 }
 
 .slide-2 {
@@ -648,7 +634,7 @@ body {
     }
 
 .deal {
-    background: linear-gradient(180deg,var(--red),var(--brand-mid));
+    background: linear-gradient(180deg,#d70018,#b3000f);
     border-radius: 14px;
     padding: 16px;
 }
@@ -762,7 +748,7 @@ body {
     .favorite-toggle:hover, .favorite-toggle.is-favorite {
         color: var(--red);
         border-color: var(--red);
-        background: var(--brand-tint-1);
+        background: #fff5f5;
     }
 
     .favorite-toggle:disabled {
@@ -999,7 +985,7 @@ body {
         .admin-side a:hover {
             background: #374151;
             color: #fff;
-            border-left-color: var(--red);
+            border-left-color: #d70018;
         }
 
     .admin-side hr {
@@ -1043,7 +1029,7 @@ body {
     }
 
 .btn-dashboard {
-    background: var(--red);
+    background: #d70018;
     color: #fff;
     border: 0;
     border-radius: 8px;
@@ -1053,7 +1039,7 @@ body {
 }
 
     .btn-dashboard:hover {
-        background: var(--red-dark);
+        background: #b80014;
     }
 
 .dashboard-card {
@@ -1086,8 +1072,8 @@ body {
     width: 46px;
     height: 46px;
     border-radius: 12px;
-    background: var(--brand-tint-2);
-    color: var(--red);
+    background: #fee2e2;
+    color: #d70018;
     font-size: 1.4rem;
     display: flex;
     align-items: center;
@@ -1116,14 +1102,14 @@ body {
 }
 
     .month-card:hover {
-        border-color: var(--red);
-        box-shadow: 0 4px 12px rgba(var(--brand-rgb), .12);
+        border-color: #d70018;
+        box-shadow: 0 4px 12px rgba(215, 0, 24, .12);
         transform: translateY(-2px);
     }
 
     .month-card.active {
-        border: 2px solid var(--red);
-        background: var(--brand-tint-1);
+        border: 2px solid #d70018;
+        background: #fff5f5;
     }
 
 .month-card-name {
@@ -1133,7 +1119,7 @@ body {
 .month-card-revenue {
     font-size: 1.2rem;
     font-weight: 800;
-    color: var(--red);
+    color: #d70018;
     margin: 6px 0 2px;
 }
 
@@ -1204,8 +1190,8 @@ body {
 }
 
     .history-date-button:hover {
-        border-color: var(--red);
-        color: var(--red);
+        border-color: #d70018;
+        color: #d70018;
     }
 
 /* tab trạng thái */
@@ -1229,13 +1215,13 @@ body {
 }
 
     .history-tab:hover {
-        border-color: var(--red);
-        color: var(--red);
+        border-color: #d70018;
+        color: #d70018;
     }
 
     .history-tab.active {
-        background: var(--red);
-        border-color: var(--red);
+        background: #d70018;
+        border-color: #d70018;
         color: #fff;
     }
 
@@ -1283,7 +1269,7 @@ body {
 }
 
 .status-cancel {
-    background: var(--brand-tint-2)__ERR;
+    background: #fee2e2;
     color: #b91c1c;
 }
 
@@ -1334,7 +1320,7 @@ body {
 }
 
 .history-detail-link {
-    color: var(--red);
+    color: #d70018;
     text-decoration: none;
     font-weight: 600;
 }
@@ -1365,7 +1351,7 @@ body {
         display: inline-block;
         margin-top: 14px;
         padding: 8px 22px;
-        background: var(--red);
+        background: #d70018;
         color: #fff;
         border-radius: 8px;
         text-decoration: none;
@@ -1379,13 +1365,13 @@ body {
 }
 
 .btn-apply {
-    background: var(--red);
+    background: #d70018;
     color: #fff;
     border: 0;
 }
 
     .btn-apply:hover {
-        background: var(--red-dark);
+        background: #b80014;
         color: #fff;
     }
 /* ===== MỤC SO SÁNH TRANG CHỦ ===== */
@@ -1398,11 +1384,11 @@ body {
     padding: 36px;
     border-radius: 16px;
     color: #fff;
-    background: linear-gradient(135deg, var(--brand-deep), var(--brand-mid) 55%, var(--red));
+    background: linear-gradient(135deg, #7a0010, #b3001b 55%, #d70018);
 }
 
 .cmp-eyebrow {
-    color: var(--brand-tint-3);
+    color: #fecaca;
     font-size: .78rem;
     font-weight: 700;
     letter-spacing: .1em;
@@ -1416,7 +1402,7 @@ body {
 }
 
 .cmp p {
-    color: var(--brand-tint-2);
+    color: #fee2e2;
     margin-bottom: 14px;
 }
 
@@ -1441,7 +1427,7 @@ body {
     align-items: center;
     gap: 8px;
     background: #fff;
-    color: var(--red);
+    color: #d70018;
     text-decoration: none;
     padding: 11px 22px;
     border-radius: 10px;
@@ -1450,8 +1436,8 @@ body {
 }
 
     .cmp-btn:hover {
-        background: var(--brand-tint-2);
-        color: var(--red-dark);
+        background: #fee2e2;
+        color: #b80014;
     }
 
 .cmp-right {
@@ -1502,7 +1488,7 @@ body {
     justify-content: center;
     flex-direction: column;
     gap: 6px;
-    color: var(--brand-tint-2);
+    color: #fee2e2;
     font-weight: 600;
 }
 
@@ -1523,7 +1509,7 @@ body {
     height: 34px;
     border-radius: 50%;
     background: #fff;
-    color: var(--red);
+    color: #d70018;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -1577,19 +1563,19 @@ body {
 }
 
     .pick-item:hover {
-        border-color: var(--brand-tint-4);
+        border-color: #fca5a5;
     }
 
     .pick-item.on {
-        border-color: var(--red);
-        background: var(--brand-tint-1);
+        border-color: #d70018;
+        background: #fff5f5;
     }
 
     .pick-item input {
         position: absolute;
         top: 10px;
         left: 10px;
-        accent-color: var(--red);
+        accent-color: #d70018;
         width: 18px;
         height: 18px;
     }
@@ -1645,7 +1631,7 @@ body {
     }
 
 .cmp-col-brand {
-    color: var(--red);
+    color: #d70018;
     font-size: .8rem;
     font-weight: 700;
     margin-top: 6px;
@@ -1657,7 +1643,7 @@ body {
 }
 
 .km-title {
-    color: var(--red);
+    color: #d70018;
     font-weight: 700;
 }
 
@@ -1698,18 +1684,18 @@ body {
 }
 
 .km-code {
-    color: var(--red);
+    color: #d70018;
     font-weight: 700;
 }
 
 .km-btn {
-    background: var(--red);
+    background: #d70018;
     color: #fff;
     border: none;
 }
 
     .km-btn:hover {
-        background: var(--red-dark);
+        background: #a80012;
         color: #fff;
     }
 
@@ -1747,7 +1733,7 @@ body {
 }
 
 .km-title {
-    color: var(--red);
+    color: #d70018;
     font-weight: 700;
 }
 
@@ -1761,18 +1747,18 @@ body {
 }
 
 .km-btn {
-    background: var(--red);
+    background: #d70018;
     color: #fff;
     border: none;
 }
 
     .km-btn:hover {
-        background: var(--red-dark);
+        background: #a80012;
         color: #fff;
     }
 
 .field-validation-error {
-    color: var(--red);
+    color: #d70018;
     font-size: .875rem;
 }
 
@@ -1782,7 +1768,7 @@ body {
 }
 
 .km-title {
-    color: var(--red);
+    color: #d70018;
     font-weight: 700;
 }
 
@@ -1795,18 +1781,18 @@ body {
 }
 
 .km-btn {
-    background: var(--red);
+    background: #d70018;
     color: #fff;
     border: none;
 }
 
     .km-btn:hover {
-        background: var(--red-dark);
+        background: #a80012;
         color: #fff;
     }
 
 .field-validation-error {
-    color: var(--red);
+    color: #d70018;
     font-size: .875rem;
 }
 /* ===== TRANG ĐẶT HÀNG ===== */
@@ -1822,11 +1808,11 @@ body {
 }
 
     .pay-opt:hover {
-        border-color: var(--brand-tint-4);
+        border-color: #fca5a5;
     }
 
     .pay-opt input {
-        accent-color: var(--red);
+        accent-color: #d70018;
         width: 18px;
         height: 18px;
     }
@@ -1937,7 +1923,7 @@ body {
 
     .pd-tools .detail-favorite-toggle {
         color: var(--red);
-        border-color: var(--brand-tint-4);
+        border-color: #fca5a5;
     }
 
 .pd-main {
@@ -1981,7 +1967,7 @@ body {
 }
 
     .pd-thumb:hover {
-        border-color: var(--brand-tint-4);
+        border-color: #fca5a5;
     }
 
     .pd-thumb.on {
@@ -2049,8 +2035,8 @@ body {
     flex-wrap: wrap;
     gap: 10px;
     padding: 12px 16px;
-    background: var(--brand-tint-1);
-    border: 1px solid var(--brand-tint-3);
+    background: #fff7f7;
+    border: 1px solid #fecaca;
     border-radius: 12px;
 }
 
@@ -2141,7 +2127,7 @@ body {
 }
 
     .pd-opt:hover:not(:disabled) {
-        border-color: var(--brand-tint-4);
+        border-color: #fca5a5;
     }
 
 .pd-opt-name {
@@ -2160,7 +2146,7 @@ body {
 
 .pd-opt.on {
     border-color: var(--red);
-    background: var(--brand-tint-1);
+    background: #fff5f5;
 }
 
     .pd-opt.on .pd-opt-sub {
@@ -2256,8 +2242,8 @@ body {
 /* ưu đãi + cam kết */
 .pd-promo {
     margin-top: 16px;
-    border: 1px solid var(--brand-tint-3);
-    background: var(--brand-tint-1);
+    border: 1px solid #fecaca;
+    background: #fff7f7;
     border-radius: 12px;
     overflow: hidden;
 }
@@ -2402,7 +2388,7 @@ body {
     width: 38px;
     height: 38px;
     border-radius: 50%;
-    background: var(--brand-tint-2);
+    background: #fee2e2;
     color: var(--red);
     font-weight: 800;
     display: flex;
@@ -2521,7 +2507,7 @@ body.has-pdbar .to-top {
         .subnav a:hover {
             color: var(--red);
             border-bottom-color: var(--red);
-            background: var(--brand-tint-1);
+            background: #fff5f5;
         }
 
 .foot-hotline {
@@ -2894,7 +2880,7 @@ body.has-pdbar .to-top {
         width: 48px;
         height: 48px;
         border-radius: 50%;
-        background: rgba(var(--brand-rgb), .9);
+        background: rgba(215, 0, 24, .9);
         color: #fff;
         display: flex;
         align-items: center;
@@ -3245,7 +3231,7 @@ body.has-pdbar .to-top {
 .admin-side a.active {
     background: #374151;
     color: #fff;
-    border-left-color: var(--red);
+    border-left-color: #d70018;
 }
 
 .admin-side-title {
@@ -3305,8 +3291,8 @@ body.has-pdbar .to-top {
 }
 
     .adm-kpi-ico.red {
-        background: var(--brand-tint-2);
-        color: var(--red);
+        background: #fee2e2;
+        color: #d70018;
     }
 
     .adm-kpi-ico.green {
@@ -3416,7 +3402,7 @@ body.has-pdbar .to-top {
 }
 
 .adm-badge-red {
-    background: var(--brand-tint-2)__ERR;
+    background: #fee2e2;
     color: #b91c1c;
 }
 
@@ -3499,7 +3485,7 @@ body.has-pdbar .to-top {
 
     .adm-month.active {
         border-color: var(--red);
-        background: var(--brand-tint-1);
+        background: #fff1f2;
     }
 
     .adm-month small {
@@ -3564,8 +3550,8 @@ body.has-pdbar .to-top {
         }
 
         .adm-tabs a.out.active {
-            background: var(--red);
-            border-color: var(--red);
+            background: #d70018;
+            border-color: #d70018;
             color: #fff;
         }
 
@@ -3833,7 +3819,7 @@ html {
 }
 
 .cat-list > li.active > a {
-    background: var(--brand-tint-1);
+    background: #fff1f2;
     color: var(--red);
 }
 
@@ -3947,7 +3933,7 @@ html {
     }
 
     .hb-tab.on {
-        background: var(--brand-tint-1);
+        background: #fff5f5;
         color: var(--red);
     }
 
@@ -4021,7 +4007,7 @@ html {
     }
 
 .g1 {
-    background: linear-gradient(115deg, var(--red), var(--brand-deep));
+    background: linear-gradient(115deg, #d70018, #8e000f);
 }
 
 .g2 {
@@ -4033,7 +4019,7 @@ html {
 }
 
 .g4 {
-    background: linear-gradient(115deg, var(--brand-deep), var(--red) 60%, var(--brand-accent));
+    background: linear-gradient(115deg, #7a0010, #d70018 60%, #ff6b3d);
 }
 
 .hb-fallback.g3, .hb-mini.g3 {
@@ -4166,7 +4152,7 @@ html {
 }
 
 .tc-hero {
-    background: linear-gradient(115deg, var(--brand-deep), var(--red));
+    background: linear-gradient(115deg, #7a0010, #d70018);
     color: #fff;
     border-radius: 14px;
     padding: 26px 30px;
@@ -4286,12 +4272,12 @@ html {
     }
 
     .tc-opt:hover > span {
-        border-color: var(--brand-tint-4);
+        border-color: #fca5a5;
     }
 
     .tc-opt input:checked + span {
         border-color: var(--red);
-        background: var(--brand-tint-1);
+        background: #fff5f5;
     }
 
     .tc-opt input:focus-visible + span {
@@ -4421,7 +4407,7 @@ html {
 
     .tc-track-item.now {
         color: var(--red);
-        background: var(--brand-tint-1);
+        background: #fff1f2;
     }
 
         .tc-track-item.now span {
@@ -4455,7 +4441,7 @@ html {
 }
 
     .tc-track-btn:hover {
-        background: var(--brand-tint-2);
+        background: #fee2e2;
         color: var(--red-dark);
     }
 
@@ -4569,7 +4555,7 @@ html {
 }
 
     .acct-me:hover {
-        background: var(--brand-tint-1);
+        background: #fff5f5;
         color: var(--red-dark);
     }
 
@@ -4631,7 +4617,7 @@ html {
         }
 
         .acct-quick a:hover {
-            background: var(--brand-tint-1);
+            background: #fff1f2;
             color: var(--red);
         }
 
@@ -4679,12 +4665,12 @@ html {
     }
 
         .acct-tabs button:hover {
-            border-color: var(--brand-tint-4);
+            border-color: #fca5a5;
         }
 
         .acct-tabs button.on {
             border-color: var(--red);
-            background: var(--brand-tint-1);
+            background: #fff5f5;
             color: var(--red);
             font-weight: 600;
         }
@@ -4822,7 +4808,7 @@ html {
     width: 68px;
     height: 68px;
     border-radius: 50%;
-    background: var(--brand-tint-2);
+    background: #fee2e2;
     color: var(--red);
     font-size: 1.8rem;
     font-weight: 800;
@@ -4906,7 +4892,7 @@ html {
     width: 48px;
     height: 48px;
     border-radius: 50%;
-    background: var(--brand-tint-2);
+    background: #fee2e2;
     color: var(--red);
     font-size: 1.4rem;
     display: flex;
@@ -4949,7 +4935,7 @@ html {
     .tv-bar > span {
         display: block;
         height: 100%;
-        background: linear-gradient(90deg, var(--brand-light), var(--red));
+        background: linear-gradient(90deg, #ff6b6b, var(--red));
         border-radius: 99px;
     }
 
@@ -4992,7 +4978,7 @@ html {
         }
 
         .tv-quick a:hover {
-            background: var(--brand-tint-1);
+            background: #fff1f2;
             color: var(--red);
         }
 
@@ -5049,7 +5035,7 @@ html {
         }
 
         .tv-menu a.active {
-            background: var(--brand-tint-2);
+            background: #fee2e2;
             color: var(--red);
             font-weight: 700;
             box-shadow: inset 3px 0 0 var(--red);
@@ -5263,8 +5249,8 @@ html {
     align-items: center;
     padding: 12px;
     margin-bottom: 10px;
-    border: 1px dashed var(--brand-tint-4);
-    background: var(--brand-tint-1);
+    border: 1px dashed #fca5a5;
+    background: #fff7f7;
     border-radius: 10px;
 }
 
@@ -5301,7 +5287,7 @@ html {
         display: inline-block;
         margin-top: 4px;
         background: #fff;
-        border: 1px solid var(--brand-tint-3);
+        border: 1px solid #fecaca;
         color: var(--red);
         border-radius: 6px;
         padding: 1px 8px;
@@ -5349,7 +5335,7 @@ html {
 
     .tv-rank-card.now {
         border-color: var(--red);
-        background: var(--brand-tint-1);
+        background: #fff7f7;
     }
 
 .tv-rank-need {
@@ -5506,7 +5492,7 @@ html {
     margin-left: 6px;
     padding: 1px 7px;
     border-radius: 6px;
-    background: var(--brand-tint-2);
+    background: #fee2e2;
     color: var(--red);
     font-size: .75rem;
     font-weight: 700;
@@ -5576,9 +5562,9 @@ html {
     gap: 8px;
     margin-top: 12px;
     padding: 10px 12px;
-    border: 1px solid var(--brand-tint-3);
+    border: 1px solid #fecaca;
     border-radius: 10px;
-    background: var(--brand-tint-1);
+    background: #fff5f5;
     color: var(--ink);
     font-size: .88rem;
     text-decoration: none;
@@ -5888,7 +5874,7 @@ html {
 }
 
     .pay-card:hover {
-        border-color: var(--brand-tint-4);
+        border-color: #fca5a5;
     }
 
     .pay-card input {
@@ -5899,14 +5885,14 @@ html {
 
     .pay-card:has(input:checked) {
         border-color: var(--red);
-        background: var(--brand-tint-1);
+        background: #fff5f5;
     }
 
 .pay-ico {
     flex: 0 0 42px;
     height: 42px;
     border-radius: 10px;
-    background: var(--brand-tint-2);
+    background: #fee2e2;
     color: var(--red);
     font-size: 1.35rem;
     display: flex;
@@ -5942,9 +5928,9 @@ html {
 .co-qr {
     margin-top: 14px;
     padding: 16px;
-    border: 1px dashed var(--brand-tint-4);
+    border: 1px dashed #fca5a5;
     border-radius: 12px;
-    background: var(--brand-tint-1);
+    background: #fffafa;
     text-align: center;
 }
 
@@ -5972,7 +5958,7 @@ html {
             justify-content: space-between;
             gap: 12px;
             padding: 4px 0;
-            border-bottom: 1px dashed var(--brand-tint-3);
+            border-bottom: 1px dashed #f1d5d5;
         }
 
         .co-qr .qr-info span {
@@ -5995,9 +5981,9 @@ html {
     gap: 8px;
     margin-bottom: 8px;
     padding: 4px 4px 4px 12px;
-    border: 1.5px dashed var(--brand-tint-4);
+    border: 1.5px dashed #fca5a5;
     border-radius: 10px;
-    background: var(--brand-tint-1);
+    background: #fff7f7;
 }
 
     .co-code i {
@@ -6156,168 +6142,195 @@ html {
     border-radius: 0 8px 8px 0;
     z-index: 2;
 }
-/* ===== BOOTSTRAP OVERRIDE (MAU CHU DAO) ===== */
-.btn-outline-danger {
-    --bs-btn-color: var(--red); --bs-btn-border-color: var(--red);
-    --bs-btn-hover-color: #fff; --bs-btn-hover-bg: var(--red); --bs-btn-hover-border-color: var(--red);
-    --bs-btn-focus-shadow-rgb: var(--brand-rgb);
-    --bs-btn-active-color: #fff; --bs-btn-active-bg: var(--red-dark); --bs-btn-active-border-color: var(--red-dark);
-    --bs-btn-disabled-color: var(--red); --bs-btn-disabled-border-color: var(--red);
+/* ===== TRA CỨU BẢO HÀNH ===== */
+.warranty-page {
+    max-width: 900px;
+    margin: 0 auto 30px;
 }
-.btn-danger {
-    --bs-btn-color: #fff; --bs-btn-bg: var(--red); --bs-btn-border-color: var(--red);
-    --bs-btn-hover-color: #fff; --bs-btn-hover-bg: var(--red-dark); --bs-btn-hover-border-color: var(--red-dark);
-    --bs-btn-focus-shadow-rgb: var(--brand-rgb);
-    --bs-btn-active-color: #fff; --bs-btn-active-bg: var(--red-dark); --bs-btn-active-border-color: var(--red-dark);
-    --bs-btn-disabled-bg: var(--red); --bs-btn-disabled-border-color: var(--red);
+
+.warranty-title {
+    margin-bottom: 16px;
 }
-.text-brand { color: var(--red) !important; }
-.form-control:focus, .form-select:focus, .form-check-input:focus {
-    border-color: var(--red); box-shadow: 0 0 0 .2rem rgba(var(--brand-rgb), .18);
+
+    .warranty-title h1 {
+        font-size: 1.7rem;
+        font-weight: 800;
+        margin: 0 0 4px;
+        display: flex;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .warranty-title p {
+        margin: 0;
+        color: var(--muted);
+    }
+
+.warranty-box {
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    padding: 20px 22px;
+    margin-bottom: 14px;
 }
+
 .form-check-input:checked { background-color: var(--red); border-color: var(--red); }
 .page-link { color: var(--red); }
 .page-item.active .page-link { background: var(--red); border-color: var(--red); color: #fff; }
 ::selection { background: var(--brand-tint-3); }
 
-
-
-/* ==================== FOOTER TONE HEADER ==================== */
+/* ==================== FOOTER ==================== */
 .ftnew-footer {
-    background: #117C73;
-    color: #FFFFFF;
-    padding: 45px 0 0;
     margin-top: 50px;
+    padding: 48px 0 0;
+    background: #1f2328;
+    color: #cbd5e1;
+    border-top: 4px solid var(--red);
 }
 
-/* Thong tin cua hang */
+    .ftnew-footer .ftnew-main {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr 1.1fr 1fr;
+        gap: 40px;
+        align-items: start;
+    }
 
-.ftnew-brand h4 {
-    color: #FFFFFF;
-    font-size: 23px;
-    font-weight: 700;
-    margin-bottom: 12px;
+    .ftnew-footer .ftnew-brand,
+    .ftnew-footer .ftnew-column {
+        min-width: 0;
+    }
+
+/* cột thương hiệu */
+.ftnew-brand-link {
+    display: inline-block;
+    text-decoration: none !important;
 }
+
+    .ftnew-brand-link h4 {
+        margin: 0 0 10px;
+        color: #fff;
+        font-size: 1.6rem;
+        font-weight: 800;
+        letter-spacing: -.02em;
+    }
 
 .ftnew-desc {
-    color: #E0F2F1;
-    font-size: 14px;
-    margin-bottom: 18px;
+    margin: 0 0 18px;
+    color: #9ca3af;
+    font-size: .9rem;
 }
 
 .ftnew-hotline {
-    display: flex;
+    display: inline-flex;
     align-items: center;
     gap: 10px;
-    color: #FFFFFF;
-    font-size: 23px;
-    font-weight: 700;
-    margin-bottom: 15px;
+    margin-bottom: 16px;
+    padding: 10px 16px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, .06);
+    border: 1px solid rgba(255, 255, 255, .12);
+    color: #fff;
+    font-size: 1.35rem;
+    font-weight: 800;
 }
+
+    .ftnew-hotline i {
+        color: var(--gold);
+    }
 
 .ftnew-address {
     display: flex;
     align-items: flex-start;
     gap: 8px;
-    color: #E0F2F1;
-    font-size: 13px;
-    line-height: 1.7;
+    color: #9ca3af;
+    font-size: .85rem;
+    line-height: 1.6;
     text-decoration: none;
 }
 
     .ftnew-address i {
-        color: #FFB4A2;
         margin-top: 3px;
+        color: #ff4d5e;
     }
 
     .ftnew-address:hover {
-        color: #FFFFFF;
-        text-decoration: underline;
+        color: #fff;
     }
 
-/* Cac cot footer */
-
+/* các cột liên kết */
 .ftnew-column h6 {
-    color: #FFFFFF;
-    font-size: 16px;
+    position: relative;
+    margin: 0 0 16px;
+    padding-bottom: 10px;
+    color: #fff;
+    font-size: .95rem;
     font-weight: 700;
-    margin-bottom: 18px;
 }
+
+    .ftnew-column h6::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 28px;
+        height: 3px;
+        border-radius: 2px;
+        background: var(--red);
+    }
 
 .ftnew-column > a {
     display: block;
-    color: #E0F2F1;
-    font-size: 14px;
+    padding: 5px 0;
+    color: #cbd5e1;
+    font-size: .9rem;
     text-decoration: none;
-    margin-bottom: 12px;
-    transition: color 0.2s ease;
+    transition: color .15s, transform .15s;
 }
 
     .ftnew-column > a:hover {
-        color: #D5FFF3;
-        text-decoration: underline;
+        color: #fff;
+        transform: translateX(4px);
     }
 
-/* Phuong thuc thanh toan */
-
+/* phương thức thanh toán: xếp dọc, không bị rớt dòng lộn xộn */
 .ftnew-payments {
     display: flex;
-    flex-wrap: wrap;
+    flex-direction: column;
+    align-items: flex-start;
     gap: 10px;
 }
 
     .ftnew-payments span {
         display: inline-flex;
         align-items: center;
-        gap: 7px;
-        background: rgba(255, 255, 255, 0.12);
-        border: 1px solid rgba(255, 255, 255, 0.25);
-        border-radius: 8px;
-        padding: 9px 12px;
-        color: #FFFFFF;
-        font-size: 13px;
-        transition: all 0.2s ease;
+        gap: 10px;
+        padding: 8px 14px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, .06);
+        border: 1px solid rgba(255, 255, 255, .12);
+        color: #fff;
+        font-size: .85rem;
+        font-weight: 600;
     }
 
     .ftnew-payments i {
-        color: #D5FFF3;
+        color: var(--gold);
+        font-size: 1.05rem;
     }
 
-    .ftnew-payments span:hover {
-        background: rgba(255, 255, 255, 0.22);
-        border-color: #FFFFFF;
-    }
-
-/* Chan footer */
-
+/* chân footer */
 .ftnew-bottom {
     display: flex;
     justify-content: space-between;
     align-items: center;
     flex-wrap: wrap;
-    gap: 10px;
-    border-top: 1px solid rgba(255, 255, 255, 0.25);
-    padding: 20px 0;
-    color: #E0F2F1;
-    font-size: 13px;
+    gap: 8px;
+    margin-top: 36px;
+    padding: 18px 0;
+    border-top: 1px solid rgba(255, 255, 255, .1);
+    color: #9ca3af;
+    font-size: .8rem;
 }
-
-/* ==================== FOOTER LAYOUT ==================== */
-
-.ftnew-footer .ftnew-main {
-    display: grid;
-    grid-template-columns: 1.4fr 0.8fr 1fr 1fr;
-    gap: 35px;
-    align-items: start;
-    width: 100%;
-}
-
-.ftnew-footer .ftnew-brand,
-.ftnew-footer .ftnew-column {
-    min-width: 0;
-}
-
-/* Responsive */
 
 @media (max-width: 991px) {
     .ftnew-footer .ftnew-main {
@@ -6327,46 +6340,20 @@ html {
 }
 
 @media (max-width: 575px) {
-    .ftnew-footer .ftnew-main {
-        grid-template-columns: 1fr;
-        gap: 25px;
-    }
-
     .ftnew-footer {
-        padding-top: 30px;
+        padding-top: 32px;
     }
 
-    .ftnew-brand h4 {
-        font-size: 21px;
-    }
-
-    .ftnew-hotline {
-        font-size: 21px;
-    }
+        .ftnew-footer .ftnew-main {
+            grid-template-columns: 1fr;
+            gap: 26px;
+        }
 
     .ftnew-bottom {
         flex-direction: column;
         align-items: flex-start;
-        line-height: 1.6;
     }
 }
-
-/* Ten cua hang trong footer */
-.ftnew-brand-link {
-    display: inline-block;
-    text-decoration: none !important;
-}
-
-    .ftnew-brand-link h4 {
-        color: #FFFFFF;
-        margin-bottom: 12px;
-        text-decoration: none !important;
-    }
-
-    .ftnew-brand-link:hover,
-    .ftnew-brand-link:hover h4 {
-        text-decoration: none !important;
-    }
 
 /* ==================== TRA CUU BAO HANH ==================== */
 
@@ -6394,7 +6381,7 @@ html {
     }
 
         .warranty-title h1 i {
-            color: #117C73;
+            color: var(--red);
         }
 
     .warranty-title p {
@@ -6411,7 +6398,7 @@ html {
     border-radius: 12px;
     padding: 20px;
     margin-bottom: 18px;
-    box-shadow: 0 3px 12px rgba(17, 124, 115, 0.04);
+    box-shadow: 0 3px 12px rgba(215, 0, 24, 0.04);
 }
 
     /* Form tra cuu */
@@ -6425,10 +6412,52 @@ html {
 .warranty-search {
     display: flex;
     align-items: center;
+
     gap: 10px;
 }
 
     .warranty-search .form-control {
+/*<<<<<<< HEAD
+        flex: 1;
+        min-width: 0;
+        height: 46px;
+        border-radius: 10px;
+    }
+
+    .warranty-search button {
+        flex: 0 0 auto;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        height: 46px;
+        padding: 0 22px;
+        border: 0;
+        border-radius: 10px;
+        background: var(--red);
+        color: #fff;
+        font-weight: 700;
+        white-space: nowrap;
+    }
+
+        .warranty-search button:hover {
+            background: var(--red-dark);
+        }*/
+
+/* kết quả: ảnh bên trái, thông tin bên phải */
+/*.warranty-result {
+    display: grid;
+    grid-template-columns: 240px minmax(0, 1fr);
+    gap: 24px;
+    align-items: center;
+}
+
+.warranty-image {
+    aspect-ratio: 1 / 1;
+    padding: 12px;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    background: #fafafa;
+=======*/
         height: 44px;
         border: 1px solid #DCE4E9;
         border-radius: 8px;
@@ -6440,8 +6469,8 @@ html {
     }
 
         .warranty-search .form-control:focus {
-            border-color: #117C73;
-            box-shadow: 0 0 0 3px rgba(17, 124, 115, 0.12);
+            border-color: var(--red);
+            box-shadow: 0 0 0 3px rgba(215, 0, 24, 0.12);
         }
 
     .warranty-search button {
@@ -6450,7 +6479,7 @@ html {
         padding: 0 18px;
         border: none;
         border-radius: 8px;
-        background: #117C73;
+        background: var(--red);
         color: #FFFFFF;
         font-size: 14px;
         font-weight: 600;
@@ -6459,7 +6488,7 @@ html {
     }
 
         .warranty-search button:hover {
-            background: #0D625B;
+            background: var(--red-dark);
         }
 
         .warranty-search button:active {
@@ -6475,7 +6504,7 @@ html {
 }
 
     .warranty-box .h5 i {
-        color: #117C73;
+        color: var(--red);
     }
 
 .warranty-result {
@@ -6490,10 +6519,12 @@ html {
     flex: 0 0 190px;
     width: 190px;
     height: 190px;
+
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
+
     background: #F7F9FA;
     border: 1px solid #E1E8ED;
     border-radius: 10px;
@@ -6548,10 +6579,12 @@ html {
     border-radius: 20px;
     padding: 4px 11px;
     font-size: 12px;
+
     font-weight: 700;
 }
 
     .warranty-status.expired {
+
         background: #FDE8E8;
         color: #C62828;
     }
@@ -6603,6 +6636,7 @@ html {
         align-items: stretch;
     }
 
+
         .warranty-search button {
             width: 100%;
         }
@@ -6628,4 +6662,392 @@ html {
         .warranty-info p strong {
             flex-basis: 125px;
         }
+}
+/* nền bằng hình cho ô thương hiệu */
+.bt .bt-txt {
+    z-index: 2;
+}
+
+.bt-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    transition: transform .35s ease;
+}
+
+.bt.has-bg::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(90deg, rgba(0,0,0,.72) 0%, rgba(0,0,0,.35) 55%, rgba(0,0,0,.05) 100%);
+}
+
+.bt.has-bg::after, .bt.has-bg .bt-logo {
+    display: none;
+}
+
+.bt.has-bg:hover .bt-bg {
+    transform: scale(1.06);
+}
+/* chốt khung chứa cho hình nền ô thương hiệu */
+.bt.has-bg {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+}
+
+.bt-bg {
+    max-width: none;
+}
+/* ================= KHUYẾN MÃI TRANG CHỦ ================= */
+.promo-panel {
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px 20px 22px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.05);
+}
+
+.promo-title {
+    text-align: center;
+    font-size: 1.15rem;
+    font-weight: 800;
+    letter-spacing: .4px;
+    text-transform: uppercase;
+    margin: 0 0 4px;
+}
+
+.promo-sub {
+    text-align: center;
+    color: var(--muted);
+    font-size: .88rem;
+    margin: 0 0 16px;
+}
+
+.promo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    gap: 14px;
+}
+
+/* thẻ mã giảm giá kiểu vé */
+.cp {
+    position: relative;
+    display: flex;
+    min-height: 132px;
+    border-radius: 14px;
+    overflow: hidden;
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(0,0,0,.12);
+    transition: transform .18s ease, box-shadow .18s ease;
+}
+
+    .cp:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 22px rgba(0,0,0,.18);
+    }
+
+    .cp.c-pct {
+        background: linear-gradient(135deg, #d70018, #ff5a5f);
+    }
+
+    .cp.c-amt {
+        background: linear-gradient(135deg, #0b57d0, #4aa3ff);
+    }
+
+    .cp.c-ship {
+        background: linear-gradient(135deg, #0a8f4e, #3ccf8a);
+    }
+
+    /* hai nửa vòng cắt giữa vé */
+    .cp::before, .cp::after {
+        content: "";
+        position: absolute;
+        left: 102px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #fff;
+        z-index: 2;
+    }
+
+    .cp::before {
+        top: -8px;
+    }
+
+    .cp::after {
+        bottom: -8px;
+    }
+
+.cp-left {
+    flex: 0 0 110px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 10px 6px;
+    text-align: center;
+    background: rgba(0,0,0,.14);
+    border-right: 2px dashed rgba(255,255,255,.6);
+}
+
+    .cp-left i {
+        font-size: 1.25rem;
+        opacity: .9;
+    }
+
+.cp-small {
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    opacity: .9;
+}
+
+.cp-big {
+    font-size: 1.75rem;
+    font-weight: 800;
+    line-height: 1.05;
+}
+
+.cp-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px 14px;
+}
+
+.cp-name {
+    font-weight: 700;
+    font-size: .95rem;
+    line-height: 1.3;
+}
+
+.cp-cond {
+    font-size: .78rem;
+    opacity: .92;
+    line-height: 1.35;
+}
+
+.cp-hot {
+    align-self: flex-start;
+    background: #ffd34d;
+    color: #7a1f00;
+    font-size: .68rem;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 99px;
+}
+
+.cp-bar {
+    height: 6px;
+    border-radius: 99px;
+    background: rgba(255,255,255,.3);
+    overflow: hidden;
+}
+
+    .cp-bar i {
+        display: block;
+        height: 100%;
+        background: #ffd34d;
+        border-radius: 99px;
+    }
+
+.cp-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: .72rem;
+    opacity: .9;
+}
+
+.cp-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: auto;
+}
+
+.cp-code {
+    font-family: Consolas, "Courier New", monospace;
+    font-weight: 700;
+    font-size: .82rem;
+    letter-spacing: .5px;
+    padding: 3px 9px;
+    border-radius: 6px;
+    background: rgba(255,255,255,.18);
+    border: 1px dashed rgba(255,255,255,.75);
+    white-space: nowrap;
+}
+
+.cp-copy {
+    border: 0;
+    background: #fff;
+    color: var(--red);
+    font-weight: 700;
+    font-size: .78rem;
+    padding: 5px 12px;
+    border-radius: 99px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+    .cp-copy:hover {
+        background: #fff3f3;
+    }
+
+.cp.c-amt .cp-copy {
+    color: #0b57d0;
+}
+
+.cp.c-ship .cp-copy {
+    color: #0a8f4e;
+}
+
+.cp-copy.done {
+    background: #ffd34d;
+    color: #5a3b00;
+}
+
+/* chuyên trang thương hiệu */
+.brand-head {
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: .3px;
+    text-transform: uppercase;
+    margin: 0 0 12px;
+}
+
+.brand-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: 14px;
+}
+
+.bt {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    min-height: 118px;
+    padding: 16px 16px 16px 18px;
+    border-radius: 14px;
+    overflow: hidden;
+    color: #fff;
+    text-decoration: none;
+    background: linear-gradient(135deg, var(--c1, #d70018), var(--c2, #ff5a5f));
+    box-shadow: 0 4px 14px rgba(0,0,0,.12);
+    transition: transform .18s ease, box-shadow .18s ease;
+}
+
+    .bt:hover {
+        color: #fff;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 22px rgba(0,0,0,.2);
+    }
+
+    .bt::after { /* vòng tròn trang trí */
+        content: "";
+        position: absolute;
+        right: -30px;
+        bottom: -40px;
+        width: 130px;
+        height: 130px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.12);
+    }
+
+.bt-txt {
+    position: relative;
+    z-index: 1;
+    min-width: 0;
+}
+
+.bt-small {
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    opacity: .9;
+}
+
+.bt-name {
+    font-size: 1.3rem;
+    font-weight: 800;
+    line-height: 1.15;
+    margin: 2px 0 4px;
+}
+
+.bt-count {
+    font-size: .8rem;
+    opacity: .92;
+}
+
+.bt-go {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: .76rem;
+    font-weight: 700;
+    background: rgba(255,255,255,.95);
+    color: #1f2328;
+    padding: 3px 12px;
+    border-radius: 99px;
+}
+
+.bt-logo {
+    position: relative;
+    z-index: 1;
+    flex: 0 0 72px;
+    width: 72px;
+    height: 72px;
+    border-radius: 16px;
+    object-fit: cover;
+    border: 3px solid rgba(255,255,255,.9);
+    box-shadow: 0 4px 10px rgba(0,0,0,.2);
+    background: #fff;
+}
+
+    .bt-logo.ph { /* chưa có file logo: hiện chữ cái đầu */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #1f2328;
+    }
+
+@media (max-width: 480px) {
+    .cp-left {
+        flex-basis: 86px;
+    }
+
+    .cp::before, .cp::after {
+        left: 78px;
+    }
+
+    .cp-big {
+        font-size: 1.45rem;
+    }
+
+    .cp-body {
+        padding: 12px 10px;
+    }
+
+    .cp-foot {
+        flex-wrap: wrap;
+    }
+
+    .cp-meta {
+        flex-wrap: wrap;
+        gap: 0 8px;
+    }
+
+    .bt-name {
+        font-size: 1.15rem;
+    }
 }
