@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Data.Entity;
@@ -6,11 +7,16 @@ using System.Linq;
 
 namespace WebsiteQuanLiDienThoaiDiDong.Models.ViewModels
 {
-    public class MenuThuongHieuVM { public int Id { get; set; } public string Ten { get; set; } }
+    public class MenuThuongHieuVM
+    {
+        public int Id { get; set; }
+        public string Ten { get; set; }
+    }
+
     public class MenuLoaiVM
     {
-        public int LoaiId { get; set; }          
-        public decimal? GiaGoc { get; set; }    
+        public int LoaiId { get; set; }
+        public decimal? GiaGoc { get; set; }
         public int Id { get; set; }
         public string Ten { get; set; }
         public List<MenuThuongHieuVM> ThuongHieus { get; set; }
@@ -20,19 +26,20 @@ namespace WebsiteQuanLiDienThoaiDiDong.Models.ViewModels
     public class SanPhamCardVM
     {
         public int Id { get; set; }
-        public int LoaiId { get; set; }              
+        public int LoaiId { get; set; }
         public string TenSanPham { get; set; }
         public string TenThuongHieu { get; set; }
         public string AnhDaiDien { get; set; }
         public decimal? GiaThapNhat { get; set; }
         public decimal? GiaCaoNhat { get; set; }
-        public decimal? GiaGoc { get; set; }        
+        public decimal? GiaGoc { get; set; }
         public int? TongTon { get; set; }
         public decimal SaoTrungBinh { get; set; }
         public int SoDanhGia { get; set; }
         public int DaBan { get; set; }
         public bool DaYeuThich { get; set; }
     }
+
     public class TrangChuVM
     {
         public List<SanPhamCardVM> MayCu { get; set; } = new List<SanPhamCardVM>();
@@ -60,25 +67,56 @@ namespace WebsiteQuanLiDienThoaiDiDong.Models.ViewModels
         public string SapXep { get; set; }
         public int Trang { get; set; }
         public int SoTrang { get; set; }
+        public byte? SaoToiThieu { get; set; }
     }
 
     public class SanPhamChiTietVM
     {
         public SanPham SanPham { get; set; }
+
         public List<HinhAnhSanPham> HinhAnhs { get; set; } = new List<HinhAnhSanPham>();
+
         public List<DanhGia> DanhGias { get; set; } = new List<DanhGia>();
+
         public bool CoTheDanhGia { get; set; }
+
         public bool DaDanhGia { get; set; }
+
         public List<byte> KyHanTraGop { get; set; } = new List<byte>();
+
         public List<SanPhamCardVM> SanPhamLienQuan { get; set; } = new List<SanPhamCardVM>();
+
+        public List<ThongSoDong> ThongSos { get; set; } = new List<ThongSoDong>();
+
+        // Thống kê đánh giá
+        public int TongDanhGia { get; set; }
+
+        public double DiemTrungBinh { get; set; }
+
+        public int SoSao5 { get; set; }
+
+        public int SoSao4 { get; set; }
+
+        public int SoSao3 { get; set; }
+
+        public int SoSao2 { get; set; }
+
+        public int SoSao1 { get; set; }
+
+        // Bộ lọc đánh giá
+        public byte? SaoDanhGia { get; set; }
+
+        public string SapXepDanhGia { get; set; }
     }
 
     public class DanhGiaVM
     {
         public int SanPhamId { get; set; }
+
         [Required(ErrorMessage = "Vui lòng chọn số sao")]
         [Range(1, 5, ErrorMessage = "Số sao từ 1 đến 5")]
         public byte SoSao { get; set; }
+
         [StringLength(1000, ErrorMessage = "Nội dung tối đa 1000 ký tự")]
         public string NoiDung { get; set; }
     }
@@ -106,8 +144,13 @@ namespace WebsiteQuanLiDienThoaiDiDong.Models.ViewModels
         public decimal TietKiem { get { return GiaGoc > DonGia ? (GiaGoc - DonGia) * SoLuong : 0; } }   // THÊM
         public int SoLuong { get; set; }
         public int Ton { get; set; }
-        public decimal ThanhTien { get { return DonGia * SoLuong; } }
+
+        public decimal ThanhTien
+        {
+            get { return DonGia * SoLuong; }
+        }
     }
+
     public class CartVM
     {
         public List<CartItemVM> Items { get; set; } = new List<CartItemVM>();
@@ -158,14 +201,21 @@ namespace WebsiteQuanLiDienThoaiDiDong.Models.ViewModels
         [Required(ErrorMessage = "Vui lòng nhập địa chỉ giao hàng"), StringLength(300)]
         public string DiaChiGiao { get; set; }
 
-        [StringLength(300)] public string GhiChu { get; set; }
-        [StringLength(30)] public string MaKhuyenMai { get; set; }
+        [StringLength(300)]
+        public string GhiChu { get; set; }
+
+        [StringLength(30)]
+        public string MaKhuyenMai { get; set; }
+
         public string PhuongThucThanhToan { get; set; } = "COD";
 
         // dữ liệu hiển thị (không bind từ form)
         public CartVM Cart { get; set; }
+
         public List<string> DanhSachTinh { get; set; }
+
         public decimal PhiShip { get; set; }
+
         public decimal TienGiam { get; set; }
         public decimal GiamHang { get; set; }      // ưu đãi theo hạng thành viên
         public string TenHang { get; set; }
@@ -179,4 +229,11 @@ namespace WebsiteQuanLiDienThoaiDiDong.Models.ViewModels
         public string MaDonHang { get; set; }
         public decimal TongThanhToan { get; set; }
     }
+}
+
+public class ThongSoDong
+{
+    public string Nhom { get; set; }
+    public string TenThongSo { get; set; }
+    public string GiaTri { get; set; }
 }

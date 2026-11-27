@@ -426,3 +426,7 @@ FodyWeavers.xsd
 
 # Official VS Code C# Dev Kit Extension exclusion
 #*.lscache
+
+bao_cao_anh.json
+bao_cao_tgdd.json
+log_tai_anh.txt
