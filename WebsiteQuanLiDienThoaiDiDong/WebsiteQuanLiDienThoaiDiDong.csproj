@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="packages\EntityFramework.6.5.2\build\EntityFramework.props" Condition="Exists('packages\EntityFramework.6.5.2\build\EntityFramework.props')" />
   <Import Project="packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props" Condition="Exists('packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" />
+  <Import Project="packages\EntityFramework.6.5.2\build\EntityFramework.props" Condition="Exists('packages\EntityFramework.6.5.2\build\EntityFramework.props')" />
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -51,6 +51,9 @@
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <HintPath>packages\EntityFramework.6.5.2\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform, Version=2.0.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System" />
@@ -121,27 +124,38 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Reference Include="Microsoft.CodeDom.Providers.DotNetCompilerPlatform">
-      <HintPath>packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\lib\net45\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.dll</HintPath>
-    </Reference>
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="App_Start\BundleConfig.cs" />
+    <Compile Include="App_Start\BundleConfig2.cs" />
     <Compile Include="App_Start\FilterConfig.cs" />
     <Compile Include="App_Start\RouteConfig.cs" />
     <Compile Include="Areas\Admin\AdminAreaRegistration.cs" />
+    <Compile Include="Areas\Admin\Controllers\AdminBaseController.cs" />
+    <Compile Include="Areas\Admin\Controllers\DonHangController.cs" />
     <Compile Include="Areas\Admin\Controllers\GioHangController.cs" />
+    <Compile Include="Areas\Admin\Controllers\KhoController.cs" />
+    <Compile Include="Areas\Admin\Controllers\QuanLyThuCuController.cs" />
     <Compile Include="Controllers\AccountController.cs" />
     <Compile Include="Controllers\DatHangController.cs" />
+    <Compile Include="Controllers\DonHangController.cs" />
     <Compile Include="Controllers\GioHangController.cs" />
     <Compile Include="Controllers\HomeController.cs" />
+    <Compile Include="Controllers\KhuyenMaiController.cs" />
     <Compile Include="Controllers\SanPhamController.cs" />
+    <Compile Include="Controllers\BaoHanhController.cs" />
+    <Compile Include="Controllers\ThanhVienController.cs" />
+    <Compile Include="Controllers\ThongKeController.cs" />
+    <Compile Include="Controllers\ThuCuController.cs" />
     <Compile Include="Global.asax.cs">
       <DependentUpon>Global.asax</DependentUpon>
     </Compile>
     <Compile Include="Helpers\AuthHelper.cs" />
     <Compile Include="Helpers\CauHinh.cs" />
+    <Compile Include="Helpers\EmailHelper.cs" />
+    <Compile Include="Helpers\OtpHelper.cs" />
+    <Compile Include="Helpers\ResetTokenHelper.cs" />
     <Compile Include="Helpers\SecurityHelper.cs" />
+    <Compile Include="Helpers\SocialLoginHelper.cs" />
+    <Compile Include="Helpers\VietQrHelper.cs" />
     <Compile Include="Models\BienTheSanPham.cs">
       <DependentUpon>QuanLiDiDong.tt</DependentUpon>
     </Compile>
@@ -199,7 +213,11 @@
     <Compile Include="Models\PhiVanChuyen.cs">
       <DependentUpon>QuanLiDiDong.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\QuanLiDiDong.Context.cs" />
+    <Compile Include="Models\QuanLiDiDong.Context.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>QuanLiDiDong.Context.tt</DependentUpon>
+    </Compile>
     <Compile Include="Models\QuanLiDiDong.cs" />
     <Compile Include="Models\QuanLiDiDong.Designer.cs">
       <DependentUpon>QuanLiDiDong.cs</DependentUpon>
@@ -208,11 +226,6 @@
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>QuanLiDiDong.tt</DependentUpon>
-    </Compile>
-    <Compile Include="Models\QuanLiDiDong1.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>QuanLiDiDong.edmx</DependentUpon>
     </Compile>
     <Compile Include="Models\SanPham.cs">
       <DependentUpon>QuanLiDiDong.tt</DependentUpon>
@@ -246,7 +259,7 @@
     <Compile Include="Models\sql.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>sql.tt</DependentUpon>
+      <DependentUpon>QuanLiDiDong.tt</DependentUpon>
     </Compile>
     <Compile Include="Models\sql.Designer.cs">
       <AutoGen>True</AutoGen>
@@ -265,7 +278,7 @@
     <Compile Include="Models\VaiTro.cs">
       <DependentUpon>QuanLiDiDong.tt</DependentUpon>
     </Compile>
-    <Compile Include="Models\ViewModels\ViewModels.cs" />
+    <Compile Include="Models\ViewModels\viewmodels\ViewModels.cs" />
     <Compile Include="Models\vw_CanhBaoTonKho.cs">
       <DependentUpon>QuanLiDiDong.tt</DependentUpon>
     </Compile>
@@ -283,6 +296,9 @@
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Services\CartService.cs" />
+    <Compile Include="Services\NewsService.cs" />
+    <Compile Include="Services\ThuCuService.cs" />
+    <Compile Include="Services\UuDaiHang.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap-grid.css" />
@@ -301,6 +317,174 @@
     <Content Include="Content\bootstrap.min.css" />
     <Content Include="Content\bootstrap.rtl.css" />
     <Content Include="Content\bootstrap.rtl.min.css" />
+    <Content Include="Content\images\banners\banner-1.png" />
+    <Content Include="Content\images\banners\banner-2.png" />
+    <Content Include="Content\images\banners\banner-3.png" />
+    <Content Include="Content\images\banners\banner-4.png" />
+    <Content Include="Content\images\banners\mini-1.png" />
+    <Content Include="Content\images\banners\mini-2.png" />
+    <Content Include="Content\images\banners\mini-3.png" />
+    <Content Include="Content\images\brands\anker.png" />
+    <Content Include="Content\images\brands\apple.png" />
+    <Content Include="Content\images\brands\oppo.png" />
+    <Content Include="Content\images\brands\samsung.png" />
+    <Content Include="Content\images\brands\vivo.png" />
+    <Content Include="Content\images\brands\xiaomi.png" />
+    <Content Include="Content\images\products\airpods-pro-2-2.jpg" />
+    <Content Include="Content\images\products\airpods-pro-2-3.jpg" />
+    <Content Include="Content\images\products\airpods-pro-2-4.jpg" />
+    <Content Include="Content\images\products\airpods-pro-2-5.jpg" />
+    <Content Include="Content\images\products\airpods-pro-2-6.jpg" />
+    <Content Include="Content\images\products\airpods-pro-2.jpg" />
+    <Content Include="Content\images\products\anker-nano-30w-2.jpg" />
+    <Content Include="Content\images\products\anker-nano-30w-3.jpg" />
+    <Content Include="Content\images\products\anker-nano-30w-4.jpg" />
+    <Content Include="Content\images\products\anker-nano-30w-5.jpg" />
+    <Content Include="Content\images\products\anker-nano-30w-6.jpg" />
+    <Content Include="Content\images\products\anker-nano-30w.jpg" />
+    <Content Include="Content\images\products\anker-pin-10000-2.jpg" />
+    <Content Include="Content\images\products\anker-pin-10000-3.jpg" />
+    <Content Include="Content\images\products\anker-pin-10000-4.jpg" />
+    <Content Include="Content\images\products\anker-pin-10000-5.jpg" />
+    <Content Include="Content\images\products\anker-pin-10000-6.jpg" />
+    <Content Include="Content\images\products\anker-pin-10000.jpg" />
+    <Content Include="Content\images\products\baseus-cap-100w-2.jpg" />
+    <Content Include="Content\images\products\baseus-cap-100w-3.jpg" />
+    <Content Include="Content\images\products\baseus-cap-100w-4.jpg" />
+    <Content Include="Content\images\products\baseus-cap-100w-5.jpg" />
+    <Content Include="Content\images\products\baseus-cap-100w-6.jpg" />
+    <Content Include="Content\images\products\baseus-cap-100w.jpg" />
+    <Content Include="Content\images\products\galaxy-a56-5g-2.jpg" />
+    <Content Include="Content\images\products\galaxy-a56-5g-3.jpg" />
+    <Content Include="Content\images\products\galaxy-a56-5g-4.jpg" />
+    <Content Include="Content\images\products\galaxy-a56-5g-5.jpg" />
+    <Content Include="Content\images\products\galaxy-a56-5g-6.jpg" />
+    <Content Include="Content\images\products\galaxy-a56-5g.jpg" />
+    <Content Include="Content\images\products\galaxy-buds3-pro-2.jpg" />
+    <Content Include="Content\images\products\galaxy-buds3-pro-3.jpg" />
+    <Content Include="Content\images\products\galaxy-buds3-pro-4.jpg" />
+    <Content Include="Content\images\products\galaxy-buds3-pro-5.jpg" />
+    <Content Include="Content\images\products\galaxy-buds3-pro-6.jpg" />
+    <Content Include="Content\images\products\galaxy-buds3-pro.jpg" />
+    <Content Include="Content\images\products\galaxy-s25-ultra-2.jpg" />
+    <Content Include="Content\images\products\galaxy-s25-ultra-3.jpg" />
+    <Content Include="Content\images\products\galaxy-s25-ultra-4.jpg" />
+    <Content Include="Content\images\products\galaxy-s25-ultra-5.jpg" />
+    <Content Include="Content\images\products\galaxy-s25-ultra-6.jpg" />
+    <Content Include="Content\images\products\galaxy-s25-ultra.jpg" />
+    <Content Include="Content\images\products\galaxy-z-flip6-2.jpg" />
+    <Content Include="Content\images\products\galaxy-z-flip6-3.jpg" />
+    <Content Include="Content\images\products\galaxy-z-flip6-4.jpg" />
+    <Content Include="Content\images\products\galaxy-z-flip6-5.jpg" />
+    <Content Include="Content\images\products\galaxy-z-flip6-6.jpg" />
+    <Content Include="Content\images\products\galaxy-z-flip6.jpg" />
+    <Content Include="Content\images\products\iphone-15-2.jpg" />
+    <Content Include="Content\images\products\iphone-15-3.jpg" />
+    <Content Include="Content\images\products\iphone-15-4.jpg" />
+    <Content Include="Content\images\products\iphone-15-5.jpg" />
+    <Content Include="Content\images\products\iphone-15-6.jpg" />
+    <Content Include="Content\images\products\iphone-15.jpg" />
+    <Content Include="Content\images\products\iphone-16-2.jpg" />
+    <Content Include="Content\images\products\iphone-16-3.jpg" />
+    <Content Include="Content\images\products\iphone-16-4.jpg" />
+    <Content Include="Content\images\products\iphone-16-5.jpg" />
+    <Content Include="Content\images\products\iphone-16-6.jpg" />
+    <Content Include="Content\images\products\iphone-16-pro-max-2.jpg" />
+    <Content Include="Content\images\products\iphone-16-pro-max-3.jpg" />
+    <Content Include="Content\images\products\iphone-16-pro-max-4.jpg" />
+    <Content Include="Content\images\products\iphone-16-pro-max-5.jpg" />
+    <Content Include="Content\images\products\iphone-16-pro-max-6.jpg" />
+    <Content Include="Content\images\products\iphone-16-pro-max.jpg" />
+    <Content Include="Content\images\products\iphone-16.jpg" />
+    <Content Include="Content\images\products\kinh-cuong-luc-ip16-2.jpg" />
+    <Content Include="Content\images\products\kinh-cuong-luc-ip16-3.jpg" />
+    <Content Include="Content\images\products\kinh-cuong-luc-ip16-4.jpg" />
+    <Content Include="Content\images\products\kinh-cuong-luc-ip16-5.jpg" />
+    <Content Include="Content\images\products\kinh-cuong-luc-ip16-6.jpg" />
+    <Content Include="Content\images\products\kinh-cuong-luc-ip16.jpg" />
+    <Content Include="Content\images\products\oppo-reno12-f-5g-2.jpg" />
+    <Content Include="Content\images\products\oppo-reno12-f-5g-3.jpg" />
+    <Content Include="Content\images\products\oppo-reno12-f-5g-4.jpg" />
+    <Content Include="Content\images\products\oppo-reno12-f-5g-5.jpg" />
+    <Content Include="Content\images\products\oppo-reno12-f-5g-6.jpg" />
+    <Content Include="Content\images\products\oppo-reno12-f-5g.jpg" />
+    <Content Include="Content\images\products\redmi-note-14-pro-5g-2.jpg" />
+    <Content Include="Content\images\products\redmi-note-14-pro-5g-3.jpg" />
+    <Content Include="Content\images\products\redmi-note-14-pro-5g-4.jpg" />
+    <Content Include="Content\images\products\redmi-note-14-pro-5g-5.jpg" />
+    <Content Include="Content\images\products\redmi-note-14-pro-5g-6.jpg" />
+    <Content Include="Content\images\products\redmi-note-14-pro-5g.jpg" />
+    <Content Include="Content\images\products\sp5-a6b1de47.jpg" />
+    <Content Include="Content\images\products\spigen-ip16pm-2.jpg" />
+    <Content Include="Content\images\products\spigen-ip16pm-3.jpg" />
+    <Content Include="Content\images\products\spigen-ip16pm-4.jpg" />
+    <Content Include="Content\images\products\spigen-ip16pm-5.jpg" />
+    <Content Include="Content\images\products\spigen-ip16pm-6.jpg" />
+    <Content Include="Content\images\products\spigen-ip16pm.jpg" />
+    <Content Include="Content\images\products\spigen-s25-ultra-2.jpg" />
+    <Content Include="Content\images\products\spigen-s25-ultra-3.jpg" />
+    <Content Include="Content\images\products\spigen-s25-ultra-4.jpg" />
+    <Content Include="Content\images\products\spigen-s25-ultra-5.jpg" />
+    <Content Include="Content\images\products\spigen-s25-ultra-6.jpg" />
+    <Content Include="Content\images\products\spigen-s25-ultra.jpg" />
+    <Content Include="Content\images\products\vivo-v40-5g-2.jpg" />
+    <Content Include="Content\images\products\vivo-v40-5g-3.jpg" />
+    <Content Include="Content\images\products\vivo-v40-5g-4.jpg" />
+    <Content Include="Content\images\products\vivo-v40-5g-5.jpg" />
+    <Content Include="Content\images\products\vivo-v40-5g-6.jpg" />
+    <Content Include="Content\images\products\vivo-v40-5g.jpg" />
+    <Content Include="Content\products_cu\airpods-pro-2-2.jpg" />
+    <Content Include="Content\products_cu\airpods-pro-2-3.jpg" />
+    <Content Include="Content\products_cu\airpods-pro-2.jpg" />
+    <Content Include="Content\products_cu\anker-nano-30w-2.jpg" />
+    <Content Include="Content\products_cu\anker-nano-30w-3.jpg" />
+    <Content Include="Content\products_cu\anker-nano-30w.jpg" />
+    <Content Include="Content\products_cu\anker-pin-10000-2.jpg" />
+    <Content Include="Content\products_cu\anker-pin-10000-3.jpg" />
+    <Content Include="Content\products_cu\anker-pin-10000.jpg" />
+    <Content Include="Content\products_cu\baseus-cap-100w-2.jpg" />
+    <Content Include="Content\products_cu\baseus-cap-100w-3.jpg" />
+    <Content Include="Content\products_cu\baseus-cap-100w.jpg" />
+    <Content Include="Content\products_cu\galaxy-a56-5g-2.jpg" />
+    <Content Include="Content\products_cu\galaxy-a56-5g-3.jpg" />
+    <Content Include="Content\products_cu\galaxy-a56-5g.jpg" />
+    <Content Include="Content\products_cu\galaxy-buds3-pro-2.jpg" />
+    <Content Include="Content\products_cu\galaxy-buds3-pro-3.jpg" />
+    <Content Include="Content\products_cu\galaxy-buds3-pro.jpg" />
+    <Content Include="Content\products_cu\galaxy-s25-ultra-2.jpg" />
+    <Content Include="Content\products_cu\galaxy-s25-ultra-3.jpg" />
+    <Content Include="Content\products_cu\galaxy-s25-ultra.jpg" />
+    <Content Include="Content\products_cu\galaxy-z-flip6-2.jpg" />
+    <Content Include="Content\products_cu\galaxy-z-flip6-3.jpg" />
+    <Content Include="Content\products_cu\galaxy-z-flip6.jpg" />
+    <Content Include="Content\products_cu\iphone-15-2.jpg" />
+    <Content Include="Content\products_cu\iphone-15-3.jpg" />
+    <Content Include="Content\products_cu\iphone-15.jpg" />
+    <Content Include="Content\products_cu\iphone-16-2.jpg" />
+    <Content Include="Content\products_cu\iphone-16-3.jpg" />
+    <Content Include="Content\products_cu\iphone-16-pro-max-2.jpg" />
+    <Content Include="Content\products_cu\iphone-16-pro-max-3.jpg" />
+    <Content Include="Content\products_cu\iphone-16-pro-max.jpg" />
+    <Content Include="Content\products_cu\iphone-16.jpg" />
+    <Content Include="Content\products_cu\kinh-cuong-luc-ip16-2.jpg" />
+    <Content Include="Content\products_cu\kinh-cuong-luc-ip16-3.jpg" />
+    <Content Include="Content\products_cu\kinh-cuong-luc-ip16.jpg" />
+    <Content Include="Content\products_cu\oppo-reno12-f-5g-2.jpg" />
+    <Content Include="Content\products_cu\oppo-reno12-f-5g-3.jpg" />
+    <Content Include="Content\products_cu\oppo-reno12-f-5g.jpg" />
+    <Content Include="Content\products_cu\redmi-note-14-pro-5g-2.jpg" />
+    <Content Include="Content\products_cu\redmi-note-14-pro-5g-3.jpg" />
+    <Content Include="Content\products_cu\redmi-note-14-pro-5g.jpg" />
+    <Content Include="Content\products_cu\sp5-a6b1de47.jpg" />
+    <Content Include="Content\products_cu\spigen-ip16pm-2.jpg" />
+    <Content Include="Content\products_cu\spigen-ip16pm-3.jpg" />
+    <Content Include="Content\products_cu\spigen-ip16pm.jpg" />
+    <Content Include="Content\products_cu\spigen-s25-ultra-2.jpg" />
+    <Content Include="Content\products_cu\spigen-s25-ultra-3.jpg" />
+    <Content Include="Content\products_cu\spigen-s25-ultra.jpg" />
+    <Content Include="Content\products_cu\vivo-v40-5g-2.jpg" />
+    <Content Include="Content\products_cu\vivo-v40-5g-3.jpg" />
+    <Content Include="Content\products_cu\vivo-v40-5g.jpg" />
     <Content Include="favicon.ico" />
     <Content Include="Global.asax" />
     <Content Include="Content\Site.css" />
@@ -338,11 +522,18 @@
     <Content Include="Areas\Admin\Views\_ViewStart.cshtml" />
     <EntityDeploy Include="Models\QuanLiDiDong.edmx">
       <Generator>EntityModelCodeGenerator</Generator>
-      <LastGenOutput>QuanLiDiDong1.Designer.cs</LastGenOutput>
+      <LastGenOutput>QuanLiDiDong2.Designer.cs</LastGenOutput>
     </EntityDeploy>
     <Content Include="Models\QuanLiDiDong.edmx.diagram">
       <DependentUpon>QuanLiDiDong.edmx</DependentUpon>
     </Content>
+    <Content Include="Areas\Admin\Views\Kho\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\Kho\PhieuKho.cshtml" />
+    <Content Include="Areas\Admin\Views\Kho\LichSu.cshtml" />
+    <Content Include="Areas\Admin\Views\Web.config" />
+    <Content Include="Areas\Admin\Views\DonHang\Index.cshtml" />
+    <Content Include="Areas\Admin\Views\DonHang\ChiTiet.cshtml" />
+    <Content Include="Areas\Admin\Views\QuanLyThuCu\Index.cshtml" />
     <None Include="Scripts\jquery-3.7.0.intellisense.js" />
     <Content Include="Scripts\jquery-3.7.0.js" />
     <Content Include="Scripts\search-suggest.js" />
@@ -387,7 +578,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\" />
+    <Folder Include="Areas\Admin\Views\AdminBase\" />
     <Folder Include="Areas\Admin\Views\GioHang\" />
+    <Folder Include="Data\" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\bootstrap.rtl.min.css.map" />
@@ -451,9 +644,9 @@
     <PropertyGroup>
       <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
     </PropertyGroup>
-    <Error Condition="!Exists('packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
     <Error Condition="!Exists('packages\EntityFramework.6.5.2\build\EntityFramework.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\EntityFramework.6.5.2\build\EntityFramework.props'))" />
     <Error Condition="!Exists('packages\EntityFramework.6.5.2\build\EntityFramework.targets')" Text="$([System.String]::Format('$(ErrorText)', 'packages\EntityFramework.6.5.2\build\EntityFramework.targets'))" />
+    <Error Condition="!Exists('packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props')" Text="$([System.String]::Format('$(ErrorText)', 'packages\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.2.0.1\build\net46\Microsoft.CodeDom.Providers.DotNetCompilerPlatform.props'))" />
   </Target>
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it.
        Other similar extension points exist, see Microsoft.Common.targets.

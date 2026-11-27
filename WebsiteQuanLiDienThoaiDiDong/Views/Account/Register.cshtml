@@ -3,53 +3,52 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-<div class="container mt-5" style="max-width: 500px;">
-    <div class="card shadow-sm border-0">
-        <div class="card-body p-4">
-            <h3 class="card-title text-center mb-4 font-weight-bold">ĐĂNG KÝ TÀI KHOẢN</h3>
+<div class="auth-card auth-wide">
+    <h1 class="auth-title">Đăng ký tài khoản</h1>
+    <p class="auth-sub">Tạo tài khoản để mua hàng nhanh hơn và theo dõi đơn hàng</p>
 
-            @using (Html.BeginForm("Register", "Account", FormMethod.Post))
-            {
-                @Html.AntiForgeryToken()
-                <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
+    @using (Html.BeginForm("Register", "Account", FormMethod.Post))
+    {
+        @Html.AntiForgeryToken()
+        <input type="hidden" name="returnUrl" value="@ViewBag.ReturnUrl" />
 
-                @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3" })
-                @Html.ValidationMessage("confirmPassword", "", new { @class = "text-danger d-block mb-2" })
+        @Html.ValidationSummary(true, "", new { @class = "text-danger mb-3" })
+        @Html.ValidationMessage("confirmPassword", "", new { @class = "text-danger d-block mb-2" })
 
-                <div class="form-group mb-3">
-                    <label for="HoTen" class="form-label">Họ và tên</label>
-                    <input type="text" id="HoTen" name="HoTen" class="form-control" placeholder="Nhập họ và tên..." required />
-                </div>
+        <div class="mb-3">
+            <label for="HoTen" class="form-label">Họ và tên</label>
+            <input type="text" id="HoTen" name="HoTen" class="form-control" placeholder="Nhập họ và tên..." value="@(Request["HoTen"])" required />
+        </div>
 
-                <div class="form-group mb-3">
-                    <label for="Email" class="form-label">Email</label>
-                    <input type="email" id="Email" name="Email" class="form-control" placeholder="Nhập email..." required />
-                    @Html.ValidationMessage("Email", "", new { @class = "text-danger" })
-                </div>
+        <div class="mb-3">
+            <label for="Email" class="form-label">Email</label>
+            <input type="email" id="Email" name="Email" class="form-control" autocomplete="off" placeholder="Nhập email..." value="@(Request["Email"])" required />
+            @Html.ValidationMessage("Email", "", new { @class = "text-danger small" })
+            <div class="form-text">Chúng tôi sẽ gửi mã xác thực 6 số đến email này.</div>
+        </div>
 
-                <div class="form-group mb-3">
-                    <label for="SoDienThoai" class="form-label">Số điện thoại</label>
-                    <input type="tel" id="SoDienThoai" name="SoDienThoai" class="form-control" placeholder="Nhập số điện thoại..." />
-                </div>
+        <div class="mb-3">
+            <label for="SoDienThoai" class="form-label">Số điện thoại <span class="text-muted fw-normal">(không bắt buộc)</span></label>
+            <input type="tel" id="SoDienThoai" name="SoDienThoai" class="form-control" placeholder="Nhập số điện thoại..." value="@(Request["SoDienThoai"])" />
+        </div>
 
-                <div class="form-group mb-3">
-                    <label for="MatKhauHash" class="form-label">Mật khẩu</label>
-                    <input type="password" id="MatKhauHash" name="MatKhauHash" class="form-control" placeholder="Nhập mật khẩu..." required />
-                </div>
-
-                <div class="form-group mb-4">
-                    <label for="confirmPassword" class="form-label">Xác nhận mật khẩu</label>
-                    <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" placeholder="Nhập lại mật khẩu..." required />
-                </div>
-
-                <button type="submit" class="btn btn-success w-100 py-2 font-weight-bold">ĐĂNG KÝ</button>
-            }
-
-            <hr class="my-4">
-
-            <div class="text-center">
-                <p class="mb-0">Đã có tài khoản? <a href="@Url.Action("Login", "Account")" class="text-primary font-weight-bold text-decoration-none">Đăng nhập ngay</a></p>
+        <div class="row g-3 mb-4">
+            <div class="col-sm-6">
+                <label for="MatKhauHash" class="form-label">Mật khẩu</label>
+                <input type="password" id="MatKhauHash" name="MatKhauHash" class="form-control" autocomplete="new-password" placeholder="Nhập mật khẩu..." minlength="6" required />
+            </div>
+            <div class="col-sm-6">
+                <label for="confirmPassword" class="form-label">Xác nhận mật khẩu</label>
+                <input type="password" id="confirmPassword" name="confirmPassword" class="form-control" autocomplete="new-password" placeholder="Nhập lại mật khẩu..." minlength="6" required />
             </div>
         </div>
+
+        <button type="submit" class="btn btn-brand w-100 py-2">ĐĂNG KÝ</button>
+    }
+
+    @Html.Partial("_SocialLogin")
+
+    <div class="auth-foot">
+        Đã có tài khoản? <a href="@Url.Action("Login", "Account", new { returnUrl = ViewBag.ReturnUrl })" class="fw-bold">Đăng nhập ngay</a>
     </div>
 </div>

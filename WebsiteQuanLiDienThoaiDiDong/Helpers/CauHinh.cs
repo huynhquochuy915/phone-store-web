@@ -35,15 +35,5 @@ namespace WebsiteQuanLiDienThoaiDiDong.Helpers
         public static string VND(this decimal? v) { return v.HasValue ? v.Value.VND() : "Liên hệ"; }
     }
 
-    public static class VietQrHelper
-    {
-        // Ảnh QR động của VietQR: số tiền + nội dung chuyển khoản = mã đơn
-        public static string BuildUrl(decimal soTien, string noiDung)
-        {
-            return string.Format(
-                "https://img.vietqr.io/image/{0}-{1}-compact2.png?amount={2}&addInfo={3}&accountName={4}",
-                CauHinh.Get("NganHang_Ma"), CauHinh.Get("NganHang_SoTaiKhoan"), (long)soTien,
-                Uri.EscapeDataString(noiDung), Uri.EscapeDataString(CauHinh.Get("NganHang_TenChuTK")));
-        }
-    }
+    
 }

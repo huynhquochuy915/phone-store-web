@@ -1,0 +1,32 @@
+﻿@model WebsiteQuanLiDienThoaiDiDong.Models.BienTheSanPham
+
+@{
+    ViewBag.Title = "Sua";
+}
+
+<h2>Sửa sản phẩm</h2>
+<p><strong>@Model.SanPham.TenSanPham</strong> - @Model.MauSac @Model.DungLuong</p>
+
+@if (TempData["Loi"] != null)
+{
+    <div class="alert alert-danger">@TempData["Loi"]</div>
+}
+
+@using (Html.BeginForm("Sua", "Seller", FormMethod.Post))
+{
+    @Html.AntiForgeryToken()
+    <input type="hidden" name="id" value="@Model.Id" />
+
+    <div class="mb-3">
+        <label class="form-label">Giá bán (tối đa @Model.GiaGoc.ToString("N0") đ)</label>
+        <input type="number" name="giaBan" class="form-control" min="1" max="@Model.GiaGoc.ToString("0")" value="@Model.GiaBan.ToString("0")" required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Số lượng tồn kho</label>
+        <input type="number" name="soLuongTon" class="form-control" min="0" value="@Model.SoLuongTon" required />
+    </div>
+
+    <button type="submit" class="btn btn-primary">Lưu</button>
+    <a href="@Url.Action("Index")" class="btn btn-light">Quay lại</a>
+}
