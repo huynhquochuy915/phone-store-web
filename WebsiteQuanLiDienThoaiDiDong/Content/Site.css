@@ -6174,13 +6174,250 @@ html {
     margin-bottom: 14px;
 }
 
-/* ô nhập IMEI + nút tra cứu */
+.form-check-input:checked { background-color: var(--red); border-color: var(--red); }
+.page-link { color: var(--red); }
+.page-item.active .page-link { background: var(--red); border-color: var(--red); color: #fff; }
+::selection { background: var(--brand-tint-3); }
+
+/* ==================== FOOTER ==================== */
+.ftnew-footer {
+    margin-top: 50px;
+    padding: 48px 0 0;
+    background: #1f2328;
+    color: #cbd5e1;
+    border-top: 4px solid var(--red);
+}
+
+    .ftnew-footer .ftnew-main {
+        display: grid;
+        grid-template-columns: 1.5fr 1fr 1.1fr 1fr;
+        gap: 40px;
+        align-items: start;
+    }
+
+    .ftnew-footer .ftnew-brand,
+    .ftnew-footer .ftnew-column {
+        min-width: 0;
+    }
+
+/* cột thương hiệu */
+.ftnew-brand-link {
+    display: inline-block;
+    text-decoration: none !important;
+}
+
+    .ftnew-brand-link h4 {
+        margin: 0 0 10px;
+        color: #fff;
+        font-size: 1.6rem;
+        font-weight: 800;
+        letter-spacing: -.02em;
+    }
+
+.ftnew-desc {
+    margin: 0 0 18px;
+    color: #9ca3af;
+    font-size: .9rem;
+}
+
+.ftnew-hotline {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 16px;
+    padding: 10px 16px;
+    border-radius: 12px;
+    background: rgba(255, 255, 255, .06);
+    border: 1px solid rgba(255, 255, 255, .12);
+    color: #fff;
+    font-size: 1.35rem;
+    font-weight: 800;
+}
+
+    .ftnew-hotline i {
+        color: var(--gold);
+    }
+
+.ftnew-address {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    color: #9ca3af;
+    font-size: .85rem;
+    line-height: 1.6;
+    text-decoration: none;
+}
+
+    .ftnew-address i {
+        margin-top: 3px;
+        color: #ff4d5e;
+    }
+
+    .ftnew-address:hover {
+        color: #fff;
+    }
+
+/* các cột liên kết */
+.ftnew-column h6 {
+    position: relative;
+    margin: 0 0 16px;
+    padding-bottom: 10px;
+    color: #fff;
+    font-size: .95rem;
+    font-weight: 700;
+}
+
+    .ftnew-column h6::after {
+        content: "";
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        width: 28px;
+        height: 3px;
+        border-radius: 2px;
+        background: var(--red);
+    }
+
+.ftnew-column > a {
+    display: block;
+    padding: 5px 0;
+    color: #cbd5e1;
+    font-size: .9rem;
+    text-decoration: none;
+    transition: color .15s, transform .15s;
+}
+
+    .ftnew-column > a:hover {
+        color: #fff;
+        transform: translateX(4px);
+    }
+
+/* phương thức thanh toán: xếp dọc, không bị rớt dòng lộn xộn */
+.ftnew-payments {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+}
+
+    .ftnew-payments span {
+        display: inline-flex;
+        align-items: center;
+        gap: 10px;
+        padding: 8px 14px;
+        border-radius: 10px;
+        background: rgba(255, 255, 255, .06);
+        border: 1px solid rgba(255, 255, 255, .12);
+        color: #fff;
+        font-size: .85rem;
+        font-weight: 600;
+    }
+
+    .ftnew-payments i {
+        color: var(--gold);
+        font-size: 1.05rem;
+    }
+
+/* chân footer */
+.ftnew-bottom {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 36px;
+    padding: 18px 0;
+    border-top: 1px solid rgba(255, 255, 255, .1);
+    color: #9ca3af;
+    font-size: .8rem;
+}
+
+@media (max-width: 991px) {
+    .ftnew-footer .ftnew-main {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 30px;
+    }
+}
+
+@media (max-width: 575px) {
+    .ftnew-footer {
+        padding-top: 32px;
+    }
+
+        .ftnew-footer .ftnew-main {
+            grid-template-columns: 1fr;
+            gap: 26px;
+        }
+
+    .ftnew-bottom {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+}
+
+/* ==================== TRA CUU BAO HANH ==================== */
+
+.warranty-page {
+    max-width: 1100px;
+    margin: 30px auto 45px;
+    padding: 0 15px;
+    color: #263238;
+}
+
+/* Tieu de */
+
+.warranty-title {
+    margin-bottom: 20px;
+}
+
+    .warranty-title h1 {
+        display: flex;
+        align-items: center;
+        gap: 10px;
+        color: #263238;
+        font-size: 25px;
+        font-weight: 700;
+        margin-bottom: 6px;
+    }
+
+        .warranty-title h1 i {
+            color: var(--red);
+        }
+
+    .warranty-title p {
+        color: #718096;
+        font-size: 14px;
+        margin: 0;
+    }
+
+/* Khung noi dung */
+
+.warranty-box {
+    background: #FFFFFF;
+    border: 1px solid #E1E8ED;
+    border-radius: 12px;
+    padding: 20px;
+    margin-bottom: 18px;
+    box-shadow: 0 3px 12px rgba(215, 0, 24, 0.04);
+}
+
+    /* Form tra cuu */
+
+    .warranty-box .form-label {
+        color: #374151;
+        font-size: 14px;
+        margin-bottom: 8px;
+    }
+
 .warranty-search {
     display: flex;
+    align-items: center;
+
     gap: 10px;
 }
 
     .warranty-search .form-control {
+/*<<<<<<< HEAD
         flex: 1;
         min-width: 0;
         height: 46px;
@@ -6204,10 +6441,10 @@ html {
 
         .warranty-search button:hover {
             background: var(--red-dark);
-        }
+        }*/
 
 /* kết quả: ảnh bên trái, thông tin bên phải */
-.warranty-result {
+/*.warranty-result {
     display: grid;
     grid-template-columns: 240px minmax(0, 1fr);
     gap: 24px;
@@ -6220,67 +6457,597 @@ html {
     border: 1px solid var(--line);
     border-radius: 12px;
     background: #fafafa;
+=======*/
+        height: 44px;
+        border: 1px solid #DCE4E9;
+        border-radius: 8px;
+        padding: 0 13px;
+        font-size: 14px;
+        color: #263238;
+        box-shadow: none;
+        transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+        .warranty-search .form-control:focus {
+            border-color: var(--red);
+            box-shadow: 0 0 0 3px rgba(215, 0, 24, 0.12);
+        }
+
+    .warranty-search button {
+        height: 44px;
+        min-width: 110px;
+        padding: 0 18px;
+        border: none;
+        border-radius: 8px;
+        background: var(--red);
+        color: #FFFFFF;
+        font-size: 14px;
+        font-weight: 600;
+        white-space: nowrap;
+        transition: background 0.2s, transform 0.2s;
+    }
+
+        .warranty-search button:hover {
+            background: var(--red-dark);
+        }
+
+        .warranty-search button:active {
+            transform: scale(0.98);
+        }
+
+/* Thong tin bao hanh */
+
+.warranty-box .h5 {
+    color: #263238;
+    font-size: 18px;
+    font-weight: 700;
+}
+
+    .warranty-box .h5 i {
+        color: var(--red);
+    }
+
+.warranty-result {
+    display: flex;
+    align-items: flex-start;
+    gap: 22px;
+}
+
+/* Anh san pham */
+
+.warranty-image {
+    flex: 0 0 190px;
+    width: 190px;
+    height: 190px;
+
     display: flex;
     align-items: center;
     justify-content: center;
     overflow: hidden;
+
+    background: #F7F9FA;
+    border: 1px solid #E1E8ED;
+    border-radius: 10px;
+    padding: 12px;
 }
 
     .warranty-image img {
-        max-width: 100%;
-        max-height: 100%;
+        width: 100%;
+        height: 100%;
         object-fit: contain;
-        mix-blend-mode: multiply;
+        border-radius: 6px;
     }
 
-.warranty-info h2 {
-    font-size: 1.3rem;
-    font-weight: 800;
-    margin: 0 0 12px;
+/* Thong tin san pham */
+
+.warranty-info {
+    flex: 1;
+    min-width: 0;
 }
 
-.warranty-info p {
-    margin: 0 0 8px;
-}
+    .warranty-info h2 {
+        color: #263238;
+        font-size: 20px;
+        font-weight: 700;
+        margin: 3px 0 15px;
+    }
 
-.warranty-info strong {
-    display: inline-block;
-    min-width: 150px;
-    color: var(--muted);
-    font-weight: 600;
-}
+    .warranty-info p {
+        display: flex;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 8px;
+        color: #4B5563;
+        font-size: 14px;
+        line-height: 1.6;
+        margin-bottom: 9px;
+    }
+
+        .warranty-info p strong {
+            flex: 0 0 145px;
+            color: #718096;
+            font-size: 13px;
+            font-weight: 600;
+        }
+
+/* Trang thai bao hanh */
 
 .warranty-status {
     display: inline-block;
-    padding: 3px 12px;
-    border-radius: 999px;
-    background: #dcfce7;
-    color: #15803d;
-    font-size: .85rem;
+    background: #E0F5E9;
+    color: #16834A;
+    border-radius: 20px;
+    padding: 4px 11px;
+    font-size: 12px;
+
     font-weight: 700;
 }
 
     .warranty-status.expired {
-        background: #fee2e2;
-        color: #b91c1c;
+
+        background: #FDE8E8;
+        color: #C62828;
     }
 
-@media (max-width: 767px) {
+/* Thong bao */
+
+.warranty-box .alert {
+    border-radius: 8px;
+    font-size: 14px;
+}
+
+/* Responsive */
+
+@media (max-width: 768px) {
+    .warranty-page {
+        margin-top: 22px;
+    }
+
+    .warranty-title h1 {
+        font-size: 22px;
+    }
+
+    .warranty-box {
+        padding: 16px;
+    }
+
     .warranty-result {
-        grid-template-columns: 1fr;
+        gap: 16px;
     }
 
     .warranty-image {
-        max-width: 240px;
-        margin: 0 auto;
+        flex-basis: 150px;
+        width: 150px;
+        height: 165px;
     }
 
+    .warranty-info h2 {
+        font-size: 17px;
+    }
+
+    .warranty-info p strong {
+        flex-basis: 125px;
+    }
+}
+
+@media (max-width: 575px) {
     .warranty-search {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+
+        .warranty-search button {
+            width: 100%;
+        }
+
+    .warranty-result {
         flex-direction: column;
     }
 
-    .warranty-info strong {
-        min-width: 0;
-        margin-right: 6px;
+    .warranty-image {
+        width: 100%;
+        height: 210px;
+        flex-basis: auto;
+    }
+
+        .warranty-image img {
+            max-width: 180px;
+        }
+
+    .warranty-info {
+        width: 100%;
+    }
+
+        .warranty-info p strong {
+            flex-basis: 125px;
+        }
+}
+/* nền bằng hình cho ô thương hiệu */
+.bt .bt-txt {
+    z-index: 2;
+}
+
+.bt-bg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    z-index: 0;
+    transition: transform .35s ease;
+}
+
+.bt.has-bg::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    background: linear-gradient(90deg, rgba(0,0,0,.72) 0%, rgba(0,0,0,.35) 55%, rgba(0,0,0,.05) 100%);
+}
+
+.bt.has-bg::after, .bt.has-bg .bt-logo {
+    display: none;
+}
+
+.bt.has-bg:hover .bt-bg {
+    transform: scale(1.06);
+}
+/* chốt khung chứa cho hình nền ô thương hiệu */
+.bt.has-bg {
+    position: relative;
+    overflow: hidden;
+    isolation: isolate;
+}
+
+.bt-bg {
+    max-width: none;
+}
+/* ================= KHUYẾN MÃI TRANG CHỦ ================= */
+.promo-panel {
+    background: #fff;
+    border-radius: 16px;
+    padding: 20px 20px 22px;
+    box-shadow: 0 2px 12px rgba(0,0,0,.05);
+}
+
+.promo-title {
+    text-align: center;
+    font-size: 1.15rem;
+    font-weight: 800;
+    letter-spacing: .4px;
+    text-transform: uppercase;
+    margin: 0 0 4px;
+}
+
+.promo-sub {
+    text-align: center;
+    color: var(--muted);
+    font-size: .88rem;
+    margin: 0 0 16px;
+}
+
+.promo-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 280px), 1fr));
+    gap: 14px;
+}
+
+/* thẻ mã giảm giá kiểu vé */
+.cp {
+    position: relative;
+    display: flex;
+    min-height: 132px;
+    border-radius: 14px;
+    overflow: hidden;
+    color: #fff;
+    box-shadow: 0 4px 14px rgba(0,0,0,.12);
+    transition: transform .18s ease, box-shadow .18s ease;
+}
+
+    .cp:hover {
+        transform: translateY(-3px);
+        box-shadow: 0 10px 22px rgba(0,0,0,.18);
+    }
+
+    .cp.c-pct {
+        background: linear-gradient(135deg, #d70018, #ff5a5f);
+    }
+
+    .cp.c-amt {
+        background: linear-gradient(135deg, #0b57d0, #4aa3ff);
+    }
+
+    .cp.c-ship {
+        background: linear-gradient(135deg, #0a8f4e, #3ccf8a);
+    }
+
+    /* hai nửa vòng cắt giữa vé */
+    .cp::before, .cp::after {
+        content: "";
+        position: absolute;
+        left: 102px;
+        width: 16px;
+        height: 16px;
+        border-radius: 50%;
+        background: #fff;
+        z-index: 2;
+    }
+
+    .cp::before {
+        top: -8px;
+    }
+
+    .cp::after {
+        bottom: -8px;
+    }
+
+.cp-left {
+    flex: 0 0 110px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 2px;
+    padding: 10px 6px;
+    text-align: center;
+    background: rgba(0,0,0,.14);
+    border-right: 2px dashed rgba(255,255,255,.6);
+}
+
+    .cp-left i {
+        font-size: 1.25rem;
+        opacity: .9;
+    }
+
+.cp-small {
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    opacity: .9;
+}
+
+.cp-big {
+    font-size: 1.75rem;
+    font-weight: 800;
+    line-height: 1.05;
+}
+
+.cp-body {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 12px 14px;
+}
+
+.cp-name {
+    font-weight: 700;
+    font-size: .95rem;
+    line-height: 1.3;
+}
+
+.cp-cond {
+    font-size: .78rem;
+    opacity: .92;
+    line-height: 1.35;
+}
+
+.cp-hot {
+    align-self: flex-start;
+    background: #ffd34d;
+    color: #7a1f00;
+    font-size: .68rem;
+    font-weight: 800;
+    padding: 2px 8px;
+    border-radius: 99px;
+}
+
+.cp-bar {
+    height: 6px;
+    border-radius: 99px;
+    background: rgba(255,255,255,.3);
+    overflow: hidden;
+}
+
+    .cp-bar i {
+        display: block;
+        height: 100%;
+        background: #ffd34d;
+        border-radius: 99px;
+    }
+
+.cp-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: .72rem;
+    opacity: .9;
+}
+
+.cp-foot {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-top: auto;
+}
+
+.cp-code {
+    font-family: Consolas, "Courier New", monospace;
+    font-weight: 700;
+    font-size: .82rem;
+    letter-spacing: .5px;
+    padding: 3px 9px;
+    border-radius: 6px;
+    background: rgba(255,255,255,.18);
+    border: 1px dashed rgba(255,255,255,.75);
+    white-space: nowrap;
+}
+
+.cp-copy {
+    border: 0;
+    background: #fff;
+    color: var(--red);
+    font-weight: 700;
+    font-size: .78rem;
+    padding: 5px 12px;
+    border-radius: 99px;
+    cursor: pointer;
+    white-space: nowrap;
+}
+
+    .cp-copy:hover {
+        background: #fff3f3;
+    }
+
+.cp.c-amt .cp-copy {
+    color: #0b57d0;
+}
+
+.cp.c-ship .cp-copy {
+    color: #0a8f4e;
+}
+
+.cp-copy.done {
+    background: #ffd34d;
+    color: #5a3b00;
+}
+
+/* chuyên trang thương hiệu */
+.brand-head {
+    font-size: 1.1rem;
+    font-weight: 800;
+    letter-spacing: .3px;
+    text-transform: uppercase;
+    margin: 0 0 12px;
+}
+
+.brand-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(min(100%, 220px), 1fr));
+    gap: 14px;
+}
+
+.bt {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    min-height: 118px;
+    padding: 16px 16px 16px 18px;
+    border-radius: 14px;
+    overflow: hidden;
+    color: #fff;
+    text-decoration: none;
+    background: linear-gradient(135deg, var(--c1, #d70018), var(--c2, #ff5a5f));
+    box-shadow: 0 4px 14px rgba(0,0,0,.12);
+    transition: transform .18s ease, box-shadow .18s ease;
+}
+
+    .bt:hover {
+        color: #fff;
+        transform: translateY(-3px);
+        box-shadow: 0 10px 22px rgba(0,0,0,.2);
+    }
+
+    .bt::after { /* vòng tròn trang trí */
+        content: "";
+        position: absolute;
+        right: -30px;
+        bottom: -40px;
+        width: 130px;
+        height: 130px;
+        border-radius: 50%;
+        background: rgba(255,255,255,.12);
+    }
+
+.bt-txt {
+    position: relative;
+    z-index: 1;
+    min-width: 0;
+}
+
+.bt-small {
+    font-size: .7rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    opacity: .9;
+}
+
+.bt-name {
+    font-size: 1.3rem;
+    font-weight: 800;
+    line-height: 1.15;
+    margin: 2px 0 4px;
+}
+
+.bt-count {
+    font-size: .8rem;
+    opacity: .92;
+}
+
+.bt-go {
+    display: inline-block;
+    margin-top: 8px;
+    font-size: .76rem;
+    font-weight: 700;
+    background: rgba(255,255,255,.95);
+    color: #1f2328;
+    padding: 3px 12px;
+    border-radius: 99px;
+}
+
+.bt-logo {
+    position: relative;
+    z-index: 1;
+    flex: 0 0 72px;
+    width: 72px;
+    height: 72px;
+    border-radius: 16px;
+    object-fit: cover;
+    border: 3px solid rgba(255,255,255,.9);
+    box-shadow: 0 4px 10px rgba(0,0,0,.2);
+    background: #fff;
+}
+
+    .bt-logo.ph { /* chưa có file logo: hiện chữ cái đầu */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 1.8rem;
+        font-weight: 800;
+        color: #1f2328;
+    }
+
+@media (max-width: 480px) {
+    .cp-left {
+        flex-basis: 86px;
+    }
+
+    .cp::before, .cp::after {
+        left: 78px;
+    }
+
+    .cp-big {
+        font-size: 1.45rem;
+    }
+
+    .cp-body {
+        padding: 12px 10px;
+    }
+
+    .cp-foot {
+        flex-wrap: wrap;
+    }
+
+    .cp-meta {
+        flex-wrap: wrap;
+        gap: 0 8px;
+    }
+
+    .bt-name {
+        font-size: 1.15rem;
     }
 }

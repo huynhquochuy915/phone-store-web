@@ -1,31 +1,61 @@
 ﻿@model WebsiteQuanLiDienThoaiDiDong.Models.DonHang
 @{
     ViewBag.Title = "Đặt hàng thành công";
-    var qr = ViewBag.QrUrl as string;
+}
+
+@{
+    bool choTra = ViewBag.ChoVnPay == true;
+    bool daHuy = Model.TrangThai == "DaHuy";
 }
 
 <div class="box text-center mb-3">
-    <i class="bi bi-check-circle-fill text-success" style="font-size:3rem"></i>
-    <h3 class="mt-2">Đặt hàng thành công!</h3>
+    @if (daHuy)
+    {
+        <i class="bi bi-x-circle-fill text-danger" style="font-size:3rem"></i>
+        <h3 class="mt-2">Đơn hàng đã bị hủy</h3>
+    }
+    else if (choTra)
+    {
+        <i class="bi bi-hourglass-split text-warning" style="font-size:3rem"></i>
+        <h3 class="mt-2">Đơn hàng đang chờ thanh toán</h3>
+    }
+    else
+    {
+        <i class="bi bi-check-circle-fill text-success" style="font-size:3rem"></i>
+        <h3 class="mt-2">Đặt hàng thành công!</h3>
+    }
+
     <p class="mb-0">Mã đơn hàng: <strong>@Model.MaDonHang</strong></p>
-    <p class="text-muted">Chúng tôi đã ghi nhận đơn và sẽ liên hệ xác nhận sớm nhất.</p>
+
+    @if (choTra)
+    {
+        <p class="text-muted">Đơn đã được giữ hàng. Hoàn tất thanh toán qua VNPay để chúng tôi xác nhận đơn.</p>
+    }
+    else if (!daHuy)
+    {
+        <p class="text-muted">Chúng tôi đã ghi nhận đơn và sẽ liên hệ xác nhận sớm nhất.</p>
+    }
 </div>
 
-@if (qr != null)
+@if (ViewBag.ChoVnPay == true)
 {
     <div class="box text-center mb-3">
-        <h5>Quét mã QR để thanh toán</h5>
-        <img src="@qr" alt="VietQR" style="max-width:320px;width:100%" />
-        <div class="mt-2">
-            Ngân hàng: <strong>@CauHinh.Get("NganHang_Ma")</strong> &middot;
-            STK: <strong>@CauHinh.Get("NganHang_SoTaiKhoan")</strong> &middot;
-            Chủ TK: <strong>@CauHinh.Get("NganHang_TenChuTK")</strong>
-        </div>
-        <div>Số tiền: <strong class="text-danger">@(((decimal)ViewBag.Tong).VND())</strong> &middot; Nội dung CK: <strong>@Model.MaDonHang</strong></div>
-        <div class="alert alert-warning d-inline-block mt-3 mb-0">
-            Vui lòng thanh toán trong <strong id="cd" data-sec="@ViewBag.ConLaiGiay"></strong>, quá hạn đơn sẽ tự động hủy.
+        <h5>Thanh toán online qua VNPay</h5>
+        <p class="text-muted mb-2">Quét VNPAY-QR, dùng thẻ ATM nội địa hoặc thẻ quốc tế trên trang thanh toán của VNPay.</p>
+        <div>Số tiền: <strong class="text-danger">@(((decimal)ViewBag.Tong).VND())</strong> &middot; Mã đơn: <strong>@Model.MaDonHang</strong></div>
+        <div class="d-flex flex-column align-items-center gap-3 mt-3">
+            <a class="btn btn-brand btn-lg" href="@Url.Action("Pay", "VnPay", new { id = Model.Id })">
+                <i class="bi bi-qr-code-scan"></i> Thanh toán với VNPay
+            </a>
+            <div class="alert alert-warning mb-0 py-2">
+                Vui lòng thanh toán trong <strong id="cd" data-sec="@ViewBag.ConLaiGiay"></strong>, quá hạn đơn sẽ tự động hủy.
+            </div>
         </div>
     </div>
+}
+else if (Model.TrangThaiThanhToan == "DaThanhToan")
+{
+    <div class="alert alert-success text-center mb-3"><i class="bi bi-check-circle"></i> Đơn hàng đã được thanh toán.</div>
 }
 
 <div class="box">

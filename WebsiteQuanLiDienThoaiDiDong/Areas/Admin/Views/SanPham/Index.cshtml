@@ -1,0 +1,64 @@
+﻿@model List<WebsiteQuanLiDienThoaiDiDong.Areas.Admin.Controllers.SanPhamDongVM>
+@{
+    ViewBag.Title = "Sản phẩm";
+    var noImg = Url.Content("~/Content/images/no-image.png");
+    int page = (int)ViewBag.Page, soTrang = (int)ViewBag.SoTrang;
+}
+
+<div class="d-flex justify-content-between mb-3">
+    <form method="get" class="d-flex gap-2">
+        <input type="text" name="q" value="@ViewBag.Q" class="form-control" placeholder="Tìm tên sản phẩm..." />
+        <button class="btn btn-outline-secondary">Tìm</button>
+    </form>
+    <a class="btn btn-brand" href="@Url.Action("Tao")"><i class="bi bi-plus-lg"></i> Thêm sản phẩm</a>
+</div>
+
+<div class="adm-card">
+    <table class="table align-middle mb-0">
+        <thead>
+            <tr><th>Sản phẩm</th><th>Loại</th><th>Hãng</th><th>Biến thể</th><th>Tồn</th><th>Trạng thái</th><th></th></tr>
+        </thead>
+        <tbody>
+            @foreach (var s in Model)
+            {
+                <tr>
+                    <td>
+                        <img src="@(s.Anh != null ? Url.Content("~" + s.Anh) : noImg)" style="width:44px;height:44px;object-fit:contain"
+                             onerror="this.onerror=null;this.src='@noImg'" />
+                        @s.Ten
+                    </td>
+                    <td>@s.Loai</td>
+                    <td>@s.ThuongHieu</td>
+                    <td>@s.SoBienThe</td>
+                    <td>@s.TongTon</td>
+                    <td>@if (s.HienThi)
+                    {<span class="badge bg-success">Đang bán</span> }
+                    else
+                    { <span class="badge bg-secondary">Đã ẩn</span>}</td>
+                    <td>
+                        @using (Html.BeginForm("DoiTrangThai", "SanPham", new { area = "Admin", id = s.Id }, FormMethod.Post))
+                        {
+                            @Html.AntiForgeryToken()
+                            <button class="btn btn-sm btn-outline-secondary">@(s.HienThi ? "Ẩn" : "Hiện")</button>
+                        }
+                    </td>
+                </tr>
+            }
+            @if (!Model.Any())
+            {
+                <tr><td colspan="7" class="text-center text-muted py-4">Chưa có sản phẩm.</td></tr>
+}
+        </tbody>
+    </table>
+</div>
+
+@if (soTrang > 1)
+{
+    <div class="d-flex gap-2 mt-3 align-items-center">
+        @if (page > 1)
+        {<a class="btn btn-sm btn-outline-secondary" href="@Url.Action("Index", new { q = ViewBag.Q, page = page - 1 })">‹ Trước</a>}
+        <span class="text-muted">Trang @page / @soTrang</span>
+        @if (page < soTrang)
+        {<a class="btn btn-sm btn-outline-secondary" href="@Url.Action("Index", new { q = ViewBag.Q, page = page + 1 })">Sau ›</a>}
+    </div>
+}

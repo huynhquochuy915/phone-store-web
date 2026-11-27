@@ -1,0 +1,423 @@
+﻿@* Khung chat "Liên hệ" nổi ở góc phải dưới, gộp 2 chế độ:
+     - Trợ lý tư vấn: bot trả lời ngay (TuVanController -> ChatTuVanService), không lưu gì.
+     - Nhân viên: chat với người thật, lưu DB (ChatController -> ChatService), admin trả lời ở Quản trị > Tin nhắn.
+   Nhân viên/Admin không thấy khung này. *@
+@if (!AuthHelper.IsStaff)
+{
+    var tenCuaHang = CauHinh.Get("TenCuaHang", "PhoneStore");
+    <div id="chatw" class="chatw"
+         data-poll="@Url.Action("Poll", "Chat", new { area = "" })"
+         data-send="@Url.Action("Send", "Chat", new { area = "" })"
+         data-bot="@Url.Action("Hoi", "TuVan", new { area = "" })"
+         data-logged="@(AuthHelper.IsLoggedIn ? "1" : "0")"
+         data-store="@tenCuaHang">
+        @Html.AntiForgeryToken()
+
+        <button type="button" class="chatw-fab" id="chatwFab" aria-label="Liên hệ với cửa hàng" aria-expanded="false" aria-controls="chatwBox">
+            <i class="bi bi-chat-dots-fill"></i><span class="chatw-fab-txt">Liên hệ</span>
+            <b class="chatw-badge" id="chatwBadge"></b>
+        </button>
+
+        <section class="chatw-box" id="chatwBox" role="dialog" aria-label="Liên hệ với cửa hàng" hidden>
+            <header class="chatw-head">
+                <span class="chatw-avatar"><i class="bi bi-robot" id="chatwAvatarIcon"></i></span>
+                <span class="chatw-title"><b id="chatwTitle">Trợ lý tư vấn</b><small id="chatwSub">Trả lời ngay · @tenCuaHang</small></span>
+                <button type="button" class="chatw-x" id="chatwBotClear" title="Cuộc trò chuyện mới" aria-label="Cuộc trò chuyện mới"><i class="bi bi-arrow-counterclockwise"></i></button>
+                <button type="button" class="chatw-x" id="chatwClose" aria-label="Thu nhỏ khung chat"><i class="bi bi-dash-lg"></i></button>
+            </header>
+
+            <div class="chatw-tabs" role="tablist">
+                <button type="button" id="chatwTabBot" class="on" role="tab" aria-selected="true"><i class="bi bi-robot"></i> Trợ lý tư vấn</button>
+                <button type="button" id="chatwTabStaff" role="tab" aria-selected="false"><i class="bi bi-headset"></i> Nhân viên <b class="chatw-tabdot" id="chatwTabDot"></b></button>
+            </div>
+
+            @* ================= CHẾ ĐỘ 1: TRỢ LÝ TƯ VẤN ================= *@
+            <div class="chatw-pane" id="chatwBotPane">
+                <div class="chatw-body" id="chatwBotBody" aria-live="polite"></div>
+                <form class="chatw-foot" id="chatwBotForm" autocomplete="off">
+                    <input type="text" id="chatwBotInput" class="chatw-botinput" maxlength="200" placeholder="VD: iPhone dưới 30 triệu…" aria-label="Nhập câu hỏi" />
+                    <button type="submit" class="chatw-send" id="chatwBotSend" aria-label="Gửi"><i class="bi bi-send-fill"></i></button>
+                </form>
+            </div>
+
+            @* ================= CHẾ ĐỘ 2: CHAT VỚI NHÂN VIÊN ================= *@
+            <div class="chatw-pane" id="chatwStaffPane" hidden>
+                @* khách chưa đăng nhập: hỏi tên một lần trước khi chat *@
+                <div class="chatw-pre" id="chatwPre" hidden>
+                    <h6>Chat với nhân viên 👋</h6>
+                    <p>Cho mình xin vài thông tin để nhân viên hỗ trợ bạn tốt hơn nhé.</p>
+                    <form id="chatwPreForm" autocomplete="off">
+                        <label for="chatwName">Tên của bạn *</label>
+                        <input type="text" id="chatwName" maxlength="60" placeholder="Ví dụ: Minh Anh" required />
+                        <label for="chatwPhone">Số điện thoại (không bắt buộc)</label>
+                        <input type="tel" id="chatwPhone" maxlength="20" placeholder="Để nhân viên gọi lại khi cần" />
+                        <button type="submit" class="chatw-start">Bắt đầu chat</button>
+                    </form>
+                    <div class="chatw-login">Đã có tài khoản? <a href="@Url.Action("Login", "Account", new { area = "" })">Đăng nhập</a> để lưu lịch sử trò chuyện.</div>
+                </div>
+
+                <div class="chatw-body" id="chatwBody" aria-live="polite">
+                    <div id="chatwList"></div>
+                    <div class="chatw-chips" id="chatwChips">
+                        <button type="button">Tư vấn chọn điện thoại</button>
+                        <button type="button">Hỏi về đơn hàng</button>
+                        <button type="button">Bảo hành, đổi trả</button>
+                        <button type="button">Mua trả góp 0%</button>
+                    </div>
+                </div>
+
+                <div class="chatw-err" id="chatwErr" hidden></div>
+                <form class="chatw-foot" id="chatwFoot">
+                    <textarea id="chatwText" rows="1" maxlength="1000" placeholder="Nhập tin nhắn..." aria-label="Nhập tin nhắn"></textarea>
+                    <button type="submit" class="chatw-send" id="chatwSend" aria-label="Gửi"><i class="bi bi-send-fill"></i></button>
+                </form>
+            </div>
+        </section>
+    </div>
+
+    <script>
+    (function () {
+        var root = document.getElementById('chatw');
+        if (!root) return;
+        document.body.classList.add('has-chat');
+
+        function $(id) { return document.getElementById(id); }
+        var fab = $('chatwFab'), box = $('chatwBox'), badge = $('chatwBadge'), tabDot = $('chatwTabDot');
+        var tabBot = $('chatwTabBot'), tabStaff = $('chatwTabStaff'), paneBot = $('chatwBotPane'), paneStaff = $('chatwStaffPane');
+        var title = $('chatwTitle'), sub = $('chatwSub'), avatarIcon = $('chatwAvatarIcon'), botClear = $('chatwBotClear');
+        // chế độ nhân viên
+        var body = $('chatwBody'), list = $('chatwList'), pre = $('chatwPre'), foot = $('chatwFoot'), ta = $('chatwText'),
+            chips = $('chatwChips'), err = $('chatwErr'), sendBtn = $('chatwSend');
+        // chế độ trợ lý
+        var botBody = $('chatwBotBody'), botForm = $('chatwBotForm'), botInput = $('chatwBotInput'), botSendBtn = $('chatwBotSend');
+
+        var urlPoll = root.getAttribute('data-poll'), urlSend = root.getAttribute('data-send'), urlBot = root.getAttribute('data-bot');
+        var store = root.getAttribute('data-store');
+        var logged = root.getAttribute('data-logged') === '1';
+        var tokenInput = root.querySelector('input[name="__RequestVerificationToken"]');
+        var token = tokenInput ? tokenInput.value : '';
+
+        var isOpen = false, mode = 'bot', unread = 0;
+        // nhân viên
+        var last = 0, started = false, hasMine = false, timer = null, pollBusy = false, sending = false, seen = {}, greeted = false;
+        var guest = { name: '', phone: '' };
+        try { var g = JSON.parse(sessionStorage.getItem('chatw_guest')); if (g && g.name) guest = g; } catch (e) { }
+        try { if (sessionStorage.getItem('chatw_mode') === 'staff') mode = 'staff'; } catch (e) { }
+
+        // ---------- tiện ích ----------
+        function el(tag, cls, text) {
+            var n = document.createElement(tag);
+            if (cls) n.className = cls;
+            if (text != null) n.textContent = text;        // luôn dùng textContent, không chèn HTML từ server/người dùng
+            return n;
+        }
+        function pad(n) { return ('0' + n).slice(-2); }
+        function fmtTime(ts) {
+            var d = new Date(ts), now = new Date();
+            var t = pad(d.getHours()) + ':' + pad(d.getMinutes());
+            return d.toDateString() === now.toDateString() ? t : pad(d.getDate()) + '/' + pad(d.getMonth() + 1) + ' ' + t;
+        }
+        function money(v) { return Number(v).toLocaleString('vi-VN') + '₫'; }
+        // chỉ biến http(s):// thành liên kết, còn lại luôn là văn bản thuần
+        function fillText(node, text) {
+            var re = /(https?:\/\/[^\s<>"']+)/g, pos = 0, m;
+            while ((m = re.exec(text)) !== null) {
+                if (m.index > pos) node.appendChild(document.createTextNode(text.slice(pos, m.index)));
+                var a = document.createElement('a');
+                a.href = m[1]; a.textContent = m[1]; a.target = '_blank'; a.rel = 'noopener nofollow';
+                node.appendChild(a);
+                pos = m.index + m[1].length;
+            }
+            if (pos < text.length) node.appendChild(document.createTextNode(text.slice(pos)));
+        }
+        function nearBottom(c) { return c.scrollHeight - c.scrollTop - c.clientHeight < 90; }
+        function toBottom(c) { c.scrollTop = c.scrollHeight; }
+        function staffVisible() { return isOpen && mode === 'staff'; }
+
+        function paintBadges() {
+            var n = unread > 9 ? '9+' : unread;
+            badge.style.display = (!isOpen && unread > 0) ? 'flex' : 'none';
+            badge.textContent = n;
+            tabDot.style.display = (isOpen && mode === 'bot' && unread > 0) ? 'inline-flex' : 'none';
+            tabDot.textContent = n;
+        }
+
+        // =====================================================================
+        //  CHẾ ĐỘ 1: TRỢ LÝ TƯ VẤN (bot)  -  /TuVan/Hoi
+        // =====================================================================
+        var BOT_KEY = 'chatw_bot_v1';
+        var DEFAULT_CHIPS = ['iPhone dưới 30 triệu', 'Samsung từ 10 đến 20 triệu', 'Điện thoại bán chạy nhất', 'Tai nghe dưới 3 triệu'];
+        var bot = { messages: [] }, botBusy = false;
+
+        function botLoad() { try { var s = JSON.parse(sessionStorage.getItem(BOT_KEY) || 'null'); if (s && Array.isArray(s.messages)) bot = s; } catch (e) { } }
+        function botSave() { try { bot.messages = bot.messages.slice(-30); sessionStorage.setItem(BOT_KEY, JSON.stringify(bot)); } catch (e) { } }
+
+        function botProduct(p) {
+            var a = el('a', 'chatw-card'); a.href = p.url;
+            var img = el('img'); img.src = p.image; img.alt = ''; img.loading = 'lazy';
+            img.onerror = function () { this.style.visibility = 'hidden'; };
+            a.appendChild(img);
+            var info = el('div', 'chatw-card-info');
+            info.appendChild(el('div', 'chatw-card-name', p.name));
+            var meta = [];
+            if (p.brand) meta.push(p.brand);
+            if (p.storage) meta.push(p.storage);
+            var metaEl = el('div', 'chatw-card-meta', meta.join(' · '));
+            if (p.stars != null) metaEl.appendChild(el('span', 'chatw-star', ' ★ ' + p.stars));
+            info.appendChild(metaEl);
+            var price = el('div', 'chatw-card-price');
+            price.appendChild(el('strong', null, money(p.price)));
+            if (p.oldPrice) price.appendChild(el('del', null, money(p.oldPrice)));
+            if (p.outOfStock) price.appendChild(el('span', 'chatw-out', 'Tạm hết hàng'));
+            info.appendChild(price);
+            a.appendChild(info);
+            return a;
+        }
+
+        function botRenderMsg(m) {
+            var wrap = el('div', 'chatw-bm ' + (m.from === 'user' ? 'u' : 'b'));
+            wrap.appendChild(el('div', 'chatw-bubble', m.text));
+            if (m.products && m.products.length) {
+                var ps = el('div', 'chatw-prods');
+                m.products.forEach(function (p) { ps.appendChild(botProduct(p)); });
+                wrap.appendChild(ps);
+            }
+            if (m.viewAll) { var all = el('a', 'chatw-lk', 'Xem tất cả ' + (m.total || '') + ' sản phẩm'); all.href = m.viewAll; wrap.appendChild(all); }
+            if (m.link) { var lk = el('a', 'chatw-lk', m.link.text); lk.href = m.link.url; wrap.appendChild(lk); }
+            var hasChips = (m.suggestions && m.suggestions.length) || m.handoff;
+            if (hasChips) {
+                var cs = el('div', 'chatw-chips');
+                (m.suggestions || []).forEach(function (s) {
+                    var b = el('button', null, s); b.type = 'button';
+                    b.addEventListener('click', function () { botSend(s); });
+                    cs.appendChild(b);
+                });
+                if (m.handoff) {            // nút chuyển sang chat với người thật
+                    var h = el('button', 'chatw-handoff', '💬 Chat với nhân viên'); h.type = 'button';
+                    h.addEventListener('click', function () { setMode('staff'); });
+                    cs.appendChild(h);
+                }
+                wrap.appendChild(cs);
+            }
+            botBody.appendChild(wrap);
+        }
+
+        function botAdd(m) {
+            // gợi ý (chip) chỉ hiện ở tin cuối cùng
+            bot.messages.forEach(function (x) { x.suggestions = null; x.handoff = false; });
+            Array.prototype.forEach.call(botBody.querySelectorAll('.chatw-chips'), function (n) { n.remove(); });
+            bot.messages.push(m);
+            botRenderMsg(m);
+            toBottom(botBody);
+            botSave();
+        }
+
+        function botWelcome() {
+            botAdd({
+                from: 'bot',
+                text: 'Xin chào! Mình là trợ lý tư vấn của ' + store + '.\nBạn cứ nói nhu cầu, ví dụ “iPhone dưới 30 triệu” hoặc “Samsung RAM 8GB từ 10 đến 20 triệu”.',
+                suggestions: DEFAULT_CHIPS, handoff: true
+            });
+        }
+
+        function botSend(text) {
+            text = (text || '').replace(/^\s+|\s+$/g, '');
+            if (!text || botBusy) return;
+            botBusy = true; botSendBtn.disabled = true; botInput.value = '';
+            botAdd({ from: 'user', text: text });
+
+            var typing = el('div', 'chatw-bm b');
+            var tb = el('div', 'chatw-bubble chatw-typing');
+            tb.appendChild(el('span')); tb.appendChild(el('span')); tb.appendChild(el('span'));
+            typing.appendChild(tb); botBody.appendChild(typing); toBottom(botBody);
+
+            fetch(urlBot + '?cauHoi=' + encodeURIComponent(text), { headers: { 'Accept': 'application/json' }, credentials: 'same-origin', cache: 'no-store' })
+                .then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
+                .then(function (d) {
+                    typing.remove();
+                    var prods = d.products || [];
+                    botAdd({
+                        from: 'bot', text: d.reply || '', products: prods, suggestions: d.suggestions || [],
+                        viewAll: d.viewAll || null, total: d.total || 0, link: d.link || null,
+                        handoff: prods.length === 0 && !d.link        // bot không tìm được gì thì mời gặp nhân viên
+                    });
+                })
+                .catch(function () {
+                    typing.remove();
+                    botAdd({ from: 'bot', text: 'Xin lỗi, mình chưa kết nối được. Bạn thử lại hoặc chat với nhân viên nhé.', handoff: true });
+                })
+                .then(function () { botBusy = false; botSendBtn.disabled = false; botInput.focus(); });
+        }
+
+        botForm.addEventListener('submit', function (e) { e.preventDefault(); botSend(botInput.value); });
+        botClear.addEventListener('click', function () { bot.messages = []; botBody.innerHTML = ''; botWelcome(); botInput.focus(); });
+
+        // =====================================================================
+        //  CHẾ ĐỘ 2: CHAT VỚI NHÂN VIÊN  -  /Chat/Poll, /Chat/Send
+        // =====================================================================
+        function setErr(t) { err.hidden = !t; err.textContent = t || ''; }
+        function needForm() { return !logged && !started && !guest.name; }
+        function staffView() {
+            var f = needForm();
+            pre.hidden = !f; body.hidden = f; foot.hidden = f;
+            chips.hidden = hasMine;
+        }
+
+        function bubble(m) {
+            var row = el('div', 'chatw-row ' + (m.me ? 'me' : 'them'));
+            if (!m.me && m.ten) row.appendChild(el('div', 'chatw-name', m.ten));
+            var b = el('div', 'chatw-bubble'); fillText(b, m.nd); row.appendChild(b);
+            if (m.ts) row.appendChild(el('div', 'chatw-time', fmtTime(m.ts)));
+            return row;
+        }
+        function greet() {
+            if (greeted) return; greeted = true;
+            var name = guest.name ? ' ' + guest.name : '';
+            list.appendChild(bubble({ me: false, ten: store, nd: 'Xin chào' + name + '! 👋 Mình là nhân viên hỗ trợ của ' + store + '. Bạn cần giúp gì ạ?' }));
+        }
+        function addMessages(msgs) {
+            var stick = nearBottom(body);
+            greet();
+            msgs.forEach(function (m) {
+                if (seen[m.id]) return;
+                seen[m.id] = 1;
+                if (m.id > last) last = m.id;
+                if (m.me) hasMine = true;
+                list.appendChild(bubble(m));
+            });
+            chips.hidden = hasMine;
+            if (stick || msgs.some(function (m) { return m.me; })) toBottom(body);
+        }
+
+        // hỏi tin mới: khung chat nhân viên đang xem thì 2,5 giây/lần (và đánh dấu đã đọc), còn lại 12 giây/lần chỉ lấy số chưa đọc
+        function poll() {
+            if (pollBusy) return;
+            pollBusy = true;
+            var sv = staffVisible();
+            fetch(urlPoll + '?after=' + last + '&open=' + (sv ? 1 : 0) + '&_=' + Date.now(), { credentials: 'same-origin', cache: 'no-store' })
+                .then(function (r) { return r.json(); })
+                .then(function (d) {
+                    if (!d || !d.ok) return;
+                    started = !!d.started;
+                    if (staffVisible()) {
+                        unread = 0; paintBadges();
+                        if (d.messages && d.messages.length) addMessages(d.messages); else greet();
+                        staffView();
+                    } else {
+                        unread = d.unread || 0; paintBadges();
+                    }
+                })
+                .catch(function () { })
+                .then(function () { pollBusy = false; });
+        }
+        function schedule() {
+            clearTimeout(timer);
+            var ms = document.hidden ? 30000 : (staffVisible() ? 2500 : 12000);
+            timer = setTimeout(function () { poll(); schedule(); }, ms);
+        }
+
+        function send(text) {
+            text = (text || '').replace(/^\s+|\s+$/g, '');
+            if (!text || sending) return;
+            sending = true; sendBtn.disabled = true; setErr('');
+            var payload = 'noiDung=' + encodeURIComponent(text) +
+                '&hoTen=' + encodeURIComponent(guest.name) +
+                '&sdt=' + encodeURIComponent(guest.phone) +
+                '&__RequestVerificationToken=' + encodeURIComponent(token);
+            fetch(urlSend, {
+                method: 'POST', credentials: 'same-origin',
+                headers: { 'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8', 'X-Requested-With': 'XMLHttpRequest' },
+                body: payload
+            })
+                .then(function (r) { return r.json(); })
+                .then(function (d) {
+                    if (d && d.ok) { started = true; ta.value = ''; autosize(); addMessages([d.msg]); }
+                    else {
+                        if (d && d.needName) { guest.name = ''; staffView(); }
+                        setErr((d && d.err) || 'Không gửi được tin nhắn, vui lòng thử lại.');
+                    }
+                })
+                .catch(function () { setErr('Mất kết nối, vui lòng thử lại.'); })
+                .then(function () { sending = false; sendBtn.disabled = false; ta.focus(); });
+        }
+        function autosize() { ta.style.height = 'auto'; ta.style.height = Math.min(ta.scrollHeight, 96) + 'px'; }
+
+        $('chatwPreForm').addEventListener('submit', function (e) {
+            e.preventDefault();
+            var name = $('chatwName').value.replace(/^\s+|\s+$/g, '');
+            if (!name) { $('chatwName').focus(); return; }
+            guest = { name: name, phone: $('chatwPhone').value.replace(/^\s+|\s+$/g, '') };
+            try { sessionStorage.setItem('chatw_guest', JSON.stringify(guest)); } catch (e2) { }
+            greeted = false; list.innerHTML = ''; seen = {};
+            staffView(); greet(); setTimeout(function () { ta.focus(); }, 30);
+        });
+        foot.addEventListener('submit', function (e) { e.preventDefault(); send(ta.value); });
+        ta.addEventListener('input', autosize);
+        ta.addEventListener('keydown', function (e) {
+            // Enter = gửi, Shift+Enter = xuống dòng (bỏ qua khi đang gõ dấu tiếng Việt bằng bộ gõ)
+            if (e.key === 'Enter' && !e.shiftKey && !e.isComposing && e.keyCode !== 229) { e.preventDefault(); send(ta.value); }
+        });
+        chips.addEventListener('click', function (e) { var b = e.target.closest('button'); if (b) send(b.textContent); });
+
+        // =====================================================================
+        //  CHUYỂN CHẾ ĐỘ + MỞ / ĐÓNG
+        // =====================================================================
+        function applyModeUI() {
+            var staff = mode === 'staff';
+            paneBot.hidden = staff; paneStaff.hidden = !staff;
+            tabBot.classList.toggle('on', !staff); tabStaff.classList.toggle('on', staff);
+            tabBot.setAttribute('aria-selected', staff ? 'false' : 'true'); tabStaff.setAttribute('aria-selected', staff ? 'true' : 'false');
+            title.textContent = staff ? store : 'Trợ lý tư vấn';
+            sub.textContent = staff ? 'Nhân viên thường trả lời trong vài phút' : 'Trả lời ngay · ' + store;
+            avatarIcon.className = 'bi ' + (staff ? 'bi-headset' : 'bi-robot');
+            botClear.hidden = staff;
+        }
+        function setMode(m) {
+            mode = m;
+            try { sessionStorage.setItem('chatw_mode', m); } catch (e) { }
+            applyModeUI();
+            if (m === 'staff') {
+                unread = 0; paintBadges();
+                staffView(); poll();
+                setTimeout(function () { toBottom(body); (needForm() ? $('chatwName') : ta).focus(); }, 60);
+            } else {
+                paintBadges();
+                setTimeout(function () { toBottom(botBody); botInput.focus(); }, 60);
+            }
+            schedule();
+        }
+        function setOpen(v) {
+            isOpen = v;
+            box.hidden = !v;
+            fab.classList.toggle('on', v);
+            fab.setAttribute('aria-expanded', v ? 'true' : 'false');
+            try { sessionStorage.setItem('chatw_open', v ? '1' : '0'); } catch (e) { }
+            if (v) {
+                if (mode === 'staff') { unread = 0; staffView(); poll(); }
+                paintBadges();
+                setTimeout(function () {
+                    if (mode === 'staff') { toBottom(body); (needForm() ? $('chatwName') : ta).focus(); }
+                    else { toBottom(botBody); botInput.focus(); }
+                }, 60);
+            } else paintBadges();
+            schedule();
+        }
+
+        fab.addEventListener('click', function () { setOpen(!isOpen); });
+        $('chatwClose').addEventListener('click', function () { setOpen(false); });
+        tabBot.addEventListener('click', function () { if (mode !== 'bot') setMode('bot'); });
+        tabStaff.addEventListener('click', function () { if (mode !== 'staff') setMode('staff'); });
+        document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && isOpen) setOpen(false); });
+        document.addEventListener('visibilitychange', function () { if (!document.hidden) { poll(); schedule(); } });
+
+        // ---------- khởi động ----------
+        botLoad();
+        if (bot.messages.length) { bot.messages.forEach(botRenderMsg); toBottom(botBody); } else botWelcome();
+        applyModeUI();
+        var wasOpen = false;
+        try { wasOpen = sessionStorage.getItem('chatw_open') === '1'; } catch (e) { }
+        if (wasOpen) setOpen(true);          // đang chat dở ở trang trước thì giữ khung chat mở
+        else { poll(); schedule(); }         // đóng: chỉ lấy số tin nhân viên chưa đọc để hiện trên nút
+    })();
+    </script>
+}
