@@ -338,6 +338,7 @@ INSERT INTO NguoiDung (Id, VaiTroId, HoTen, Email, SoDienThoai, MatKhauHash, Goo
 (6, 3, N'Phạm Minh Đức',   'duc.pham@example.com',     '0944567890', @mk, NULL, '2026-05-30'),
 (7, 3, N'Võ Thị Hà',       'ha.vo@example.com',        '0977678901', @mk, NULL, '2026-06-18'),
 (8, 3, N'Đặng Quốc Khánh', 'khanh.dang@example.com',   '0988789012', NULL, 'google-oauth-100234567890', '2026-07-22');
+
 SET IDENTITY_INSERT NguoiDung OFF;
  
 -- Địa chỉ giao hàng (dòng MacDinh = 1 được dùng khi tạo đơn mẫu)
@@ -466,6 +467,86 @@ INSERT INTO HinhAnhSanPham (SanPhamId, DuongDan, LaAnhChinh, ThuTu) VALUES
 (4, '/Content/images/products/galaxy-s25-ultra-2.jpg', 0, 2),
 (4, '/Content/images/products/galaxy-s25-ultra-3.jpg', 0, 3),
 (5, '/Content/images/products/galaxy-z-flip6-2.jpg', 0, 2);
+INSERT INTO HinhAnhSanPham (SanPhamId, DuongDan, LaAnhChinh, ThuTu) VALUES
+(1, '/Content/images/products/iphone-16-pro-max-4.jpg', 0, 4),
+(1, '/Content/images/products/iphone-16-pro-max-5.jpg', 0, 5),
+(1, '/Content/images/products/iphone-16-pro-max-6.jpg', 0, 6),
+(2, '/Content/images/products/iphone-16-3.jpg', 0, 3),
+(2, '/Content/images/products/iphone-16-4.jpg', 0, 4),
+(2, '/Content/images/products/iphone-16-5.jpg', 0, 5),
+(2, '/Content/images/products/iphone-16-6.jpg', 0, 6),
+(3, '/Content/images/products/iphone-15-2.jpg', 0, 2),
+(3, '/Content/images/products/iphone-15-3.jpg', 0, 3),
+(3, '/Content/images/products/iphone-15-4.jpg', 0, 4),
+(3, '/Content/images/products/iphone-15-5.jpg', 0, 5),
+(3, '/Content/images/products/iphone-15-6.jpg', 0, 6),
+(4, '/Content/images/products/galaxy-s25-ultra-4.jpg', 0, 4),
+(4, '/Content/images/products/galaxy-s25-ultra-5.jpg', 0, 5),
+(4, '/Content/images/products/galaxy-s25-ultra-6.jpg', 0, 6),
+(5, '/Content/images/products/galaxy-z-flip6-3.jpg', 0, 3),
+(5, '/Content/images/products/galaxy-z-flip6-4.jpg', 0, 4),
+(5, '/Content/images/products/galaxy-z-flip6-5.jpg', 0, 5),
+(5, '/Content/images/products/galaxy-z-flip6-6.jpg', 0, 6),
+(6, '/Content/images/products/galaxy-a56-5g-2.jpg', 0, 2),
+(6, '/Content/images/products/galaxy-a56-5g-3.jpg', 0, 3),
+(6, '/Content/images/products/galaxy-a56-5g-4.jpg', 0, 4),
+(6, '/Content/images/products/galaxy-a56-5g-5.jpg', 0, 5),
+(6, '/Content/images/products/galaxy-a56-5g-6.jpg', 0, 6),
+(7, '/Content/images/products/redmi-note-14-pro-5g-2.jpg', 0, 2),
+(7, '/Content/images/products/redmi-note-14-pro-5g-3.jpg', 0, 3),
+(7, '/Content/images/products/redmi-note-14-pro-5g-4.jpg', 0, 4),
+(7, '/Content/images/products/redmi-note-14-pro-5g-5.jpg', 0, 5),
+(7, '/Content/images/products/redmi-note-14-pro-5g-6.jpg', 0, 6),
+(8, '/Content/images/products/oppo-reno12-f-5g-2.jpg', 0, 2),
+(8, '/Content/images/products/oppo-reno12-f-5g-3.jpg', 0, 3),
+(8, '/Content/images/products/oppo-reno12-f-5g-4.jpg', 0, 4),
+(8, '/Content/images/products/oppo-reno12-f-5g-5.jpg', 0, 5),
+(8, '/Content/images/products/oppo-reno12-f-5g-6.jpg', 0, 6),
+(9, '/Content/images/products/vivo-v40-5g-2.jpg', 0, 2),
+(9, '/Content/images/products/vivo-v40-5g-3.jpg', 0, 3),
+(9, '/Content/images/products/vivo-v40-5g-4.jpg', 0, 4),
+(9, '/Content/images/products/vivo-v40-5g-5.jpg', 0, 5),
+(9, '/Content/images/products/vivo-v40-5g-6.jpg', 0, 6),
+(10, '/Content/images/products/airpods-pro-2-2.jpg', 0, 2),
+(10, '/Content/images/products/airpods-pro-2-3.jpg', 0, 3),
+(10, '/Content/images/products/airpods-pro-2-4.jpg', 0, 4),
+(10, '/Content/images/products/airpods-pro-2-5.jpg', 0, 5),
+(10, '/Content/images/products/airpods-pro-2-6.jpg', 0, 6),
+(11, '/Content/images/products/galaxy-buds3-pro-2.jpg', 0, 2),
+(11, '/Content/images/products/galaxy-buds3-pro-3.jpg', 0, 3),
+(11, '/Content/images/products/galaxy-buds3-pro-4.jpg', 0, 4),
+(11, '/Content/images/products/galaxy-buds3-pro-5.jpg', 0, 5),
+(11, '/Content/images/products/galaxy-buds3-pro-6.jpg', 0, 6),
+(12, '/Content/images/products/anker-nano-30w-2.jpg', 0, 2),
+(12, '/Content/images/products/anker-nano-30w-3.jpg', 0, 3),
+(12, '/Content/images/products/anker-nano-30w-4.jpg', 0, 4),
+(12, '/Content/images/products/anker-nano-30w-5.jpg', 0, 5),
+(12, '/Content/images/products/anker-nano-30w-6.jpg', 0, 6),
+(13, '/Content/images/products/baseus-cap-100w-2.jpg', 0, 2),
+(13, '/Content/images/products/baseus-cap-100w-3.jpg', 0, 3),
+(13, '/Content/images/products/baseus-cap-100w-4.jpg', 0, 4),
+(13, '/Content/images/products/baseus-cap-100w-5.jpg', 0, 5),
+(13, '/Content/images/products/baseus-cap-100w-6.jpg', 0, 6),
+(14, '/Content/images/products/anker-pin-10000-2.jpg', 0, 2),
+(14, '/Content/images/products/anker-pin-10000-3.jpg', 0, 3),
+(14, '/Content/images/products/anker-pin-10000-4.jpg', 0, 4),
+(14, '/Content/images/products/anker-pin-10000-5.jpg', 0, 5),
+(14, '/Content/images/products/anker-pin-10000-6.jpg', 0, 6),
+(15, '/Content/images/products/spigen-ip16pm-2.jpg', 0, 2),
+(15, '/Content/images/products/spigen-ip16pm-3.jpg', 0, 3),
+(15, '/Content/images/products/spigen-ip16pm-4.jpg', 0, 4),
+(15, '/Content/images/products/spigen-ip16pm-5.jpg', 0, 5),
+(15, '/Content/images/products/spigen-ip16pm-6.jpg', 0, 6),
+(16, '/Content/images/products/spigen-s25-ultra-2.jpg', 0, 2),
+(16, '/Content/images/products/spigen-s25-ultra-3.jpg', 0, 3),
+(16, '/Content/images/products/spigen-s25-ultra-4.jpg', 0, 4),
+(16, '/Content/images/products/spigen-s25-ultra-5.jpg', 0, 5),
+(16, '/Content/images/products/spigen-s25-ultra-6.jpg', 0, 6),
+(17, '/Content/images/products/kinh-cuong-luc-ip16-2.jpg', 0, 2),
+(17, '/Content/images/products/kinh-cuong-luc-ip16-3.jpg', 0, 3),
+(17, '/Content/images/products/kinh-cuong-luc-ip16-4.jpg', 0, 4),
+(17, '/Content/images/products/kinh-cuong-luc-ip16-5.jpg', 0, 5),
+(17, '/Content/images/products/kinh-cuong-luc-ip16-6.jpg', 0, 6);
  
 -- Sản phẩm liên quan: phụ kiện mua cùng + sản phẩm tương tự
 INSERT INTO SanPhamLienQuan (SanPhamId, SanPhamLienQuanId, LoaiLienQuan) VALUES
@@ -1095,7 +1176,8 @@ CREATE PROCEDURE sp_LocSanPham
     @ConHang BIT = 0,
     @SapXep VARCHAR(20) = NULL,
     @Trang INT = 1,
-    @SoDong INT = 12
+    @SoDong INT = 12,
+    @SaoToiThieu TINYINT = NULL
 AS
 BEGIN
     SET NOCOUNT ON;
@@ -1116,6 +1198,7 @@ BEGIN
       AND (@DungLuongGB IS NULL OR EXISTS (SELECT 1 FROM BienTheSanPham b
                                            WHERE b.SanPhamId = v.Id AND b.HienThi = 1 AND b.DungLuongGB = @DungLuongGB))
       AND (@ConHang = 0 OR v.TongTon > 0)
+      AND (@SaoToiThieu IS NULL OR v.SaoTrungBinh >= @SaoToiThieu)
       AND (@TuKhoa IS NULL OR v.TenSanPham COLLATE Latin1_General_100_CI_AI LIKE N'%' + @TuKhoa + N'%')
     ORDER BY
         CASE WHEN @SapXep = 'gia_tang'  THEN v.GiaThapNhat END ASC,
@@ -1194,3 +1277,495 @@ EXEC sp_TinhTraGop @BienTheId = 18, @SoThang = 12, @TraTruocPT = 30;
 SELECT COUNT(*) AS SoBienTheLech
 FROM BienTheSanPham bt
 WHERE bt.SoLuongTon <> (SELECT ISNULL(SUM(SoLuongThayDoi), 0) FROM LichSuTonKho WHERE BienTheId = bt.Id);
+go
+INSERT INTO CauHinhHeThong (Khoa, GiaTri, MoTa) VALUES
+('Smtp_Email',   N'', N'Gmail dùng để gửi mail'),
+('Smtp_MatKhau', N'', N'Mật khẩu ứng dụng Gmail (nhập sau, không commit)'),
+('Token_BiMat',  N'', N'Khóa ký link đặt lại mật khẩu (chuỗi ngẫu nhiên dài)'),
+('Facebook_AppSecret', N'', N'Facebook App Secret (không đưa lên Git)')
+go
+
+
+ USE QL_DienThoai;
+INSERT INTO CauHinhHeThong (Khoa, GiaTri, MoTa) VALUES
+ ('CuaHang_DiaChi',    N'Số 1 Võ Văn Ngân, phường Linh Chiểu, TP Thủ Đức, TP Hồ Chí Minh', N'Địa chỉ cửa hàng (dùng cho bản đồ)'),
+ ('CuaHang_GioMoCua',  N'8:00 - 21:30 mỗi ngày', N'Giờ mở cửa'),
+ ('Tin_RssUrl',        N'https://vnexpress.net/rss/khoa-hoc-cong-nghe.rss', N'Nguồn tin RSS'),
+ ('Video_ChannelIds',  N'', N'YouTube channel ID, cách nhau bằng dấu phẩy'),
+ ('Google_ClientId',   N'', N'Google OAuth Client ID'),
+ ('Facebook_AppId',    N'', N'Facebook App ID')
+go
+
+ 
+SELECT Khoa, LEFT(GiaTri, 6) AS DauGiaTri FROM CauHinhHeThong WHERE Khoa LIKE 'Facebook%';
+USE QL_DienThoai;
+
+UPDATE CauHinhHeThong SET GiaTri = N'140 Lê Trọng Tấn, Tây Thạnh, Hồ Chí Minh, Việt Nam' WHERE Khoa = 'CuaHang_DiaChi';
+UPDATE CauHinhHeThong SET GiaTri = N'8:00 - 21:30 mỗi ngày' WHERE Khoa = 'CuaHang_GioMoCua';
+
+
+INSERT INTO CauHinhHeThong (Khoa, GiaTri, MoTa)
+VALUES ('CuaHang_MapEmbed', N'<dán link https://www.google.com/maps/embed?pb=... vào đây>', N'Link nhúng Google Maps');
+ALTER TABLE dbo.CauHinhHeThong
+ALTER COLUMN GiaTri NVARCHAR(MAX) NULL; 
+UPDATE CauHinhHeThong
+SET GiaTri = N'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.068033296988!2d106.62629417481848!3d10.806101389344475!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752be2804c5ea3%3A0x299b8ad71d268338!2zMTQwIEzDqiBUcuG7jW5nIFThuqVuLCBUw6J5IFRo4bqhbmgsIEjhu5MgQ2jDrSBNaW5oIDcwMDAwMCwgVmnhu4d0IE5hbQ!5e0!3m2!1svi!2s!4v1792913771071!5m2!1svi!2s'
+WHERE Khoa = 'CuaHang_MapEmbed';
+IF @@ROWCOUNT = 0
+    INSERT INTO CauHinhHeThong (Khoa, GiaTri, MoTa)
+    VALUES ('CuaHang_MapEmbed',
+            N'https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3919.068033296988!2d106.62629417481848!3d10.806101389344475!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x31752be2804c5ea3%3A0x299b8ad71d268338!2zMTQwIEzDqiBUcuG7jW5nIFThuqVuLCBUw6J5IFRo4bqhbmgsIEjhu5MgQ2jDrSBNaW5oIDcwMDAwMCwgVmnhu4d0IE5hbQ!5e0!3m2!1svi!2s!4v1792913771071!5m2!1svi!2s',
+            N'Link nhúng Google Maps');
+
+-- kiểm tra: dòng MapEmbed phải dài trên 500 ký tự
+SELECT Khoa, LEN(GiaTri) AS DoDai, LEFT(GiaTri, 70) AS GiaTri FROM CauHinhHeThong WHERE Khoa LIKE 'CuaHang%';
+
+USE QL_DienThoai;
+
+IF OBJECT_ID('dbo.BangGiaThuCu') IS NULL
+CREATE TABLE dbo.BangGiaThuCu (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    HangMay NVARCHAR(50) NOT NULL,
+    TenMay NVARCHAR(100) NOT NULL,
+    DungLuongGB INT NOT NULL,
+    GiaToiDa DECIMAL(18,0) NOT NULL,      -- giá thu cao nhất khi máy còn như mới
+    HienThi BIT NOT NULL DEFAULT 1
+);
+
+IF OBJECT_ID('dbo.YeuCauThuCu') IS NULL
+CREATE TABLE dbo.YeuCauThuCu (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    MaYeuCau VARCHAR(20) NOT NULL,
+    NguoiDungId INT NULL,
+    HoTen NVARCHAR(100) NOT NULL,
+    SoDienThoai VARCHAR(20) NOT NULL,
+    Email NVARCHAR(150) NULL,
+    BangGiaId INT NOT NULL,
+    TenMay NVARCHAR(150) NOT NULL,        -- chụp lại tên máy lúc gửi, đổi bảng giá sau này không ảnh hưởng
+    NgoaiHinh VARCHAR(20) NOT NULL,
+    ManHinh VARCHAR(20) NOT NULL,
+    Pin VARCHAR(20) NOT NULL,
+    ChucNang VARCHAR(20) NOT NULL,
+    GiaUocTinh DECIMAL(18,0) NOT NULL,
+    MayMuonMua NVARCHAR(150) NULL,
+    GhiChu NVARCHAR(500) NULL,
+    TrangThai VARCHAR(20) NOT NULL DEFAULT 'MoiGui',
+    GiaChot DECIMAL(18,0) NULL,
+    NgayTao DATETIME NOT NULL DEFAULT GETDATE(),
+    NgayCapNhat DATETIME NULL
+);
+
+-- thông tin riêng của máy cũ đem bán (dùng ở phần "Bán máy cũ")
+IF OBJECT_ID('dbo.ThongTinMayCu') IS NULL
+CREATE TABLE dbo.ThongTinMayCu (
+    SanPhamId INT NOT NULL PRIMARY KEY,
+    TinhTrang NVARCHAR(50) NOT NULL,      -- ví dụ: Like new 99%
+    PinPhanTram INT NULL,
+    BaoHanhThang INT NOT NULL DEFAULT 3,
+    GhiChu NVARCHAR(300) NULL,
+    CONSTRAINT FK_ThongTinMayCu_SanPham FOREIGN KEY (SanPhamId) REFERENCES dbo.SanPham(Id)
+);
+
+-- dữ liệu mẫu để demo (giá giả định, bạn tự chỉnh)
+IF NOT EXISTS (SELECT 1 FROM BangGiaThuCu)
+INSERT INTO BangGiaThuCu (HangMay, TenMay, DungLuongGB, GiaToiDa) VALUES
+ (N'Apple',   N'iPhone 11', 64, 4500000),
+ (N'Apple',   N'iPhone 12', 128, 6500000),
+ (N'Apple',   N'iPhone 13', 128, 8500000),
+ (N'Apple',   N'iPhone 14', 128, 11000000),
+ (N'Apple',   N'iPhone 14 Pro Max', 256, 17000000),
+ (N'Apple',   N'iPhone 15', 128, 13500000),
+ (N'Apple',   N'iPhone 15 Pro Max', 256, 20500000),
+ (N'Samsung', N'Galaxy S22 Ultra', 256, 8500000),
+ (N'Samsung', N'Galaxy S23 Ultra', 256, 13000000),
+ (N'Samsung', N'Galaxy A54 5G', 128, 4800000),
+ (N'Samsung', N'Galaxy Z Flip5', 256, 10500000),
+ (N'Xiaomi',  N'Redmi Note 12 Pro', 128, 3800000),
+ (N'Xiaomi',  N'Redmi Note 13 Pro', 256, 5200000),
+ (N'OPPO',    N'Reno10 5G', 256, 5500000),
+ (N'vivo',    N'V27 5G', 256, 5000000);
+ SELECT * FROM LoaiSanPham;
+SELECT TOP 2 * FROM SanPham;
+SELECT TOP 2 * FROM BienTheSanPham;
+USE QL_DienThoai;
+SET NOCOUNT ON;
+
+-- 1. loại "Máy cũ"
+DECLARE @loaiCu INT = (SELECT TOP 1 Id FROM LoaiSanPham WHERE TenLoai = N'Máy cũ');
+IF @loaiCu IS NULL
+BEGIN
+    INSERT INTO LoaiSanPham (TenLoai, MoTa, HienThi)
+    VALUES (N'Máy cũ', N'Điện thoại đã qua sử dụng, được kiểm tra kỹ, bảo hành tại cửa hàng', 1);
+    SET @loaiCu = SCOPE_IDENTITY();
+END
+
+-- 2. máy mẫu: mẫu tên máy mới cần sao chép, hệ số giá, tình trạng, % pin, tháng bảo hành
+DECLARE @M TABLE (Stt INT IDENTITY(1,1), Mau NVARCHAR(60), HeSo DECIMAL(4,2), TinhTrang NVARCHAR(50), Pin INT, BH INT);
+INSERT INTO @M (Mau, HeSo, TinhTrang, Pin, BH) VALUES
+ (N'iPhone 15%',        0.72, N'Like new 99%', 97, 6),
+ (N'iPhone 16%',        0.80, N'Like new 99%', 98, 6),
+ (N'%16 Pro Max%',      0.75, N'Đẹp 98%',      96, 6),
+ (N'%Galaxy Z Flip6%',  0.65, N'Đẹp 97%',      94, 6),
+ (N'%Redmi Note 14%',   0.70, N'Đẹp 98%',      96, 3),
+ (N'%Reno12%',          0.68, N'Đẹp 97%',      95, 3),
+ (N'%V40%',             0.68, N'Đẹp 97%',      95, 3);
+
+DECLARE @i INT = 1, @n INT = (SELECT COUNT(*) FROM @M);
+DECLARE @mau NVARCHAR(60), @heso DECIMAL(4,2), @tt NVARCHAR(50), @pin INT, @bh INT;
+DECLARE @src INT, @new INT, @ten NVARCHAR(200);
+
+WHILE @i <= @n
+BEGIN
+    SELECT @mau = Mau, @heso = HeSo, @tt = TinhTrang, @pin = Pin, @bh = BH FROM @M WHERE Stt = @i;
+    SET @src = NULL; SET @ten = NULL;
+    SELECT TOP 1 @src = Id, @ten = TenSanPham FROM SanPham
+    WHERE LoaiId = 1 AND TenSanPham LIKE @mau ORDER BY LEN(TenSanPham);
+
+    IF @src IS NULL
+        PRINT N'Bỏ qua (không có máy mới khớp): ' + @mau;
+    ELSE IF EXISTS (SELECT 1 FROM SanPham WHERE LoaiId = @loaiCu AND TenSanPham = @ten + N' cũ')
+        PRINT N'Đã có: ' + @ten + N' cũ';
+    ELSE
+    BEGIN
+        INSERT INTO SanPham (LoaiId, ThuongHieuId, TenSanPham, MoTa, ManHinh, ChipXuLy, RAM, RamGB, CameraSau, CameraTruoc,
+                             Pin, HeDieuHanh, TrongLuong, BaoHanhThang, AnhDaiDien, NoiBat, HienThi, LuotXem, NgayTao)
+        SELECT @loaiCu, ThuongHieuId, TenSanPham + N' cũ',
+               N'Máy đã qua sử dụng, được kiểm tra trước khi bán. ' + ISNULL(MoTa, N''),
+               ManHinh, ChipXuLy, RAM, RamGB, CameraSau, CameraTruoc, Pin, HeDieuHanh, TrongLuong,
+               @bh, AnhDaiDien, 0, 1, 0, GETDATE()
+        FROM SanPham WHERE Id = @src;
+        SET @new = SCOPE_IDENTITY();
+
+        -- 2 màu của bản dung lượng thấp nhất, giá = giá máy mới x hệ số, tồn kho ít như hàng cũ ngoài đời
+        INSERT INTO BienTheSanPham (SanPhamId, MauSac, DungLuong, DungLuongGB, SKU, GiaGoc, GiaBan, SoLuongTon, NguongCanhBao, HienThi)
+        SELECT TOP 2 @new, MauSac, DungLuong, DungLuongGB,
+               'CU' + CAST(@new AS VARCHAR(10)) + '-' + CAST(ROW_NUMBER() OVER (ORDER BY Id) AS VARCHAR(5)),
+               GiaBan, ROUND(GiaBan * @heso / 10000, 0) * 10000, 2, 1, 1
+        FROM BienTheSanPham
+        WHERE SanPhamId = @src AND DungLuongGB = (SELECT MIN(DungLuongGB) FROM BienTheSanPham WHERE SanPhamId = @src)
+        ORDER BY Id;
+
+        -- ảnh phụ (nếu bảng có thêm cột bắt buộc thì bước này báo lỗi nhưng các bước khác vẫn chạy)
+        BEGIN TRY
+            INSERT INTO HinhAnhSanPham (SanPhamId, DuongDan, LaAnhChinh, ThuTu)
+            SELECT @new, DuongDan, LaAnhChinh, ThuTu FROM HinhAnhSanPham WHERE SanPhamId = @src;
+        END TRY
+        BEGIN CATCH
+            PRINT N'Chưa sao chép được ảnh phụ của ' + @ten + N': ' + ERROR_MESSAGE();
+        END CATCH
+
+        INSERT INTO ThongTinMayCu (SanPhamId, TinhTrang, PinPhanTram, BaoHanhThang, GhiChu)
+        VALUES (@new, @tt, @pin, @bh, N'Máy đã được nhân viên kiểm tra trước khi bán, kèm cáp sạc');
+
+        PRINT N'Đã thêm: ' + @ten + N' cũ';
+    END
+    SET @i += 1;
+END
+
+-- 3. ghi Id của loại "Máy cũ" để web nhận ra (nhãn "Máy cũ", mục trang chủ, menu)
+UPDATE CauHinhHeThong SET GiaTri = CAST(@loaiCu AS NVARCHAR(10)) WHERE Khoa = 'LoaiId_HangCu';
+IF @@ROWCOUNT = 0
+    INSERT INTO CauHinhHeThong (Khoa, GiaTri, MoTa)
+    VALUES ('LoaiId_HangCu', CAST(@loaiCu AS NVARCHAR(10)), N'Id loại "Máy cũ"');
+
+-- kiểm tra
+SELECT s.Id, s.TenSanPham, b.MauSac, b.DungLuong, b.GiaGoc, b.GiaBan, b.SoLuongTon
+FROM SanPham s JOIN BienTheSanPham b ON b.SanPhamId = s.Id WHERE s.LoaiId = @loaiCu ORDER BY s.Id;
+SELECT Khoa, GiaTri FROM CauHinhHeThong WHERE Khoa = 'LoaiId_HangCu';
+
+
+USE QL_DienThoai;
+GO
+IF COL_LENGTH('dbo.GioHangChiTiet', 'DuocChon') IS NULL
+    ALTER TABLE dbo.GioHangChiTiet ADD DuocChon BIT NOT NULL CONSTRAINT DF_GioHangCT_DuocChon DEFAULT 1;
+GO
+ALTER PROCEDURE sp_DatHang
+    @NguoiDungId INT,
+    @TenNguoiNhan NVARCHAR(100),
+    @SoDienThoai VARCHAR(15),
+    @Email NVARCHAR(150),
+    @DiaChiGiao NVARCHAR(300),
+    @TinhThanh NVARCHAR(50),
+    @PhuongThucThanhToan VARCHAR(10),
+    @MaKhuyenMai VARCHAR(30) = NULL,
+    @GhiChu NVARCHAR(300) = NULL
+AS
+BEGIN
+    SET NOCOUNT ON;
+    SET XACT_ABORT ON;
+
+    DECLARE @GioHangId INT, @SoDong INT, @TongTien DECIMAL(18,0), @PhiShip DECIMAL(18,0),
+            @TienGiam DECIMAL(18,0) = 0, @KhuyenMaiId INT = NULL, @GioiHan INT,
+            @DonHangId INT, @MaDonHang VARCHAR(20), @So INT;
+
+    IF NOT EXISTS (SELECT 1 FROM NguoiDung WHERE Id = @NguoiDungId AND TrangThai = 1)
+        THROW 50005, N'Tài khoản không tồn tại hoặc đã bị khóa', 1;
+
+    SELECT @GioHangId = Id FROM GioHang WHERE NguoiDungId = @NguoiDungId;
+    SELECT @SoDong = COUNT(*) FROM GioHangChiTiet WHERE GioHangId = @GioHangId AND DuocChon = 1;
+    IF @SoDong = 0 THROW 50001, N'Bạn chưa chọn sản phẩm nào để đặt hàng', 1;
+
+    BEGIN TRAN;
+
+    UPDATE bt SET bt.SoLuongTon = bt.SoLuongTon - g.SoLuong
+    FROM BienTheSanPham bt
+    JOIN SanPham sp ON sp.Id = bt.SanPhamId
+    JOIN GioHangChiTiet g ON g.BienTheId = bt.Id
+    WHERE g.GioHangId = @GioHangId AND g.DuocChon = 1
+      AND bt.HienThi = 1 AND sp.HienThi = 1 AND bt.SoLuongTon >= g.SoLuong;
+    IF @@ROWCOUNT <> @SoDong THROW 50002, N'Có sản phẩm hết hàng, đã ngừng bán hoặc không đủ số lượng', 1;
+
+    SELECT @TongTien = SUM(g.SoLuong * bt.GiaBan)
+    FROM GioHangChiTiet g JOIN BienTheSanPham bt ON bt.Id = g.BienTheId
+    WHERE g.GioHangId = @GioHangId AND g.DuocChon = 1;
+
+    SELECT @PhiShip = PhiShip FROM PhiVanChuyen WHERE TinhThanh = @TinhThanh;
+    IF @PhiShip IS NULL SELECT @PhiShip = PhiShip FROM PhiVanChuyen WHERE TinhThanh = N'Khác';
+
+    IF @MaKhuyenMai IS NOT NULL AND @MaKhuyenMai <> ''
+    BEGIN
+        SET @TienGiam = dbo.fn_TinhTienGiam(@MaKhuyenMai, @TongTien);
+        IF @TienGiam = 0 THROW 50003, N'Mã khuyến mãi không hợp lệ hoặc không đủ điều kiện', 1;
+
+        SELECT @GioiHan = GioiHanMoiNguoi FROM KhuyenMai WHERE MaCode = @MaKhuyenMai;
+        IF @GioiHan IS NOT NULL
+           AND (SELECT COUNT(*) FROM KhuyenMaiSuDung su
+                JOIN KhuyenMai k ON k.Id = su.KhuyenMaiId
+                WHERE k.MaCode = @MaKhuyenMai AND su.NguoiDungId = @NguoiDungId) >= @GioiHan
+            THROW 50006, N'Bạn đã dùng hết lượt của mã khuyến mãi này', 1;
+
+        UPDATE KhuyenMai SET DaDung = DaDung + 1, @KhuyenMaiId = Id
+        WHERE MaCode = @MaKhuyenMai AND (SoLuong IS NULL OR DaDung < SoLuong);
+        IF @@ROWCOUNT = 0 THROW 50004, N'Mã khuyến mãi đã hết lượt sử dụng', 1;
+    END
+
+    SET @So = NEXT VALUE FOR dbo.seq_MaDonHang;
+    SET @MaDonHang = 'DH' + FORMAT(SYSDATETIME(), 'yyMMdd') + CAST(@So AS VARCHAR(10));
+
+    INSERT INTO DonHang (MaDonHang, NguoiDungId, TenNguoiNhan, SoDienThoai, Email, DiaChiGiao, TinhThanh,
+                         GhiChu, KhuyenMaiId, TongTienHang, PhiShip, TienGiam, PhuongThucThanhToan)
+    VALUES (@MaDonHang, @NguoiDungId, @TenNguoiNhan, @SoDienThoai, @Email, @DiaChiGiao, @TinhThanh,
+            @GhiChu, @KhuyenMaiId, @TongTien, @PhiShip, @TienGiam, @PhuongThucThanhToan);
+    SET @DonHangId = SCOPE_IDENTITY();
+
+    IF @KhuyenMaiId IS NOT NULL
+        INSERT INTO KhuyenMaiSuDung (KhuyenMaiId, NguoiDungId, DonHangId) VALUES (@KhuyenMaiId, @NguoiDungId, @DonHangId);
+
+    INSERT INTO ChiTietDonHang (DonHangId, BienTheId, TenSanPham, SoLuong, DonGia)
+    SELECT @DonHangId, bt.Id,
+           sp.TenSanPham + ISNULL(N' ' + bt.DungLuong, N'') + N' - ' + bt.MauSac,
+           g.SoLuong, bt.GiaBan
+    FROM GioHangChiTiet g
+    JOIN BienTheSanPham bt ON bt.Id = g.BienTheId
+    JOIN SanPham sp ON sp.Id = bt.SanPhamId
+    WHERE g.GioHangId = @GioHangId AND g.DuocChon = 1;
+
+    INSERT INTO LichSuTonKho (BienTheId, SoLuongThayDoi, LyDo, DonHangId)
+    SELECT g.BienTheId, -g.SoLuong, N'Bán hàng - đơn ' + @MaDonHang, @DonHangId
+    FROM GioHangChiTiet g WHERE g.GioHangId = @GioHangId AND g.DuocChon = 1;
+
+    INSERT INTO DonHangLichSu (DonHangId, TrangThai, GhiChu, NguoiCapNhatId)
+    VALUES (@DonHangId, 'ChoXacNhan', N'Khách đặt hàng thành công', @NguoiDungId);
+
+    DELETE FROM GioHangChiTiet WHERE GioHangId = @GioHangId AND DuocChon = 1; 
+    UPDATE GioHang SET NgayCapNhat = SYSDATETIME() WHERE Id = @GioHangId;
+
+    COMMIT;
+
+    SELECT @DonHangId AS DonHangId, @MaDonHang AS MaDonHang,
+           @TongTien + @PhiShip - @TienGiam AS TongThanhToan;
+END
+GO
+
+CREATE TABLE ThongSoKyThuat (
+    Id INT IDENTITY(1,1) PRIMARY KEY,
+    SanPhamId INT NOT NULL FOREIGN KEY REFERENCES SanPham(Id) ON DELETE CASCADE,
+    Nhom NVARCHAR(100) NOT NULL,
+    TenThongSo NVARCHAR(150) NOT NULL,
+    GiaTri NVARCHAR(500) NOT NULL,
+    ThuTu INT NOT NULL DEFAULT 0
+);
+GO
+
+INSERT INTO ThongSoKyThuat (SanPhamId, Nhom, TenThongSo, GiaTri, ThuTu) VALUES
+(1, N'Màn hình', N'Kích thước', N'6,9 inch', 1),
+(1, N'Màn hình', N'Công nghệ', N'Super Retina XDR OLED', 2),
+(1, N'Màn hình', N'Độ phân giải', N'2868 x 1320 px', 3),
+(1, N'Màn hình', N'Tần số quét', N'120 Hz ProMotion', 4),
+(1, N'Hiệu năng', N'Chip xử lý', N'Apple A18 Pro', 5),
+(1, N'Hiệu năng', N'RAM', N'8 GB', 6),
+(1, N'Hiệu năng', N'Bộ nhớ trong', N'256 GB / 512 GB / 1 TB', 7),
+(1, N'Hiệu năng', N'Hệ điều hành', N'iOS 18', 8),
+(1, N'Camera', N'Camera sau', N'48 MP chính + 48 MP siêu rộng + 12 MP tele 5x', 9),
+(1, N'Camera', N'Camera trước', N'12 MP', 10),
+(1, N'Camera', N'Quay video', N'4K Dolby Vision 120 fps', 11),
+(1, N'Pin & sạc', N'Dung lượng pin', N'4685 mAh', 12),
+(1, N'Pin & sạc', N'Sạc nhanh', N'Có dây USB-C tối đa 40 W, MagSafe 25 W', 13),
+(1, N'Pin & sạc', N'Thời gian xem video', N'Đến 33 giờ', 14),
+(1, N'Kết nối & tiện ích', N'Mạng', N'5G, Wi-Fi 7, Bluetooth 5.3, NFC', 15),
+(1, N'Kết nối & tiện ích', N'Cổng sạc', N'USB-C', 16),
+(1, N'Kết nối & tiện ích', N'Kháng nước, bụi', N'IP68', 17),
+(1, N'Kết nối & tiện ích', N'Bảo mật', N'Face ID', 18),
+(1, N'Kích thước & trọng lượng', N'Kích thước', N'163,0 x 77,6 x 8,25 mm', 19),
+(1, N'Kích thước & trọng lượng', N'Trọng lượng', N'227 g', 20),
+(2, N'Màn hình', N'Kích thước', N'6,1 inch', 1),
+(2, N'Màn hình', N'Công nghệ', N'Super Retina XDR OLED', 2),
+(2, N'Màn hình', N'Độ phân giải', N'2556 x 1179 px', 3),
+(2, N'Màn hình', N'Tần số quét', N'60 Hz', 4),
+(2, N'Hiệu năng', N'Chip xử lý', N'Apple A18', 5),
+(2, N'Hiệu năng', N'RAM', N'8 GB', 6),
+(2, N'Hiệu năng', N'Bộ nhớ trong', N'128 GB / 256 GB / 512 GB', 7),
+(2, N'Hiệu năng', N'Hệ điều hành', N'iOS 18', 8),
+(2, N'Camera', N'Camera sau', N'48 MP chính + 12 MP siêu rộng', 9),
+(2, N'Camera', N'Camera trước', N'12 MP', 10),
+(2, N'Camera', N'Quay video', N'4K 60 fps', 11),
+(2, N'Pin & sạc', N'Dung lượng pin', N'3561 mAh', 12),
+(2, N'Pin & sạc', N'Sạc nhanh', N'Có dây USB-C 25 W, MagSafe 25 W', 13),
+(2, N'Kết nối & tiện ích', N'Mạng', N'5G, Wi-Fi 6, Bluetooth 5.3, NFC', 14),
+(2, N'Kết nối & tiện ích', N'Cổng sạc', N'USB-C', 15),
+(2, N'Kết nối & tiện ích', N'Kháng nước, bụi', N'IP68', 16),
+(2, N'Kết nối & tiện ích', N'Bảo mật', N'Face ID', 17),
+(2, N'Kích thước & trọng lượng', N'Kích thước', N'147,6 x 71,6 x 7,8 mm', 18),
+(2, N'Kích thước & trọng lượng', N'Trọng lượng', N'170 g', 19),
+(3, N'Màn hình', N'Kích thước', N'6,1 inch', 1),
+(3, N'Màn hình', N'Công nghệ', N'Super Retina XDR OLED', 2),
+(3, N'Màn hình', N'Độ phân giải', N'2556 x 1179 px', 3),
+(3, N'Màn hình', N'Tần số quét', N'60 Hz', 4),
+(3, N'Hiệu năng', N'Chip xử lý', N'Apple A16 Bionic', 5),
+(3, N'Hiệu năng', N'RAM', N'6 GB', 6),
+(3, N'Hiệu năng', N'Bộ nhớ trong', N'128 GB / 256 GB / 512 GB', 7),
+(3, N'Hiệu năng', N'Hệ điều hành', N'iOS 17', 8),
+(3, N'Camera', N'Camera sau', N'48 MP chính + 12 MP siêu rộng', 9),
+(3, N'Camera', N'Camera trước', N'12 MP', 10),
+(3, N'Pin & sạc', N'Dung lượng pin', N'3349 mAh', 11),
+(3, N'Pin & sạc', N'Sạc nhanh', N'Có dây USB-C 20 W', 12),
+(3, N'Kết nối & tiện ích', N'Mạng', N'5G, Wi-Fi 6, Bluetooth 5.3, NFC', 13),
+(3, N'Kết nối & tiện ích', N'Cổng sạc', N'USB-C', 14),
+(3, N'Kết nối & tiện ích', N'Kháng nước, bụi', N'IP68', 15),
+(3, N'Kết nối & tiện ích', N'Bảo mật', N'Face ID', 16),
+(3, N'Kích thước & trọng lượng', N'Kích thước', N'147,6 x 71,6 x 7,8 mm', 17),
+(3, N'Kích thước & trọng lượng', N'Trọng lượng', N'171 g', 18),
+(4, N'Màn hình', N'Kích thước', N'6,9 inch', 1),
+(4, N'Màn hình', N'Công nghệ', N'Dynamic AMOLED 2X, Corning Gorilla Armor 2', 2),
+(4, N'Màn hình', N'Độ phân giải', N'3120 x 1440 px', 3),
+(4, N'Màn hình', N'Tần số quét', N'120 Hz', 4),
+(4, N'Hiệu năng', N'Chip xử lý', N'Snapdragon 8 Elite for Galaxy', 5),
+(4, N'Hiệu năng', N'RAM', N'12 GB', 6),
+(4, N'Hiệu năng', N'Bộ nhớ trong', N'256 GB / 512 GB / 1 TB', 7),
+(4, N'Hiệu năng', N'Hệ điều hành', N'Android 15, One UI 7', 8),
+(4, N'Camera', N'Camera sau', N'200 MP chính + 50 MP tele 5x + 10 MP tele 3x + 50 MP siêu rộng', 9),
+(4, N'Camera', N'Camera trước', N'12 MP', 10),
+(4, N'Pin & sạc', N'Dung lượng pin', N'5000 mAh', 11),
+(4, N'Pin & sạc', N'Sạc nhanh', N'Có dây 45 W, không dây 15 W', 12),
+(4, N'Kết nối & tiện ích', N'Mạng', N'5G, Wi-Fi 7, Bluetooth 5.4', 13),
+(4, N'Kết nối & tiện ích', N'Bút', N'S Pen', 14),
+(4, N'Kết nối & tiện ích', N'Kháng nước, bụi', N'IP68', 15),
+(4, N'Kích thước & trọng lượng', N'Kích thước', N'162,8 x 77,6 x 8,2 mm', 16),
+(4, N'Kích thước & trọng lượng', N'Trọng lượng', N'218 g', 17),
+(5, N'Màn hình', N'Màn hình chính', N'6,7 inch Dynamic AMOLED 2X, 120 Hz', 1),
+(5, N'Màn hình', N'Màn hình ngoài', N'3,4 inch Super AMOLED', 2),
+(5, N'Hiệu năng', N'Chip xử lý', N'Snapdragon 8 Gen 3 for Galaxy', 3),
+(5, N'Hiệu năng', N'RAM', N'12 GB', 4),
+(5, N'Hiệu năng', N'Bộ nhớ trong', N'256 GB / 512 GB', 5),
+(5, N'Hiệu năng', N'Hệ điều hành', N'Android 14, One UI 6.1', 6),
+(5, N'Camera', N'Camera sau', N'50 MP chính + 12 MP siêu rộng', 7),
+(5, N'Camera', N'Camera trước', N'10 MP', 8),
+(5, N'Pin & sạc', N'Dung lượng pin', N'4000 mAh', 9),
+(5, N'Pin & sạc', N'Sạc nhanh', N'Có dây 25 W', 10),
+(5, N'Kết nối & tiện ích', N'Mạng', N'5G, Wi-Fi 6E, Bluetooth 5.3, NFC', 11),
+(5, N'Kết nối & tiện ích', N'Kháng nước', N'IPX8', 12),
+(5, N'Kích thước & trọng lượng', N'Kích thước khi gập', N'71,9 x 75,9 x 17,1 mm', 13),
+(5, N'Kích thước & trọng lượng', N'Trọng lượng', N'187 g', 14),
+(6, N'Màn hình', N'Kích thước', N'6,7 inch', 1),
+(6, N'Màn hình', N'Công nghệ', N'Super AMOLED', 2),
+(6, N'Màn hình', N'Độ phân giải', N'2340 x 1080 px', 3),
+(6, N'Màn hình', N'Tần số quét', N'120 Hz', 4),
+(6, N'Hiệu năng', N'Chip xử lý', N'Exynos 1580', 5),
+(6, N'Hiệu năng', N'RAM', N'8 GB', 6),
+(6, N'Hiệu năng', N'Bộ nhớ trong', N'128 GB / 256 GB', 7),
+(6, N'Hiệu năng', N'Hệ điều hành', N'Android 15, One UI 7', 8),
+(6, N'Camera', N'Camera sau', N'50 MP chính + 12 MP siêu rộng + 5 MP macro', 9),
+(6, N'Camera', N'Camera trước', N'12 MP', 10),
+(6, N'Pin & sạc', N'Dung lượng pin', N'5000 mAh', 11),
+(6, N'Pin & sạc', N'Sạc nhanh', N'Có dây 45 W', 12),
+(6, N'Kết nối & tiện ích', N'Mạng', N'5G, Wi-Fi 6, Bluetooth 5.3, NFC', 13),
+(6, N'Kết nối & tiện ích', N'Kháng nước, bụi', N'IP67', 14),
+(7, N'Màn hình', N'Kích thước', N'6,67 inch', 1),
+(7, N'Màn hình', N'Công nghệ', N'AMOLED', 2),
+(7, N'Màn hình', N'Độ phân giải', N'1220 x 2712 px', 3),
+(7, N'Màn hình', N'Tần số quét', N'120 Hz', 4),
+(7, N'Hiệu năng', N'Chip xử lý', N'MediaTek Dimensity 7300-Ultra', 5),
+(7, N'Hiệu năng', N'RAM', N'8 GB', 6),
+(7, N'Hiệu năng', N'Bộ nhớ trong', N'256 GB', 7),
+(7, N'Hiệu năng', N'Hệ điều hành', N'Android 14, HyperOS', 8),
+(7, N'Camera', N'Camera sau', N'200 MP chính + 8 MP siêu rộng + 2 MP macro', 9),
+(7, N'Camera', N'Camera trước', N'20 MP', 10),
+(7, N'Pin & sạc', N'Dung lượng pin', N'5110 mAh', 11),
+(7, N'Pin & sạc', N'Sạc nhanh', N'Có dây 45 W', 12),
+(7, N'Kết nối & tiện ích', N'Mạng', N'5G, Wi-Fi 6, Bluetooth 5.4, NFC', 13),
+(7, N'Kết nối & tiện ích', N'Kháng nước, bụi', N'IP68', 14),
+(8, N'Màn hình', N'Kích thước', N'6,7 inch', 1),
+(8, N'Màn hình', N'Công nghệ', N'AMOLED', 2),
+(8, N'Màn hình', N'Độ phân giải', N'2412 x 1080 px', 3),
+(8, N'Màn hình', N'Tần số quét', N'120 Hz', 4),
+(8, N'Hiệu năng', N'Chip xử lý', N'MediaTek Dimensity 7050', 5),
+(8, N'Hiệu năng', N'RAM', N'8 GB', 6),
+(8, N'Hiệu năng', N'Bộ nhớ trong', N'256 GB', 7),
+(8, N'Hiệu năng', N'Hệ điều hành', N'Android 14, ColorOS 14', 8),
+(8, N'Camera', N'Camera sau', N'64 MP chính + 8 MP siêu rộng + 2 MP', 9),
+(8, N'Camera', N'Camera trước', N'32 MP', 10),
+(8, N'Pin & sạc', N'Dung lượng pin', N'5000 mAh', 11),
+(8, N'Pin & sạc', N'Sạc nhanh', N'Có dây 45 W', 12),
+(8, N'Kết nối & tiện ích', N'Mạng', N'5G, Wi-Fi 6, Bluetooth 5.3, NFC', 13),
+(8, N'Kết nối & tiện ích', N'Kháng nước, bụi', N'IP65', 14),
+(9, N'Màn hình', N'Kích thước', N'6,78 inch', 1),
+(9, N'Màn hình', N'Công nghệ', N'AMOLED', 2),
+(9, N'Màn hình', N'Độ phân giải', N'2800 x 1260 px', 3),
+(9, N'Màn hình', N'Tần số quét', N'120 Hz', 4),
+(9, N'Hiệu năng', N'Chip xử lý', N'Snapdragon 7 Gen 3', 5),
+(9, N'Hiệu năng', N'RAM', N'12 GB', 6),
+(9, N'Hiệu năng', N'Bộ nhớ trong', N'256 GB', 7),
+(9, N'Hiệu năng', N'Hệ điều hành', N'Android 14, Funtouch OS 14', 8),
+(9, N'Camera', N'Camera sau', N'50 MP chính + 50 MP siêu rộng', 9),
+(9, N'Camera', N'Camera trước', N'50 MP', 10),
+(9, N'Pin & sạc', N'Dung lượng pin', N'5500 mAh', 11),
+(9, N'Pin & sạc', N'Sạc nhanh', N'Có dây 80 W', 12),
+(9, N'Kết nối & tiện ích', N'Mạng', N'5G, Wi-Fi 6, Bluetooth 5.3, NFC', 13),
+(9, N'Kết nối & tiện ích', N'Kháng nước, bụi', N'IP68, IP69', 14),
+(10, N'Âm thanh', N'Chip', N'Apple H2', 1),
+(10, N'Âm thanh', N'Chống ồn', N'Chống ồn chủ động (ANC)', 2),
+(10, N'Âm thanh', N'Âm thanh', N'Âm thanh không gian cá nhân hóa, Adaptive EQ', 3),
+(10, N'Pin', N'Thời gian nghe', N'Khoảng 6 giờ (bật ANC), 30 giờ với hộp sạc', 4),
+(10, N'Kết nối & tiện ích', N'Kết nối', N'Bluetooth 5.3', 5),
+(10, N'Kết nối & tiện ích', N'Cổng sạc hộp', N'USB-C, hỗ trợ MagSafe và Qi', 6),
+(10, N'Kết nối & tiện ích', N'Kháng nước, bụi', N'IP54', 7),
+(10, N'Kết nối & tiện ích', N'Tính năng', N'Tìm bằng Find My', 8),
+(11, N'Âm thanh', N'Chống ồn', N'Chống ồn chủ động (ANC)', 1),
+(11, N'Âm thanh', N'Âm thanh', N'Hi-Fi 24-bit, loa woofer 10,5 mm + tweeter 6,1 mm', 2),
+(11, N'Pin', N'Thời gian nghe', N'Khoảng 6 giờ (bật ANC), 30 giờ với hộp sạc', 3),
+(11, N'Kết nối & tiện ích', N'Kết nối', N'Bluetooth 5.4', 4),
+(11, N'Kết nối & tiện ích', N'Cổng sạc hộp', N'USB-C, hỗ trợ Qi', 5),
+(11, N'Kết nối & tiện ích', N'Kháng nước, bụi', N'IP57', 6),
+(12, N'Công suất', N'Công suất tối đa', N'30 W', 1),
+(12, N'Công suất', N'Công nghệ', N'GaN', 2),
+(12, N'Công suất', N'Chuẩn sạc', N'USB-PD 3.0, PPS', 3),
+(12, N'Cổng', N'Số cổng', N'1 x USB-C', 4),
+(13, N'Thông số', N'Chiều dài', N'1 m', 1),
+(13, N'Thông số', N'Công suất tối đa', N'100 W', 2),
+(13, N'Thông số', N'Đầu kết nối', N'USB-C sang USB-C', 3),
+(13, N'Thông số', N'Chuẩn sạc', N'USB-PD, Quick Charge 4.0', 4),
+(14, N'Thông số', N'Dung lượng', N'10000 mAh', 1),
+(14, N'Thông số', N'Công suất sạc ra', N'22.5 W (PowerIQ 3.0)', 2),
+(14, N'Thông số', N'Cổng ra', N'USB-C, USB-A', 3),
+(14, N'Thông số', N'Tiện ích', N'Màn hình LED hiển thị pin', 4),
+(15, N'Thông số', N'Tương thích', N'iPhone 16 Pro Max', 1),
+(15, N'Thông số', N'Chất liệu', N'TPU mềm', 2),
+(15, N'Thông số', N'Bảo vệ', N'Viền, góc và cụm camera', 3),
+(16, N'Thông số', N'Tương thích', N'Samsung Galaxy S25 Ultra', 1),
+(16, N'Thông số', N'Chất liệu', N'PC và TPU', 2),
+(16, N'Thông số', N'Kiểu dáng', N'Trong suốt, chống sốc', 3),
+(17, N'Thông số', N'Tương thích', N'iPhone 16', 1),
+(17, N'Thông số', N'Độ cứng', N'9H', 2),
+(17, N'Thông số', N'Chất liệu', N'Kính cường lực', 3),
+(17, N'Thông số', N'Tiện ích', N'Có khung hỗ trợ dán', 4);
+GO
