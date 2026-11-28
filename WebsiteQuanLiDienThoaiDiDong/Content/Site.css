@@ -2895,6 +2895,63 @@ body.has-pdbar .to-top {
     aspect-ratio: 16 / 9;
     border: 0;
 }
+.video-item {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+}
+
+    .video-item:hover {
+        border-color: var(--red);
+    }
+
+    .video-item .video-card {
+        flex: 1;
+        border: 0;
+        border-radius: 0;
+    }
+
+.video-prod {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 8px 12px;
+    border-top: 1px solid var(--line);
+    color: var(--ink);
+    text-decoration: none;
+}
+
+    .video-prod:hover {
+        background: #fafafa;
+        color: var(--ink);
+    }
+
+    .video-prod img {
+        width: 46px;
+        height: 46px;
+        flex-shrink: 0;
+        object-fit: contain;
+        background: #f5f5f5;
+        border-radius: 8px;
+    }
+
+    .video-prod b {
+        display: -webkit-box;
+        -webkit-line-clamp: 2;
+        -webkit-box-orient: vertical;
+        overflow: hidden;
+        font-size: .85rem;
+        line-height: 1.25;
+    }
+
+    .video-prod span {
+        color: var(--red);
+        font-weight: 700;
+        font-size: .9rem;
+    }
 
 @media (max-width: 991px) {
     .news-grid {

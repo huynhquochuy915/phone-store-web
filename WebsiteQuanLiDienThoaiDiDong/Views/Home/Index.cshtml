@@ -374,11 +374,25 @@
             <div class="video-grid">
                 @foreach (var v in Model.Video)
                 {
-                    <button type="button" class="video-card" data-id="@v.Id" data-title="@v.Title">
-                        <div class="video-thumb"><img src="@v.Thumb" alt="" loading="lazy" /></div>
-                        <h3>@v.Title</h3>
-                        <div class="news-meta">@v.Channel</div>
-                    </button>
+                    var sp = Model.VideoSp.ContainsKey(v.Id) ? Model.VideoSp[v.Id] : null;
+                    <div class="video-item">
+                        <button type="button" class="video-card" data-id="@v.Id" data-title="@v.Title">
+                            <div class="video-thumb"><img src="@v.Thumb" alt="" loading="lazy" /></div>
+                            <h3>@v.Title</h3>
+                            <div class="news-meta">@v.Channel</div>
+                        </button>
+                        @if (sp != null)
+                        {
+                            <a class="video-prod" href="@Url.Action("ChiTiet", "SanPham", new { area = "", id = sp.Id })">
+                                <img src="@(sp.AnhDaiDien != null ? Url.Content("~" + sp.AnhDaiDien) : noImg2)" alt="@sp.TenSanPham"
+                                     loading="lazy" onerror="this.onerror=null;this.src='@noImg2'" />
+                                <div>
+                                    <b>@sp.TenSanPham</b>
+                                    <span>@sp.GiaThapNhat.VND()</span>
+                                </div>
+                            </a>
+                        }
+                    </div>
                 }
             </div>
 

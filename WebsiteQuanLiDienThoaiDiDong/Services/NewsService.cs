@@ -137,6 +137,27 @@ namespace WebsiteQuanLiDienThoaiDiDong.Services
             var res = new List<VideoItem>();
             XNamespace a = "http://www.w3.org/2005/Atom";
             XNamespace yt = "http://www.youtube.com/xml/schemas/2015";
+            foreach (var cap in CauHinh.Get("Video_SanPham", "").Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                var vid = cap.Split(':')[0].Trim();
+                if (vid == "" || res.Any(x => x.Id == vid)) continue;
+                var json = Fetch("https://www.youtube.com/oembed?format=json&url=" +
+                                 Uri.EscapeDataString("https://www.youtube.com/watch?v=" + vid));
+                if (json == null) continue;
+                try
+                {
+                    var d = new System.Web.Script.Serialization.JavaScriptSerializer()
+                                .Deserialize<Dictionary<string, object>>(json);
+                    res.Add(new VideoItem
+                    {
+                        Id = vid,
+                        Title = Convert.ToString(d["title"]),
+                        Channel = d.ContainsKey("author_name") ? Convert.ToString(d["author_name"]) : "",
+                        Date = DateTime.MaxValue   // để sort luôn nằm trên cùng
+                    });
+                }
+                catch { }
+            }
             var ids = CauHinh.Get("Video_ChannelIds", "").Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                 .Select(s => s.Trim()).Where(s => s != "");
             foreach (var id in ids)

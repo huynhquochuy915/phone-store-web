@@ -42,6 +42,7 @@ namespace WebsiteQuanLiDienThoaiDiDong.Models.ViewModels
 
     public class TrangChuVM
     {
+        public Dictionary<string, SanPhamCardVM> VideoSp { get; set; } = new Dictionary<string, SanPhamCardVM>();
         public List<KhuyenMaiCardVM> KhuyenMais { get; set; } = new List<KhuyenMaiCardVM>();
         public List<ThuongHieuTileVM> ThuongHieus { get; set; } = new List<ThuongHieuTileVM>();
         public List<SanPhamCardVM> MayCu { get; set; } = new List<SanPhamCardVM>();

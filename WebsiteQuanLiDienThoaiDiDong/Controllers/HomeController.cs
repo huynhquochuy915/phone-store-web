@@ -36,6 +36,26 @@ namespace WebsiteQuanLiDienThoaiDiDong.Controllers
                 Tin = NewsService.GetNews(4),
                 Video = NewsService.GetVideos(3)
             };
+            // ----- sản phẩm gắn dưới video: "videoId:sanPhamId,videoId:sanPhamId" -----
+            var videoMap = new Dictionary<string, int>();
+            foreach (var cap in CauHinh.Get("Video_SanPham", "").Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+            {
+                var p = cap.Split(':');
+                int spId;
+                if (p.Length == 2 && int.TryParse(p[1].Trim(), out spId)) videoMap[p[0].Trim()] = spId;
+            }
+            var spIds = vm.Video.Where(v => videoMap.ContainsKey(v.Id)).Select(v => videoMap[v.Id]).Distinct().ToList();
+            if (spIds.Count > 0)
+            {
+                var dsSp = db.Database.SqlQuery<SanPhamCardVM>(
+                    "SELECT v.* FROM vw_SanPhamHienThi v WHERE v.Id IN (" + string.Join(",", spIds) + ")").ToList();
+                foreach (var v in vm.Video)
+                {
+                    if (!videoMap.ContainsKey(v.Id)) continue;
+                    var sp = dsSp.FirstOrDefault(s => s.Id == videoMap[v.Id]);
+                    if (sp != null) vm.VideoSp[v.Id] = sp;
+                }
+            }
             // ----- khuyến mãi đang chạy: đang bật, còn hạn, còn lượt dùng -----
             var now = DateTime.Now;
             var kms = db.KhuyenMais
